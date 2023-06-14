@@ -1,0 +1,25 @@
+profiles:
+  uno:
+    notes: Arduino Uno
+    fqbn: arduino:avr:uno
+    platforms:
+      - platform: arduino:avr (1.8.4)
+    libraries:
+      - Ethernet (2.0.2)
+      - PubSubClient (2.8.0)
+  mega:
+    notes: Arduino Mega
+    fqbn: arduino:avr:mega
+    platforms:
+      - platform: arduino:avr (1.8.4)
+    libraries:
+      - Ethernet (2.0.2)
+      - PubSubClient (2.8.0)
+  micro:
+    notes: Arduino Micro
+    fqbn: arduino:avr:micro
+    platforms:
+      - platform: arduino:avr (1.8.4)
+    libraries:
+      - Ethernet (2.0.2)
+      - PubSubClient (2.8.0)
