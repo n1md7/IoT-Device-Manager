@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch index.js",
+    "dev": "node --env-file .env.development --watch index.js",
     "start": "node --title 'MQTT Node client' index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --write **/*.js"

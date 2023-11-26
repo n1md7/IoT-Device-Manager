@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  mqtt-server.docker:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt-server
+    ports:
+      - "1883:1883" # Default MQTT port
+      - "9001:9001" # Default MQTT port for websockets
+  mqtt-web-client:
+    image: emqx/mqttx-web
+    container_name: mqtt-web-client
+    depends_on:
+      - mqtt-server.docker
+    ports:
+      - "8080:80"
