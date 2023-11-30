@@ -7,6 +7,7 @@ profiles:
     libraries:
       - Ethernet (2.0.2)
       - PubSubClient (2.8.0)
+      - ArduinoJson (6.21.3)
   mega:
     notes: Arduino Mega
     fqbn: arduino:avr:mega
@@ -15,6 +16,7 @@ profiles:
     libraries:
       - Ethernet (2.0.2)
       - PubSubClient (2.8.0)
+      - ArduinoJson (6.21.3)
   micro:
     notes: Arduino Micro
     fqbn: arduino:avr:micro
@@ -23,3 +25,4 @@ profiles:
     libraries:
       - Ethernet (2.0.2)
       - PubSubClient (2.8.0)
+      - ArduinoJson (6.21.3)

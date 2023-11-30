@@ -47,3 +47,17 @@ arduino-cli upload -p /dev/cu.usbmodem144101 -b arduino:avr:mega arduino-client.
 
 __NOTE__: The port can be changed to the port that the arduino is connected to (`/dev/cu.usbmodem144101` is the port for
 my arduino)
+
+Check available ports:
+
+MacOS:
+```bash
+arduino-cli board list
+# or
+ls -l /dev/cu.*
+# or
+ls -l /dev/tty.*
+# or
+ls -l /dev/*.*
+```
+__NOTE__: Plugin & unplug Arduino to check which port is added to the list
