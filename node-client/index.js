@@ -12,6 +12,10 @@ import { once } from "events";
 
 const getTopicToPublish = (code) => `home/devices/${code}/set`;
 const subscribeTopicPattern = "home/devices/+/state";
+const Status = Object.freeze({
+  ON: "ON",
+  OFF: "OFF",
+});
 
 const devices = [
   {
@@ -60,8 +64,9 @@ client.subscribe(subscribeTopicPattern, (err) => {
 });
 
 client.on("message", (topic, message) => {
+  const [, deviceCode] = /home\/devices\/(.+)\/state/.exec(topic);
   console.info("*".repeat(50));
-  console.info("Received message from topic: " + topic);
+  console.info(`Received message from ${deviceCode}. Topic: ` + topic);
   console.info("Message: " + message.toString());
   console.info("*".repeat(50), "\n");
 });
@@ -73,7 +78,7 @@ client.on("message", (topic, message) => {
 for (const device of devices) {
   const topic = getTopicToPublish(device.code);
   const message = JSON.stringify({
-    status: "on",
+    status: Status.ON,
     time: {
       minutes: 12,
       seconds: 30,

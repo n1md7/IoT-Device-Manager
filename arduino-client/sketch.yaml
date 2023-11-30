@@ -8,6 +8,7 @@ profiles:
       - Ethernet (2.0.2)
       - PubSubClient (2.8.0)
       - ArduinoJson (6.21.3)
+      - AbleButtons (0.3.0)
   mega:
     notes: Arduino Mega
     fqbn: arduino:avr:mega
@@ -17,6 +18,7 @@ profiles:
       - Ethernet (2.0.2)
       - PubSubClient (2.8.0)
       - ArduinoJson (6.21.3)
+      - AbleButtons (0.3.0)
   micro:
     notes: Arduino Micro
     fqbn: arduino:avr:micro
@@ -26,3 +28,4 @@ profiles:
       - Ethernet (2.0.2)
       - PubSubClient (2.8.0)
       - ArduinoJson (6.21.3)
+      - AbleButtons (0.3.0)

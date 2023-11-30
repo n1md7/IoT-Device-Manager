@@ -1,13 +1,18 @@
 #include <SPI.h>
 #include <Ethernet.h>
-#include <PubSubClient.h>
 #include <ArduinoJson.h>
+#include <AbleButtons.h>
+#include <PubSubClient.h>
 
 #include "Component.h"
 
 #define DEVICE_CODE "D0001"
 #define DEVICE_NAME "Water Pump"
 #define INITIAL_PING_INTERVAL 5000
+
+#define RELAY_PIN 2    // Relay pin to control the water pump
+#define CON_LED_PIN 3  // LED pin to indicate the connection status
+#define BUTTON_PIN 4   // Button pin to control the water pump ON/OFF
 
 #define MQTT_CLIENT_ID DEVICE_NAME " (" DEVICE_CODE ")"
 #define MQTT_HOST "192.168.116.154"
@@ -16,13 +21,17 @@
 #define SUBSCRIBE_TOPIC "home/devices/" DEVICE_CODE "/set"
 #define PUBLISH_TOPIC "home/devices/" DEVICE_CODE "/state"
 
-#define ON "on"
-#define OFF "off"
+#define ON "ON"
+#define OFF "OFF"
 
-byte mac[] = {0xE4, 0x5F, 0x01, 0xC5, 0xBB, 0xA9}; // Arduino
-IPAddress ip(192, 168, 116, 124); // Arduino
+using Button = AblePullupClickerButton;
 
-const Component statusLight(LED_BUILTIN);
+byte mac[] = { 0xE4, 0x5F, 0x01, 0xC5, 0xBB, 0xA9 };  // Arduino
+IPAddress ip(192, 168, 116, 124);                     // Arduino
+
+const Component connectingLight(CON_LED_PIN, HIGH, LOW);
+const Component externalRelay(RELAY_PIN, LOW, HIGH);
+const Button startButton(BUTTON_PIN);
 
 EthernetClient ethClient;
 PubSubClient client;
@@ -37,19 +46,21 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
   DynamicJsonDocument decoded(32);
   deserializeJson(decoded, payload);
 
-  const char* status = decoded["status"];
+  const char *status = decoded["status"];
   const int minutes = decoded["time"]["minutes"];
   const int seconds = decoded["time"]["seconds"];
 
   Serial.print("Status: ");
   Serial.print(status);
-  Serial.print(" ");
+  Serial.print("; Time: ");
   Serial.print(minutes);
   Serial.print(":");
   Serial.print(seconds);
   Serial.println();
 
-  statusLight.setState(strcmp(status, ON) == 0);
+  const bool requestedToTurnOn = strcmp(status, ON) == 0;
+
+  externalRelay.setState(requestedToTurnOn);
 }
 
 void reconnect() {
@@ -61,9 +72,13 @@ void reconnect() {
   Serial.println("Attempting MQTT connection...");
   if (client.connect(MQTT_CLIENT_ID)) {
     Serial.println("Connected to MQTT broker!");
+    Serial.print("Subscribing to topic: ");
+    Serial.println(SUBSCRIBE_TOPIC);
+
     client.subscribe(SUBSCRIBE_TOPIC);
-    lastReconnectAttempt = 0;  // Reset the reconnect attempt counter
+    lastReconnectAttempt = 0;               // Reset the reconnect attempt counter
     PING_INTERVAL = INITIAL_PING_INTERVAL;  // Reset the retry delay
+    connectingLight.off();                  // Turn off when connected
   } else {
     Serial.print("Failed to connect, rc=");
     Serial.print(client.state());
@@ -72,6 +87,8 @@ void reconnect() {
     // Use exponential backoff for retry delay
     lastReconnectAttempt = currentMillis;
     PING_INTERVAL = min(2 * PING_INTERVAL, 30000);  // Maximum retry delay of 30 seconds
+
+    connectingLight.on();  // Turn on when trying to reconnect
   }
 }
 
@@ -87,18 +104,20 @@ void setup() {
   client.setClient(ethClient);
   client.setCallback(onMessage);
 
-  // Allow the hardware to sort itself out
-  delay(1500);
+  startButton.begin();
+
+  // Turn on when starting up
+  // Indicates that device is trying to connect to MQTT broker
+  // Once connected, it will turn off
+  connectingLight.on();
 }
 
 unsigned long lastPublishedAt = 0;
 
 void publishCurrentState() {
-  if (millis() - lastPublishedAt < PING_INTERVAL) return;
-
   DynamicJsonDocument payload(128);
 
-  payload["status"] = statusLight.isOn() ? ON : OFF;
+  payload["status"] = externalRelay.isOn() ? ON : OFF;
   payload["time"]["minutes"] = millis() / 60000;
   payload["time"]["seconds"] = (millis() / 1000) % 60;
 
@@ -107,14 +126,25 @@ void publishCurrentState() {
 
   client.publish(PUBLISH_TOPIC, buffer);
 
-  Serial.print("."); // Print a dot so we know it's working
-
   lastPublishedAt = millis();
+}
+
+void evaluateIntervalForMQTT() {
+  if (millis() - lastPublishedAt < PING_INTERVAL) return;
+
+  publishCurrentState();
 }
 
 void loop() {
   if (!client.connected()) reconnect();
 
   client.loop();
-  publishCurrentState();
+  startButton.handle();
+
+  if (startButton.resetClicked()) {
+    externalRelay.toggle();
+    publishCurrentState();
+  }
+
+  evaluateIntervalForMQTT();
 }

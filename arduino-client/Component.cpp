@@ -3,30 +3,43 @@
 Component::Component(int pin) {
   this->pin = pin;
   this->state = LOW;
+  this->offSignal = LOW;
+  this->onSignal = HIGH;
 
   pinMode(pin, OUTPUT);
+  digitalWrite(pin, state);
+}
+
+Component::Component(int pin, int offSignal, int onSignal) {
+  this->pin = pin;
+  this->state = offSignal;
+  this->onSignal = onSignal;
+  this->offSignal = offSignal;
+
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, state);
 }
 
 void Component::on() {
   if (isOn()) return;
 
-  state = HIGH;
+  state = onSignal;
   digitalWrite(pin, state);
 }
 
 void Component::off() {
   if (isOff()) return;
 
-  state = LOW;
+  state = offSignal;
   digitalWrite(pin, state);
 }
 
 bool Component::isOn() {
-  return state == HIGH;
+  return state == onSignal;
 }
 
 bool Component::isOff() {
-  return state == LOW;
+  return state == offSignal;
 }
 
 void Component::toggle() {
@@ -35,6 +48,7 @@ void Component::toggle() {
   on();
 }
 
-void Component::setState(bool state) {
-  this->state = state;
+void Component::setState(bool isOn) {
+  state = isOn ? onSignal : offSignal;
+  digitalWrite(pin, state);
 }
