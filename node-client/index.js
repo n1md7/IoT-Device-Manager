@@ -77,11 +77,14 @@ client.on("message", (topic, message) => {
 // that would publish messages to the MQTT broker
 for (const device of devices) {
   const topic = getTopicToPublish(device.code);
+  // "data" not required but NestJS adapter does it this way, so I'm following the same
   const message = JSON.stringify({
-    status: Status.ON,
-    time: {
-      minutes: 12,
-      seconds: 30,
+    data: {
+      status: Status.ON,
+      time: {
+        minutes: 12,
+        seconds: 30,
+      },
     },
   });
   console.info("Publishing message to topic: " + topic);

@@ -1,0 +1,84 @@
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from '/src/app.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import { Env } from '/libs/env/env.class';
+import { version } from '../package.json';
+import { dump } from 'js-yaml';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { writeFileSync } from 'fs';
+import { pid, cwd } from 'node:process';
+import { join } from 'node:path';
+
+(async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  app.setGlobalPrefix('/api');
+  app.enableVersioning({
+    prefix: 'v',
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
+
+  const document = SwaggerModule.createDocument(
+    app,
+    new DocumentBuilder()
+      .addBearerAuth({
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT auth token',
+        in: 'header',
+      })
+      .setTitle('Home Automation API')
+      .setDescription('Home Automation API for IoT devices')
+      .setVersion(version)
+      .build(),
+  );
+  try {
+    writeFileSync(join(cwd(), './docs/swagger.yaml'), dump(document));
+  } catch (error) {
+    Logger.error(
+      `Error while writing swagger.yaml file: ${error}`,
+      'Bootstrap',
+    );
+  }
+
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
+  const appPort = parseInt('3000', 10);
+  app.getHttpAdapter().getInstance().disable('x-powered-by');
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.MQTT,
+    options: {
+      url: 'mqtt://localhost:1883',
+      clientId: 'IoT-Manager',
+      username: '',
+      password: '',
+    },
+  });
+
+  await app.startAllMicroservices();
+  await app.listen(appPort, '0.0.0.0');
+
+  const url = await app.getUrl();
+  console.log(`
+    Application started at: ${url}
+    Swagger docs: ${url}/docs
+    Mode: ${Env.NodeEnv}
+    Pid: ${pid}
+  `);
+})();

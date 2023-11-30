@@ -43,12 +43,13 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
   Serial.print(topic);
   Serial.println(" ] ");
 
-  DynamicJsonDocument decoded(32);
+  DynamicJsonDocument decoded(64);
   deserializeJson(decoded, payload);
 
-  const char *status = decoded["status"];
-  const int minutes = decoded["time"]["minutes"];
-  const int seconds = decoded["time"]["seconds"];
+  // NestJS MQTT message emitter adds "data" property
+  const char *status = decoded["data"]["status"];
+  const int minutes = decoded["data"]["time"]["min"];
+  const int seconds = decoded["data"]["time"]["sec"];
 
   Serial.print("Status: ");
   Serial.print(status);
@@ -118,8 +119,10 @@ void publishCurrentState() {
   DynamicJsonDocument payload(128);
 
   payload["status"] = externalRelay.isOn() ? ON : OFF;
-  payload["time"]["minutes"] = millis() / 60000;
-  payload["time"]["seconds"] = (millis() / 1000) % 60;
+  payload["name"] = DEVICE_NAME;
+  payload["code"] = DEVICE_CODE;
+  payload["time"]["min"] = millis() / 60000;
+  payload["time"]["sec"] = (millis() / 1000) % 60;
 
   char buffer[128];
   serializeJson(payload, buffer);
