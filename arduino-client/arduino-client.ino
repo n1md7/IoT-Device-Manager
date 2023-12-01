@@ -4,26 +4,9 @@
 #include <AbleButtons.h>
 #include <PubSubClient.h>
 
+#include "Configuration.h"
 #include "Component.h"
 #include "Timer.h"
-
-#define DEVICE_CODE "D0001"
-#define DEVICE_NAME "Water Pump"
-#define REPORT_INTERVAL 5000    // 5s, how often report to MQTT broker
-#define MAX_PING_TIMEOUT 30000  // Maximum retry delay of 30 seconds, when MQTT broker is not available
-
-#define TIMER_INIT_VALUE 15 * 60  // 15 minutes
-
-#define RELAY_PIN 2    // Relay pin to control the water pump
-#define CON_LED_PIN 3  // LED pin to indicate the connection status
-#define BUTTON_PIN 4   // Button pin to control the water pump ON/OFF
-
-#define MQTT_CLIENT_ID DEVICE_NAME " (" DEVICE_CODE ")"
-#define MQTT_HOST "192.168.116.154"
-#define MQTT_PORT 1883
-
-#define SUBSCRIBE_TOPIC "home/devices/" DEVICE_CODE "/set"
-#define PUBLISH_TOPIC "home/devices/" DEVICE_CODE "/state"
 
 #define ON "ON"
 #define OFF "OFF"
