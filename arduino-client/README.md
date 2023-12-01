@@ -23,8 +23,6 @@ Modify values according to your setup
 #define CON_LED_PIN 3  // LED pin to indicate the connection status
 #define BUTTON_PIN 4   // Button pin to control the water pump ON/OFF
 
-// TODO: Add authentication
-
 const byte MAC[] = { 0xE4, 0x5F, 0x01, 0xC5, 0xBB, 0xA9 };  // Arduino shield MAC
 const byte IP[] = { 192, 168, 116, 124 };                   // Arduino shield IP
 
@@ -32,6 +30,11 @@ const byte IP[] = { 192, 168, 116, 124 };                   // Arduino shield IP
 #define MQTT_CLIENT_ID DEVICE_NAME " (" DEVICE_CODE ")"
 #define MQTT_HOST "192.168.116.154"
 #define MQTT_PORT 1883
+#define MQTT_QOS 1 // Quality of Service, 0 - at most once, 1 - at least once, 2 - exactly once
+
+// If you don't need authentication, make sure they are empty
+#define MQTT_USER "user"
+#define MQTT_PASS "secret"
 
 #define SUBSCRIBE_TOPIC "home/devices/" DEVICE_CODE "/set"
 #define PUBLISH_TOPIC "home/devices/" DEVICE_CODE "/state"

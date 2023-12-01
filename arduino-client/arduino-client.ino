@@ -59,15 +59,16 @@ void reconnect() {
   if (currentMillis - lastReconnectAttempt < PING_INTERVAL) return;
 
   Serial.println("Attempting MQTT connection...");
-  if (client.connect(MQTT_CLIENT_ID)) {
+
+  if (client.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS)) {
     Serial.println("Connected to MQTT broker!");
     Serial.print("Subscribing to topic: ");
     Serial.println(SUBSCRIBE_TOPIC);
 
-    client.subscribe(SUBSCRIBE_TOPIC, 1);  // QoS 1, at least once delivery
-    lastReconnectAttempt = 0;              // Reset the reconnect attempt counter
-    PING_INTERVAL = REPORT_INTERVAL;       // Reset the retry delay
-    connectingLight.off();                 // Turn off when connected
+    client.subscribe(SUBSCRIBE_TOPIC, MQTT_QOS);  // QoS 1, at least once delivery
+    lastReconnectAttempt = 0;                     // Reset the reconnect attempt counter
+    PING_INTERVAL = REPORT_INTERVAL;              // Reset the retry delay
+    connectingLight.off();                        // Turn off when connected
   } else {
     Serial.print("Failed to connect, rc=");
     Serial.print(client.state());
