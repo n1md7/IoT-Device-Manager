@@ -7,7 +7,7 @@ paths:
       responses:
         '200':
           description: ''
-  /api/v1/timer-control:
+  /api/v1/timer/control:
     post:
       operationId: DevicesController_updateTimerByDeviceCode
       parameters: []

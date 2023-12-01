@@ -21,8 +21,12 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "/src/*": ["src/*"],
+      "/libs/config": ["libs/config/src"],
       "/libs/config/*": ["libs/config/src/*"],
-      "/libs/env/*": ["libs/env/src/*"]
+      "/libs/env": ["libs/env/src"],
+      "/libs/env/*": ["libs/env/src/*"],
+      "/libs/filters": ["libs/filters/src"],
+      "/libs/filters/*": ["libs/filters/src/*"]
     }
   }
 }
