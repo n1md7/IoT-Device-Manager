@@ -50,7 +50,6 @@ const client = mqtt.connect({
 
 try {
   await once(client, "connect");
-  console.info("Connected to MQTT broker");
 } catch (error) {
   console.error("Error occurred while connecting to MQTT broker", error);
   process.exit(1);

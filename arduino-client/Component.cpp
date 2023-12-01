@@ -49,6 +49,9 @@ void Component::toggle() {
 }
 
 void Component::setState(bool isOn) {
-  state = isOn ? onSignal : offSignal;
+  int state = isOn ? onSignal : offSignal;
+  if (this->state == state) return;  // no change
+
+  this->state = state;
   digitalWrite(pin, state);
 }

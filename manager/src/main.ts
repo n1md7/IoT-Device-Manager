@@ -61,15 +61,32 @@ import { join } from 'node:path';
   const appPort = parseInt('3000', 10);
   app.getHttpAdapter().getInstance().disable('x-powered-by');
 
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.MQTT,
-    options: {
-      url: 'mqtt://localhost:1883',
-      clientId: 'IoT-Manager',
-      username: '',
-      password: '',
+  app.connectMicroservice<MicroserviceOptions>(
+    {
+      transport: Transport.MQTT,
+      options: {
+        url: 'mqtt://localhost:1883',
+        clientId: 'IoT-Manager',
+        username: '',
+        password: '',
+        subscribeOptions: {
+          /**
+           * The QoS
+           * 0 - at most once delivery
+           * 1 - at least once delivery
+           * 2 - exactly once delivery
+           *
+           * We use QoS 1 because we want to make sure that the message is delivered at least once.
+           * Duplication is possible, but it is not a problem for us.
+           * In worst case scenario, the device will receive the same message twice.
+           * Which will cause triggering the same action twice (e.g. turn on the light twice).
+           */
+          qos: 1,
+        },
+      },
     },
-  });
+    // { inheritAppConfig: true },
+  );
 
   await app.startAllMicroservices();
   await app.listen(appPort, '0.0.0.0');

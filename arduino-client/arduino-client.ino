@@ -5,10 +5,14 @@
 #include <PubSubClient.h>
 
 #include "Component.h"
+#include "Timer.h"
 
 #define DEVICE_CODE "D0001"
 #define DEVICE_NAME "Water Pump"
-#define INITIAL_PING_INTERVAL 5000
+#define REPORT_INTERVAL 5000    // 5s, how often report to MQTT broker
+#define MAX_PING_TIMEOUT 30000  // Maximum retry delay of 30 seconds, when MQTT broker is not available
+
+#define TIMER_INIT_VALUE 15 * 60  // 15 minutes
 
 #define RELAY_PIN 2    // Relay pin to control the water pump
 #define CON_LED_PIN 3  // LED pin to indicate the connection status
@@ -32,11 +36,12 @@ IPAddress ip(192, 168, 116, 124);                     // Arduino
 const Component connectingLight(CON_LED_PIN, HIGH, LOW);
 const Component externalRelay(RELAY_PIN, LOW, HIGH);
 const Button startButton(BUTTON_PIN);
+const Timer timer(TIMER_INIT_VALUE);
 
 EthernetClient ethClient;
 PubSubClient client;
 
-unsigned long PING_INTERVAL = INITIAL_PING_INTERVAL;
+unsigned long PING_INTERVAL = REPORT_INTERVAL;
 
 void onMessage(char *topic, byte *payload, unsigned int length) {
   Serial.print("Message arrived [ ");
@@ -59,9 +64,12 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
   Serial.print(seconds);
   Serial.println();
 
-  const bool requestedToTurnOn = strcmp(status, ON) == 0;
+  const bool turnOn = strcmp(status, ON) == 0;
 
-  externalRelay.setState(requestedToTurnOn);
+  if (!turnOn) return timer.reset();
+
+  timer.set(minutes, seconds);
+  timer.start();
 }
 
 void reconnect() {
@@ -76,10 +84,10 @@ void reconnect() {
     Serial.print("Subscribing to topic: ");
     Serial.println(SUBSCRIBE_TOPIC);
 
-    client.subscribe(SUBSCRIBE_TOPIC);
-    lastReconnectAttempt = 0;               // Reset the reconnect attempt counter
-    PING_INTERVAL = INITIAL_PING_INTERVAL;  // Reset the retry delay
-    connectingLight.off();                  // Turn off when connected
+    client.subscribe(SUBSCRIBE_TOPIC, 1);  // QoS 1, at least once delivery
+    lastReconnectAttempt = 0;              // Reset the reconnect attempt counter
+    PING_INTERVAL = REPORT_INTERVAL;       // Reset the retry delay
+    connectingLight.off();                 // Turn off when connected
   } else {
     Serial.print("Failed to connect, rc=");
     Serial.print(client.state());
@@ -87,10 +95,34 @@ void reconnect() {
 
     // Use exponential backoff for retry delay
     lastReconnectAttempt = currentMillis;
-    PING_INTERVAL = min(2 * PING_INTERVAL, 30000);  // Maximum retry delay of 30 seconds
+    PING_INTERVAL = min(2 * PING_INTERVAL, MAX_PING_TIMEOUT);  // Maximum retry delay of 30 seconds
 
     connectingLight.on();  // Turn on when trying to reconnect
   }
+}
+
+unsigned long lastPublishedAt = 0;
+
+void publishCurrentState() {
+  DynamicJsonDocument payload(128);
+
+  payload["status"] = timer.isActive() ? ON : OFF;
+  payload["name"] = DEVICE_NAME;
+  payload["code"] = DEVICE_CODE;
+  payload["time"] = timer.getValue();  // Seconds
+
+  char buffer[128];
+  serializeJson(payload, buffer);
+
+  client.publish(PUBLISH_TOPIC, buffer);
+
+  lastPublishedAt = millis();
+}
+
+void evaluateIntervalForMQTT() {
+  if (millis() - lastPublishedAt < PING_INTERVAL) return;
+
+  publishCurrentState();
 }
 
 void setup() {
@@ -113,41 +145,22 @@ void setup() {
   connectingLight.on();
 }
 
-unsigned long lastPublishedAt = 0;
-
-void publishCurrentState() {
-  DynamicJsonDocument payload(128);
-
-  payload["status"] = externalRelay.isOn() ? ON : OFF;
-  payload["name"] = DEVICE_NAME;
-  payload["code"] = DEVICE_CODE;
-  payload["time"]["min"] = millis() / 60000;
-  payload["time"]["sec"] = (millis() / 1000) % 60;
-
-  char buffer[128];
-  serializeJson(payload, buffer);
-
-  client.publish(PUBLISH_TOPIC, buffer);
-
-  lastPublishedAt = millis();
-}
-
-void evaluateIntervalForMQTT() {
-  if (millis() - lastPublishedAt < PING_INTERVAL) return;
-
-  publishCurrentState();
-}
-
 void loop() {
   if (!client.connected()) reconnect();
 
   client.loop();
+  timer.handle();
   startButton.handle();
 
+  // Button click event
   if (startButton.resetClicked()) {
-    externalRelay.toggle();
-    publishCurrentState();
+    timer.toggle();         // Start or Pause the timer on button click (no reset)
+    publishCurrentState();  // Notify MQTT broker of the change
   }
+
+  // Only sets the relay state when the timer state changes
+  // Otherwise, it skips the evaluation internally, to avoid unnecessary relay state change
+  externalRelay.setState(timer.isActive());
 
   evaluateIntervalForMQTT();
 }
