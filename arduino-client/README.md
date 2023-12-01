@@ -94,3 +94,14 @@ ls -l /dev/tty.*
 ls -l /dev/*.*
 ```
 __NOTE__: Plugin & unplug Arduino to check which port is added to the list
+
+### Information
+
+Compiled sketch size for Arduino Uno
+
+```bash
+Sketch uses 24326 bytes (75%) of program storage space. Maximum is 32256 bytes.
+Global variables use 925 bytes (45%) of dynamic memory, leaving 1123 bytes for local variables. Maximum is 2048 bytes.
+```
+
+__NOTE__: It is possible to have DHCP enabled, but it needs more resources (more memory). `This increases the sketch size significantly` [source](https://www.arduino.cc/reference/en/libraries/ethernet/ethernet.begin/)
