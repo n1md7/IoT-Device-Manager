@@ -13,9 +13,6 @@
 
 using Button = AblePullupClickerButton;
 
-byte mac[] = { 0xE4, 0x5F, 0x01, 0xC5, 0xBB, 0xA9 };  // Arduino
-IPAddress ip(192, 168, 116, 124);                     // Arduino
-
 const Component connectingLight(CON_LED_PIN, HIGH, LOW);
 const Component externalRelay(RELAY_PIN, LOW, HIGH);
 const Button startButton(BUTTON_PIN);
@@ -111,10 +108,13 @@ void evaluateIntervalForMQTT() {
 void setup() {
   Serial.begin(9600);
 
-  Ethernet.begin(mac, ip);
+  Ethernet.begin(MAC, IP);
 
-  Serial.print("My IP is: ");
+  Serial.print("Device IP is: ");
   Serial.println(Ethernet.localIP());
+
+  Serial.print("Default gateway is: ");
+  Serial.println(Ethernet.gatewayIP());
 
   client.setServer(MQTT_HOST, MQTT_PORT);
   client.setClient(ethClient);
