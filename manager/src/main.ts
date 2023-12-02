@@ -7,8 +7,12 @@ import { version } from '../package.json';
 import { dump } from 'js-yaml';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
-import { pid, cwd } from 'node:process';
+import { cwd, pid } from 'node:process';
 import { join } from 'node:path';
+import { GenericExceptionFilter } from '/libs/filters';
+import { RequestLoggerInterceptor } from '/libs/interceptors';
+import { RequestIdInterceptor } from '/libs/interceptors/request-id/request-id.interceptor';
+import { TimeoutInterceptor } from '/libs/interceptors/timeout/timeout.interceptor';
 
 (async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +24,12 @@ import { join } from 'node:path';
       forbidNonWhitelisted: true,
     }),
   );
+  app.useGlobalInterceptors(
+    new RequestIdInterceptor(),
+    new RequestLoggerInterceptor(),
+    new TimeoutInterceptor(),
+  );
+  app.useGlobalFilters(new GenericExceptionFilter());
 
   app.setGlobalPrefix('/api');
   app.enableVersioning({

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { DevicesService } from './devices.service';
-import { DevicesController } from './devices.controller';
+import { DevicesHttpController } from './devices-http.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { Client } from '/src/devices/enums/client.enum';
+import { DevicesMqttController } from '/src/devices/devices-mqtt.controller';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { Client } from '/src/devices/enums/client.enum';
       },
     ]),
   ],
-  controllers: [DevicesController],
+  controllers: [DevicesHttpController, DevicesMqttController],
   providers: [DevicesService],
 })
 export class DevicesModule {}

@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { DatabaseException } from '/libs/filters';
 
 @Injectable()
 export class DevicesService {
   create(createDeviceDto: unknown) {
+    // throw new DatabaseException({
+    //   message: 'Error creating device',
+    //   error: 'Error creating device',
+    //   code: 500,
+    // });
     return 'This action adds a new device';
   }
 

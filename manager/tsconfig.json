@@ -26,7 +26,11 @@
       "/libs/env": ["libs/env/src"],
       "/libs/env/*": ["libs/env/src/*"],
       "/libs/filters": ["libs/filters/src"],
-      "/libs/filters/*": ["libs/filters/src/*"]
+      "/libs/filters/*": ["libs/filters/src/*"],
+      "/libs/interceptors": ["libs/interceptors/src"],
+      "/libs/interceptors/*": ["libs/interceptors/src/*"],
+      "/libs/decorators": ["libs/decorators/src"],
+      "/libs/decorators/*": ["libs/decorators/src/*"]
     }
   }
 }

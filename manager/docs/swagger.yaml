@@ -9,7 +9,7 @@ paths:
           description: ''
   /api/v1/timer/control:
     post:
-      operationId: DevicesController_updateTimerByDeviceCode
+      operationId: DevicesHttpController_updateTimerByDeviceCode
       parameters: []
       requestBody:
         required: true
@@ -37,9 +37,6 @@ components:
       description: Enter JWT auth token
       in: header
   schemas:
-    StatusReportMessage:
-      type: object
-      properties: {}
     TimerStatus:
       type: string
       enum:
@@ -73,3 +70,6 @@ components:
       required:
         - code
         - status
+    StatusReportMessage:
+      type: object
+      properties: {}
