@@ -33,13 +33,14 @@ export class DevicesMqttController {
   constructor(private readonly devicesService: DevicesService) {}
 
   @MessagePattern('home/devices/+/state')
-  async create(
+  async handleReport(
     @Payload() report: StatusReportMessage,
     @Ctx() context: MqttRequest,
     @MsgLogger() logger: Logger,
   ) {
     // TODO:  Save data to database fo processing
     // TODO: Send data via websocket to frontend
+    this.devicesService.handlePublish(report);
 
     context.logger.log(JSON.stringify(report));
   }

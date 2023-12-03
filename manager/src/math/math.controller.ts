@@ -20,7 +20,7 @@ export class MathController {
     return this.client.send<number>(pattern, data);
   }
 
-  @MessagePattern({ cmd: 'sum' }, Transport.MQTT)
+  @MessagePattern({ cmd: 'sum' })
   sum(data: number[]): number {
     console.log('sum', data);
     return (data || []).reduce((a, b) => a + b);

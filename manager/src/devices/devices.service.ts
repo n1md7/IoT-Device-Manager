@@ -1,30 +1,31 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@nestjs/common';
-import { DatabaseException } from '/libs/filters';
+import { Observable, ReplaySubject } from 'rxjs';
+import { StatusReportMessage } from '/src/devices/messages/status-report.message';
 
 @Injectable()
 export class DevicesService {
-  create(createDeviceDto: unknown) {
-    // throw new DatabaseException({
-    //   message: 'Error creating device',
-    //   error: 'Error creating device',
-    //   code: 500,
-    // });
-    return 'This action adds a new device';
+  private readonly streams: Map<
+    string,
+    {
+      subject: ReplaySubject<unknown>;
+      observer: Observable<unknown>;
+    }
+  > = new Map();
+
+  createStream() {
+    const id = uuidv4();
+    const subject = new ReplaySubject();
+    const observer = subject.asObservable();
+
+    this.streams.set(id, { subject, observer });
+
+    return { id, observer };
   }
 
-  findAll() {
-    return `This action returns all devices`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} device`;
-  }
-
-  update(id: number, updateDeviceDto: unknown) {
-    return `This action updates a #${id} device`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} device`;
+  handlePublish(report: StatusReportMessage) {
+    for (const [idx, stream] of this.streams) {
+      stream.subject.next(report); // Tell everyone about the new report
+    }
   }
 }

@@ -27,7 +27,6 @@ import { TimeoutInterceptor } from '/libs/interceptors/timeout/timeout.intercept
   app.useGlobalInterceptors(
     new RequestIdInterceptor(),
     new RequestLoggerInterceptor(),
-    new TimeoutInterceptor(),
   );
   app.useGlobalFilters(new GenericExceptionFilter());
 

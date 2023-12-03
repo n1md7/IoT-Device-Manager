@@ -20,6 +20,13 @@ paths:
       responses:
         '201':
           description: ''
+  /api/v1/timer/updates:
+    get:
+      operationId: DevicesHttpController_updates
+      parameters: []
+      responses:
+        '200':
+          description: ''
 info:
   title: Home Automation API
   description: Home Automation API for IoT devices
