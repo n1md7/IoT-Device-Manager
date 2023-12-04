@@ -20,6 +20,12 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: env.VITE_IOT_MANAGER_URL, // Needs to end with "/api"
           changeOrigin: true,
+          credentials: 'include',
+          timeout: 0,
+          proxyTimeout: 0,
+          headers: {
+            'x-request-id': Math.random().toString(36).substring(7),
+          },
           rewrite: path => path.replace(/^\/api/, ''),
         },
       },

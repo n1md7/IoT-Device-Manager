@@ -46,10 +46,13 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 
   const bool turnOn = strcmp(status, ON) == 0;
 
-  if (!turnOn) return timer.reset();
+  if (!turnOn) timer.reset();
+  else {
+    timer.set(minutes, seconds);
+    timer.start();
+  }
 
-  timer.set(minutes, seconds);
-  timer.start();
+  publishCurrentState();
 }
 
 void reconnect() {

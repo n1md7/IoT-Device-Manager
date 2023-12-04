@@ -8,14 +8,14 @@ export class DevicesService {
   private readonly streams: Map<
     string,
     {
-      subject: ReplaySubject<unknown>;
-      observer: Observable<unknown>;
+      subject: ReplaySubject<StatusReportMessage>;
+      observer: Observable<StatusReportMessage>;
     }
   > = new Map();
 
   createStream() {
     const id = uuidv4();
-    const subject = new ReplaySubject();
+    const subject = new ReplaySubject<StatusReportMessage>();
     const observer = subject.asObservable();
 
     this.streams.set(id, { subject, observer });
@@ -27,5 +27,9 @@ export class DevicesService {
     for (const [idx, stream] of this.streams) {
       stream.subject.next(report); // Tell everyone about the new report
     }
+  }
+
+  removeStream(id: string) {
+    this.streams.delete(id);
   }
 }

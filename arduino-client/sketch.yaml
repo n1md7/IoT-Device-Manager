@@ -9,6 +9,7 @@ profiles:
       - PubSubClient (2.8.0)
       - ArduinoJson (6.21.3)
       - AbleButtons (0.3.0)
+      - Time (1.6.1)
   mega:
     notes: Arduino Mega
     fqbn: arduino:avr:mega
@@ -19,6 +20,7 @@ profiles:
       - PubSubClient (2.8.0)
       - ArduinoJson (6.21.3)
       - AbleButtons (0.3.0)
+      - Time (1.6.1)
   micro:
     notes: Arduino Micro
     fqbn: arduino:avr:micro
@@ -29,3 +31,4 @@ profiles:
       - PubSubClient (2.8.0)
       - ArduinoJson (6.21.3)
       - AbleButtons (0.3.0)
+      - Time (1.6.1)

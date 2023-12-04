@@ -5,6 +5,7 @@ import {
   Logger,
   OnModuleInit,
   Post,
+  Req,
   Sse,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -13,7 +14,8 @@ import { Client } from '/src/devices/enums/client.enum';
 import { TimerControlMessageType } from '/src/devices/types/timer-control-message.type';
 import { DevicesService } from '/src/devices/devices.service';
 import { ReqLogger } from '/libs/decorators';
-import { map, Observable, ReplaySubject } from 'rxjs';
+import { catchError, map, throwError } from 'rxjs';
+import { Request } from 'express';
 
 @Controller('timer')
 export class DevicesHttpController implements OnModuleInit {
@@ -44,15 +46,19 @@ export class DevicesHttpController implements OnModuleInit {
   }
 
   @Sse('updates')
-  async updates() {
-    const { observer } = this.devicesService.createStream();
+  async updates(@Req() request: Request) {
+    const { id, observer } = this.devicesService.createStream();
+    request.on('close', () => this.devicesService.removeStream(id));
 
     return observer.pipe(
       map((data) => {
         return {
-          event: 'updates',
+          type: 'message',
           data,
         };
+      }),
+      catchError((error) => {
+        return throwError(() => error);
       }),
     );
   }
