@@ -16,7 +16,11 @@ export function Feed() {
     source.onmessage = event => {
       const update: FeedItem = JSON.parse(event.data);
       setIsOn(update.status === 'ON');
-      setFeed(prev => [...prev, update]);
+      setFeed(prev => {
+        prev.length = 10; // limit to 10 items
+
+        return [update, ...prev];
+      });
     };
   });
 
