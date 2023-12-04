@@ -5,97 +5,156 @@ body {
   font-family: 'Black Ops One', sans-serif;
   background-image: linear-gradient(to left, #f59001 0%, #441502 100%);
 
-  div.center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  div.container {
     text-align: center;
-  }
+    margin: 48px auto auto;
+    max-width: 600px;
 
-  button.toggle {
-    background-color: #f59001;
-    border: none;
-    color: #441502;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 10px;
-    font-family: 'Black Ops One', sans-serif;
-
-    &:hover {
-      background-color: #441502;
-      color: #f59001;
+    header {
+      font-size: 64px;
     }
 
-    &:focus {
-      outline: none;
+    div.time {
+      &.preview {
+        span {
+          color: #f59001;
+          font-size: 24px;
+        }
+
+        span:nth-child(2) {
+          color: #441502;
+          font-size: 24px;
+
+          padding: 0 4px;
+        }
+      }
+
+      &.set {
+        padding: 10px 0;
+
+        label {
+          font-size: 16px;
+          margin-right: 4px;
+        }
+
+        input {
+          border: solid 1px #f59001;
+          width: 64px;
+          height: 24px;
+          font-size: 16px;
+          color: #f59001;
+          padding-left: 5px;
+          border-radius: 4px;
+          background-color: #441502;
+
+          &:nth-child(2) {
+            margin-right: 10px;
+
+          }
+        }
+
+        input:focus {
+          outline: #f59001 solid 2px;
+        }
+
+        input::placeholder {
+          color: #f59001;
+        }
+      }
     }
-  }
 
-  hr {
-    border: 1px solid #f59001;
-    margin: 10px 0;
-  }
+    button.toggle {
+      background-color: #f59001;
+      border: none;
+      color: #441502;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 10px;
+      font-family: 'Black Ops One', sans-serif;
 
-  div.feed {
-    h3 {
-      color: #f59001;
-      font-size: 24px;
-      margin-bottom: 0;
+      &:hover {
+        background-color: #441502;
+        color: #f59001;
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      &:active {
+        background-color: #441502;
+        color: #f59001;
+        outline: #f59001 solid 2px;
+      }
     }
 
-    div.container {
-      max-height: 300px;
-      overflow: auto;
-      margin-bottom: 10px;
-      padding: 10px;
+    hr {
+      border: 1px solid #f59001;
+      margin: 10px 0;
+    }
 
+    div.feed {
+      h3 {
+        color: #f59001;
+        font-size: 24px;
+        margin-bottom: 0;
+      }
 
-      ul {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
+      text-align: center;
 
-        li {
-          font-size: 12px;
-          display: flex;
+      div.container {
+        max-height: 300px;
+        overflow: auto;
+        margin-bottom: 10px;
+        padding: 10px;
 
-          gap: 5px;
+        ul {
+          list-style-type: none;
+          padding: 0;
+          margin: 0;
 
-          .code {
-            &::before {
-              content: '( ';
+          li {
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+
+            gap: 5px;
+
+            .code {
+              &::before {
+                content: '( ';
+              }
+
+              &::after {
+                content: ' )';
+              }
             }
 
-            &::after {
-              content: ' )';
+            .status {
+              color: #441502;
+
+              &::before {
+                content: 'Status: ';
+              }
             }
-          }
 
-          .status {
-            color: #441502;
+            .name {
+              color: #441502;
 
-            &::before {
-              content: 'Status: ';
+              &::before {
+                content: 'Name: ';
+              }
             }
-          }
 
-          .name {
-            color: #441502;
+            .time {
+              color: #441502;
 
-            &::before {
-              content: 'Name: ';
-            }
-          }
-
-          .time {
-            color: #441502;
-
-            &::before {
-              content: 'Time: ';
+              &::before {
+                content: 'Time: ';
+              }
             }
           }
         }
