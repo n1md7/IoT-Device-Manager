@@ -1,14 +1,14 @@
-import { OffType, OnType, useControl } from '/src/components/feed/hooks/useControl';
-import { isOn } from '/src/stores/pump.store';
+import { OffType, OnType, useControl } from '/src/components/hooks/useControl';
+import { code, isOn } from '/src/stores/pump.store';
 import { useDelayFn } from '/src/common/hooks/useDelayFn';
 import { createEffect, createSignal, Show } from 'solid-js';
-import { On } from '/src/components/feed/status/On';
-import { Off } from '/src/components/feed/status/Off';
-import { useTime } from '/src/components/feed/hooks/useTime';
+import { On } from '/src/components/status/On';
+import { Off } from '/src/components/status/Off';
+import { useTime } from '/src/components/hooks/useTime';
 import { Timer } from '/src/components/Timer';
 
 const onPayload: OnType = {
-  code: 'D0001',
+  code: code,
   status: 'ON',
   minutes: 10,
   seconds: 30,
@@ -48,7 +48,7 @@ export function WaterPump() {
   }, [min, sec]);
 
   return (
-    <div>
+    <div class="device">
       <h2>
         Water Pump is:{' '}
         <Show when={isOn()} fallback={<Off />}>
@@ -58,12 +58,15 @@ export function WaterPump() {
       <Show when={isOn()}>
         <Timer />
       </Show>
-      <div class="time set">
-        <label for="min">Min</label>
-        <input id="min" type="number" placeholder="Min" value={min()} onChange={handleMin} />
-        <label for="sec">Sec</label>
-        <input id="sec" type="number" placeholder="Sec" value={sec()} onChange={handleSec} />
-      </div>
+      <Show when={!isOn()} fallback={'Automatic shutdown'}>
+        <div class="time set">
+          <p>Set time</p>
+          <label for="p-min">Min</label>
+          <input id="p-min" type="number" placeholder="Min" value={min()} onChange={handleMin} />
+          <label for="p-sec">Sec</label>
+          <input id="p-sec" type="number" placeholder="Sec" value={sec()} onChange={handleSec} />
+        </div>
+      </Show>
       <button class="toggle" onClick={send.invoke}>
         Turn{' '}
         <Show when={isOn()} fallback={<On />}>

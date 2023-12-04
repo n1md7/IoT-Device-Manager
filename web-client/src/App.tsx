@@ -1,5 +1,6 @@
-import { WaterPump } from '/src/components/WaterPump';
 import { Feed } from '/src/components/feed/Feed';
+import { WaterPump } from '/src/devices/WaterPump';
+import { Sprinkler } from '/src/devices/Sprinkler';
 
 export function App() {
   return (
@@ -9,8 +10,10 @@ export function App() {
 
       <p>This is the home automation app.</p>
 
-      <WaterPump />
-      <hr />
+      <div class="devices">
+        <WaterPump />
+        <Sprinkler />
+      </div>
       <Feed />
     </div>
   );

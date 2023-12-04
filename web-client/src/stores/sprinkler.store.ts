@@ -9,4 +9,4 @@ export const [last, setLast] = createSignal<FeedItem>({
   time: 0,
 });
 
-export const code = 'D0001';
+export const code = 'D0002';

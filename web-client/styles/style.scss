@@ -14,82 +14,111 @@ body {
       font-size: 64px;
     }
 
-    div.time {
-      &.preview {
-        span {
+    div.devices {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+
+      div.device {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px;
+        border: solid 1px #f59001;
+        border-radius: 10px;
+
+        h3 {
           color: #f59001;
           font-size: 24px;
+          margin-bottom: 0;
         }
 
-        span:nth-child(2) {
-          color: #441502;
-          font-size: 24px;
-
-          padding: 0 4px;
-        }
-      }
-
-      &.set {
-        padding: 10px 0;
-
-        label {
-          font-size: 16px;
-          margin-right: 4px;
+        button.toggle {
+          margin-top: 10px;
         }
 
-        input {
-          border: solid 1px #f59001;
-          width: 64px;
-          height: 24px;
-          font-size: 16px;
-          color: #f59001;
-          padding-left: 5px;
-          border-radius: 4px;
-          background-color: #441502;
 
-          &:nth-child(2) {
-            margin-right: 10px;
+        div.time {
+          &.preview {
+            span {
+              color: #f59001;
+              font-size: 24px;
+            }
 
+            span:nth-child(2) {
+              color: #441502;
+              font-size: 24px;
+
+              padding: 0 4px;
+            }
+          }
+
+          &.set {
+            padding: 10px 0;
+
+            label {
+              font-size: 16px;
+              margin-right: 4px;
+            }
+
+            input {
+              border: solid 1px #f59001;
+              width: 64px;
+              height: 24px;
+              font-size: 16px;
+              color: #f59001;
+              padding-left: 5px;
+              border-radius: 4px;
+              background-color: #441502;
+
+              &:nth-child(2) {
+                margin-right: 10px;
+
+              }
+            }
+
+            input:focus {
+              outline: #f59001 solid 2px;
+            }
+
+            input::placeholder {
+              color: #f59001;
+            }
           }
         }
 
-        input:focus {
-          outline: #f59001 solid 2px;
+        button.toggle {
+          background-color: #f59001;
+          border: none;
+          color: #441502;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          font-size: 16px;
+          cursor: pointer;
+          border-radius: 10px;
+          font-family: 'Black Ops One', sans-serif;
+
+          &:hover {
+            background-color: #441502;
+            color: #f59001;
+          }
+
+          &:focus {
+            outline: none;
+          }
+
+          &:active {
+            background-color: #441502;
+            color: #f59001;
+            outline: #f59001 solid 2px;
+          }
         }
 
-        input::placeholder {
-          color: #f59001;
-        }
       }
     }
 
-    button.toggle {
-      background-color: #f59001;
-      border: none;
-      color: #441502;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 10px;
-      font-family: 'Black Ops One', sans-serif;
-
-      &:hover {
-        background-color: #441502;
-        color: #f59001;
-      }
-
-      &:focus {
-        outline: none;
-      }
-
-      &:active {
-        background-color: #441502;
-        color: #f59001;
-        outline: #f59001 solid 2px;
-      }
-    }
 
     hr {
       border: 1px solid #f59001;

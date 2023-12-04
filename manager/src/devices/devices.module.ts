@@ -11,6 +11,9 @@ import { DevicesMqttController } from '/src/devices/devices-mqtt.controller';
       {
         name: Client.TIMERS,
         transport: Transport.MQTT,
+        options: {
+          clientId: 'Devices-Module',
+        },
       },
     ]),
   ],

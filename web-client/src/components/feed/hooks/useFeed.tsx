@@ -1,6 +1,7 @@
 import { createStore } from 'solid-js/store';
 import { createEffect } from 'solid-js';
-import { setIsOn, setLast } from '/src/stores/pump.store';
+import * as pump from '/src/stores/pump.store';
+import * as sprinkler from '/src/stores/sprinkler.store';
 
 export type FeedItem = {
   status: 'ON' | 'OFF';
@@ -16,8 +17,17 @@ export function useFeed() {
   createEffect(() => {
     source.onmessage = event => {
       const update: FeedItem = JSON.parse(event.data);
-      setLast(update);
-      setIsOn(update.status === 'ON');
+
+      if (update.code === pump.code) {
+        pump.setLast(update);
+        pump.setIsOn(update.status === 'ON');
+      }
+
+      if (update.code === sprinkler.code) {
+        sprinkler.setLast(update);
+        sprinkler.setIsOn(update.status === 'ON');
+      }
+
       setFeed(prev => {
         prev.length = 10; // limit to 10 items
         // Reverse order so newest is at the top

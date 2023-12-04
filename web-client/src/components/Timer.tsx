@@ -1,4 +1,4 @@
-import { useTime } from '/src/components/feed/hooks/useTime';
+import { useTime } from '/src/components/hooks/useTime';
 import { createEffect } from 'solid-js';
 
 export function Timer() {
