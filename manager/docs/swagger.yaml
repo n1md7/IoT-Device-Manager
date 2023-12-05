@@ -1,12 +1,5 @@
 openapi: 3.0.0
 paths:
-  /api/v1/math:
-    get:
-      operationId: MathController_execute
-      parameters: []
-      responses:
-        '200':
-          description: ''
   /api/v1/timer/control:
     post:
       operationId: DevicesHttpController_updateTimerByDeviceCode

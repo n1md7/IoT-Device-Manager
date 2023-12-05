@@ -8,24 +8,24 @@ import {
   RequestTimeoutException,
 } from '@nestjs/common';
 import {
-  Observable,
-  TimeoutError,
   catchError,
+  Observable,
   throwError,
   timeout,
+  TimeoutError,
 } from 'rxjs';
 import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-  constructor(@Optional() private readonly timeout: number = 5_000) {}
+  constructor(@Optional() @Inject() private readonly timeout: number = 5_000) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const isRpc = context.getType() === 'rpc'; // Otherwise it's HTTP
 
     return next.handle().pipe(
       timeout(this.timeout), // Throw TimeoutError after {timout} seconds
-      catchError((error: unknown, caught) => {
+      catchError((error: unknown) => {
         if (error instanceof TimeoutError) {
           if (isRpc) {
             return throwError(
