@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Inject,
-  Logger,
   OnModuleInit,
   Post,
   Req,
@@ -13,7 +12,6 @@ import { TimerControlRequest } from '/src/devices/requests/timer-control.request
 import { Client } from '/src/devices/enums/client.enum';
 import { TimerControlMessageType } from '/src/devices/types/timer-control-message.type';
 import { DevicesService } from '/src/devices/devices.service';
-import { ReqLogger } from '/libs/decorators';
 import { catchError, map, throwError } from 'rxjs';
 import { Request } from 'express';
 
@@ -29,10 +27,7 @@ export class DevicesHttpController implements OnModuleInit {
   }
 
   @Post('control')
-  async updateTimerByDeviceCode(
-    @Body() device: TimerControlRequest,
-    @ReqLogger() logger: Logger,
-  ) {
+  async updateTimerByDeviceCode(@Body() device: TimerControlRequest) {
     const topic = `home/devices/${device.code}/set`;
     const payload: TimerControlMessageType = {
       status: device.status,
@@ -48,6 +43,7 @@ export class DevicesHttpController implements OnModuleInit {
   @Sse('updates')
   async updates(@Req() request: Request) {
     const { id, observer } = this.devicesService.createStream();
+
     request.on('close', () => this.devicesService.removeStream(id));
 
     return observer.pipe(

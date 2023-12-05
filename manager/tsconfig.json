@@ -32,5 +32,5 @@
       "/libs/decorators": ["libs/decorators/src"],
       "/libs/decorators/*": ["libs/decorators/src/*"]
     }
-  }
+  },
 }

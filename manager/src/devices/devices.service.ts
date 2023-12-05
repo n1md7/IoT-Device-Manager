@@ -24,7 +24,7 @@ export class DevicesService {
   }
 
   handlePublish(report: StatusReportMessage) {
-    for (const [idx, stream] of this.streams) {
+    for (const [, stream] of this.streams) {
       stream.subject.next(report); // Tell everyone about the new report
     }
   }

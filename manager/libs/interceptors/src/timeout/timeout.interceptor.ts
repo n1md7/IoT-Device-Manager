@@ -2,17 +2,17 @@ import {
   CallHandler,
   ExecutionContext,
   Inject,
-  Optional,
   Injectable,
   NestInterceptor,
+  Optional,
   RequestTimeoutException,
 } from '@nestjs/common';
 import {
-  catchError,
   Observable,
+  TimeoutError,
+  catchError,
   throwError,
   timeout,
-  TimeoutError,
 } from 'rxjs';
 import { RpcException } from '@nestjs/microservices';
 

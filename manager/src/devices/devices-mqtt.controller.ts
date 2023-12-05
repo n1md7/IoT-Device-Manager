@@ -1,6 +1,5 @@
 import {
   Controller,
-  Logger,
   UseFilters,
   UseInterceptors,
   UsePipes,
@@ -13,7 +12,6 @@ import { DevicesService } from '/src/devices/devices.service';
 import { MessageLoggerInterceptor } from '/libs/interceptors/message-logger/message-logger.interceptor';
 import { TimeoutInterceptor } from '/libs/interceptors/timeout/timeout.interceptor';
 import { MessageIdInterceptor } from '/libs/interceptors/message-id/message-id.interceptor';
-import { MsgLogger } from '/libs/decorators/message/msg-logger/msg-logger.decorator';
 import { MqttRequest } from '/libs/interceptors/request.type';
 
 @UseFilters(RpcExceptionFilter)
@@ -36,10 +34,8 @@ export class DevicesMqttController {
   async handleReport(
     @Payload() report: StatusReportMessage,
     @Ctx() context: MqttRequest,
-    @MsgLogger() logger: Logger,
   ) {
     // TODO:  Save data to database fo processing
-    // TODO: Send data via websocket to frontend
     this.devicesService.handlePublish(report);
 
     context.logger.log(JSON.stringify(report));

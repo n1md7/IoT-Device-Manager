@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '/src/app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { MicroserviceOptions } from '@nestjs/microservices';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { Env } from '/libs/env/env.class';
 import { version } from '../package.json';
@@ -12,11 +12,55 @@ import { join } from 'node:path';
 import { GenericExceptionFilter } from '/libs/filters';
 import { RequestLoggerInterceptor } from '/libs/interceptors';
 import { RequestIdInterceptor } from '/libs/interceptors/request-id/request-id.interceptor';
-import { TimeoutInterceptor } from '/libs/interceptors/timeout/timeout.interceptor';
+import { ConfigService } from '/libs/config';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 (async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  try {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+    const config = app.get(ConfigService);
 
+    configurePipes(app);
+    configureInterceptors(app);
+    configureFilters(app);
+
+    configureApi(app);
+
+    configureSwagger(app);
+    disableXPoweredByHeader(app);
+
+    const appPort = config.getOrThrow('http.port', { infer: true });
+
+    app.connectMicroservice<MicroserviceOptions>(config.getOrThrow('mqtt'));
+
+    await app.startAllMicroservices();
+    await app.listen(appPort, '0.0.0.0');
+
+    const url = await app.getUrl();
+    console.log(`
+      Application started at: ${url}
+      Swagger docs: ${url}/docs
+      Mode: ${Env.NodeEnv}
+      Pid: ${pid}
+    `);
+  } catch (error) {
+    console.error('Server failed to start', error);
+    process.exit(1);
+  }
+})();
+
+function configureInterceptors(app: NestExpressApplication) {
+  app.useGlobalInterceptors(
+    new RequestIdInterceptor(),
+    new RequestLoggerInterceptor(),
+  );
+}
+
+function configureFilters(app: NestExpressApplication) {
+  app.useGlobalFilters(new GenericExceptionFilter());
+}
+
+function configurePipes(app: NestExpressApplication) {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -24,19 +68,18 @@ import { TimeoutInterceptor } from '/libs/interceptors/timeout/timeout.intercept
       forbidNonWhitelisted: true,
     }),
   );
-  app.useGlobalInterceptors(
-    new RequestIdInterceptor(),
-    new RequestLoggerInterceptor(),
-  );
-  app.useGlobalFilters(new GenericExceptionFilter());
+}
 
+function configureApi(app: NestExpressApplication) {
   app.setGlobalPrefix('/api');
   app.enableVersioning({
     prefix: 'v',
     type: VersioningType.URI,
     defaultVersion: '1',
   });
+}
 
+function configureSwagger(app: NestExpressApplication) {
   const document = SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
@@ -67,44 +110,8 @@ import { TimeoutInterceptor } from '/libs/interceptors/timeout/timeout.intercept
       persistAuthorization: true,
     },
   });
-  const appPort = parseInt('3000', 10);
+}
+
+function disableXPoweredByHeader(app: NestExpressApplication) {
   app.getHttpAdapter().getInstance().disable('x-powered-by');
-
-  app.connectMicroservice<MicroserviceOptions>(
-    {
-      transport: Transport.MQTT,
-      options: {
-        url: 'mqtt://localhost:1883',
-        clientId: 'IoT-Manager',
-        username: '',
-        password: '',
-        subscribeOptions: {
-          /**
-           * The QoS
-           * 0 - at most once delivery
-           * 1 - at least once delivery
-           * 2 - exactly once delivery
-           *
-           * We use QoS 1 because we want to make sure that the message is delivered at least once.
-           * Duplication is possible, but it is not a problem for us.
-           * In worst case scenario, the device will receive the same message twice.
-           * Which will cause triggering the same action twice (e.g. turn on the light twice).
-           */
-          qos: 1,
-        },
-      },
-    },
-    // { inheritAppConfig: true },
-  );
-
-  await app.startAllMicroservices();
-  await app.listen(appPort, '0.0.0.0');
-
-  const url = await app.getUrl();
-  console.log(`
-    Application started at: ${url}
-    Swagger docs: ${url}/docs
-    Mode: ${Env.NodeEnv}
-    Pid: ${pid}
-  `);
-})();
+}

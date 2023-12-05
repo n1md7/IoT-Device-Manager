@@ -1,11 +1,13 @@
 import { NodeEnv } from '/libs/env/env.enum';
+import { env } from 'node:process';
 
 export class Env {
   public static get NodeEnv(): NodeEnv {
-    const env = (process.env.NODE_ENV || '').trim() as NodeEnv;
-    if (!env) throw new TypeError('NODE_ENV is not defined');
+    const nodeEnv = (env.NODE_ENV || '').trim() as NodeEnv;
 
-    return env;
+    if (!nodeEnv) throw new TypeError('NODE_ENV is not defined');
+
+    return nodeEnv;
   }
 
   public static get isDev() {
@@ -21,6 +23,6 @@ export class Env {
   }
 
   public static get isE2E() {
-    return process.env.E2E === NodeEnv.E2E;
+    return env.E2E === NodeEnv.E2E;
   }
 }
