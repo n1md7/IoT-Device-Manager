@@ -13,6 +13,8 @@ import { MessageLoggerInterceptor } from '/libs/interceptors/message-logger/mess
 import { TimeoutInterceptor } from '/libs/interceptors/timeout/timeout.interceptor';
 import { MessageIdInterceptor } from '/libs/interceptors/message-id/message-id.interceptor';
 import { MqttRequest } from '/libs/interceptors/request.type';
+import { StreamService } from '/src/devices/stream.service';
+import { DeviceRegisterMessage } from '/src/devices/messages/device-register.message';
 
 @UseFilters(RpcExceptionFilter)
 @UseInterceptors(
@@ -28,7 +30,10 @@ import { MqttRequest } from '/libs/interceptors/request.type';
 )
 @Controller('timer')
 export class DevicesMqttController {
-  constructor(private readonly devicesService: DevicesService) {}
+  constructor(
+    private readonly devicesService: DevicesService,
+    private readonly streamService: StreamService,
+  ) {}
 
   @MessagePattern('home/devices/+/state')
   async handleReport(
@@ -36,8 +41,17 @@ export class DevicesMqttController {
     @Ctx() context: MqttRequest,
   ) {
     // TODO:  Save data to database fo processing
-    this.devicesService.handlePublish(report);
+    this.streamService.push(report);
 
     context.logger.log(JSON.stringify(report));
+  }
+
+  @MessagePattern('home/devices/+/register')
+  async registerDevice(
+    @Payload() payload: DeviceRegisterMessage,
+    @Ctx() context: MqttRequest,
+  ) {
+    // TODO: add Arduino clients to send out initial register request to sign up
+    await this.devicesService.createDevice(payload);
   }
 }

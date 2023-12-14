@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '/libs/config/config.module';
 import { DevicesModule } from './devices/devices.module';
+import { SetupModule } from '/libs/setup';
 
 @Module({
-  imports: [ConfigModule, DevicesModule],
-  controllers: [],
-  providers: [],
+  imports: [SetupModule, DevicesModule],
 })
 export class AppModule {}

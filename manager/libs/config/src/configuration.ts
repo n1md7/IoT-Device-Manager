@@ -1,5 +1,7 @@
 import { MqttOptions, Transport } from '@nestjs/microservices';
-import { env } from 'node:process';
+import { env, cwd } from 'node:process';
+import { join } from 'node:path';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 export const Configuration = () => ({
   http: {
@@ -27,5 +29,17 @@ export const Configuration = () => ({
       },
     },
   } satisfies MqttOptions,
+  database: {
+    type: 'mysql',
+    host: env.DB_HOST,
+    port: parseInt(env.DB_PORT!, 10),
+    username: env.DB_USER,
+    password: env.DB_PASS,
+    database: env.DB_NAME,
+    synchronize: true,
+    logging: true,
+    autoLoadEntities: true,
+    entities: [join(cwd(), 'dist', '**', '*.entity.js')],
+  } satisfies TypeOrmModuleOptions,
 });
 export type Configuration = ReturnType<typeof Configuration>;

@@ -30,7 +30,9 @@
       "/libs/interceptors": ["libs/interceptors/src"],
       "/libs/interceptors/*": ["libs/interceptors/src/*"],
       "/libs/decorators": ["libs/decorators/src"],
-      "/libs/decorators/*": ["libs/decorators/src/*"]
+      "/libs/decorators/*": ["libs/decorators/src/*"],
+      "/libs/setup": ["libs/setup/src"],
+      "/libs/setup/*": ["libs/setup/src/*"]
     }
-  },
+  }
 }

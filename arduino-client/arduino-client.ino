@@ -4,7 +4,7 @@
 #include <AbleButtons.h>
 #include <PubSubClient.h>
 
-#include "Configuration.h"
+#include "Configuration.mega.h"
 #include "Component.h"
 #include "Timer.h"
 
@@ -14,7 +14,7 @@
 using Button = AblePullupClickerButton;
 
 const Component connectingLight(CON_LED_PIN, HIGH, LOW);
-const Component externalRelay(RELAY_PIN, LOW, HIGH);
+const Component externalRelay(RELAY_PIN);
 const Button startButton(BUTTON_PIN);
 const Timer timer(TIMER_INIT_VALUE);
 

@@ -10,6 +10,7 @@ import { Configuration } from '/libs/config/configuration';
       envFilePath: `.env.${env.NODE_ENV}`,
       load: [Configuration],
       isGlobal: true,
+      cache: true,
     }),
   ],
   providers: [ConfigService],

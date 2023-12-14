@@ -73,3 +73,6 @@ components:
     StatusReportMessage:
       type: object
       properties: {}
+    DeviceRegisterMessage:
+      type: object
+      properties: {}

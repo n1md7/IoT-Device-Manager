@@ -1,35 +1,35 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@nestjs/common';
-import { Observable, ReplaySubject } from 'rxjs';
-import { StatusReportMessage } from '/src/devices/messages/status-report.message';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Device } from '/src/devices/entities/device.entity';
+import { Repository } from 'typeorm';
+import { DatabaseException } from '/libs/filters';
+import { DeviceRegisterMessage } from '/src/devices/messages/device-register.message';
 
 @Injectable()
 export class DevicesService {
-  private readonly streams: Map<
-    string,
-    {
-      subject: ReplaySubject<StatusReportMessage>;
-      observer: Observable<StatusReportMessage>;
-    }
-  > = new Map();
+  constructor(
+    @InjectRepository(Device)
+    private readonly deviceRepository: Repository<Device>,
+  ) {}
 
-  createStream() {
-    const id = uuidv4();
-    const subject = new ReplaySubject<StatusReportMessage>();
-    const observer = subject.asObservable();
-
-    this.streams.set(id, { subject, observer });
-
-    return { id, observer };
+  async getDeviceByCode(code: string) {
+    return await this.deviceRepository.findOneBy({ code });
   }
 
-  handlePublish(report: StatusReportMessage) {
-    for (const [, stream] of this.streams) {
-      stream.subject.next(report); // Tell everyone about the new report
+  async createDevice(device: DeviceRegisterMessage): Promise<Device> {
+    try {
+      return await this.deviceRepository.save({
+        code: device.code,
+        type: device.type,
+        name: device.name,
+        version: device.version,
+        description: device.description,
+      });
+    } catch (error) {
+      throw new DatabaseException({
+        message: `Error creating device with code "${device.code}"`,
+        error,
+      });
     }
-  }
-
-  removeStream(id: string) {
-    this.streams.delete(id);
   }
 }

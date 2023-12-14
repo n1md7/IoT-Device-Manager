@@ -14,12 +14,14 @@ import { TimerControlMessageType } from '/src/devices/types/timer-control-messag
 import { DevicesService } from '/src/devices/devices.service';
 import { catchError, map, throwError } from 'rxjs';
 import { Request } from 'express';
+import { StreamService } from '/src/devices/stream.service';
 
 @Controller('timer')
 export class DevicesHttpController implements OnModuleInit {
   constructor(
     @Inject(Client.TIMERS) private readonly client: ClientProxy,
     @Inject(DevicesService) private readonly devicesService: DevicesService,
+    @Inject(StreamService) private readonly streamService: StreamService,
   ) {}
 
   async onModuleInit() {
@@ -42,9 +44,9 @@ export class DevicesHttpController implements OnModuleInit {
 
   @Sse('updates')
   async updates(@Req() request: Request) {
-    const { id, observer } = this.devicesService.createStream();
+    const { id, observer } = this.streamService.create();
 
-    request.on('close', () => this.devicesService.removeStream(id));
+    request.on('close', () => this.streamService.remove(id));
 
     return observer.pipe(
       map((data) => {

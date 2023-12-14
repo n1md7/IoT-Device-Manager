@@ -19,7 +19,15 @@
     "test:cov": "cross-env NODE_ENV=test vitest run --coverage",
     "test:debug": "cross-env NODE_ENV=test vitest --inspect-brk --inspect --logHeapUsage --threads=false",
     "test:e2e": "cross-env NODE_ENV=e2e vitest run --config ./vitest.config.e2e.mts",
-    "gen:env-types": "npx gen-env-types .env.example -o env.d.ts -k -e ."
+    "gen:env-types": "npx gen-env-types .env.example -o env.d.ts -k -e .",
+    "gen:docs": "npx @compodoc/compodoc -p tsconfig.doc.json --output public",
+    "typeorm": "cross-env NODE_ENV=development typeorm-ts-node-commonjs --dataSource src/common/setup/config/migration.config.ts",
+    "migrations": "npm run typeorm -- migration:run",
+    "migration:create": "cross-env NODE_ENV=development typeorm-ts-node-esm migration:create",
+    "premigration:generate": "npm run build",
+    "migration:generate": "npm run typeorm -- migration:generate --pretty",
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "migration:show": "npm run typeorm -- migration:show"
   },
   "engines": {
     "node": ">=21.0.0",
@@ -33,13 +41,16 @@
     "@nestjs/microservices": "^10.2.10",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.16",
+    "@nestjs/typeorm": "^10.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cross-env": "^7.0.3",
     "js-yaml": "^4.1.0",
     "mqtt": "^5.3.1",
+    "mysql2": "^3.6.5",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
+    "typeorm": "^0.3.17",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
