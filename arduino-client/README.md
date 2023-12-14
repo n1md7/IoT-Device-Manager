@@ -54,6 +54,21 @@ arduino-cli upload --port /dev/cu.usbmodem144101 --profile uno
 
 __NOTE__: All dependencies are installed automatically
 
+#### Compile and upload using Shell script
+
+Prerequisites:
+
+```bash
+brew install fzf   # For Homebrew on macOS
+sudo apt-get install fzf   # For apt on Debian/Ubuntu
+```
+
+Run
+
+```bash
+sh ./arduino-board-arduino.sh --profile mega
+```
+
 ## Manual step by step
 
 ### Compile
