@@ -14,6 +14,8 @@ Modify values according to your setup
 ```cpp
 #define DEVICE_CODE "D0001"
 #define DEVICE_NAME "Water Pump"
+#define DEVICE_TYPE "TIMER"
+#define DEVICE_VERSION "1"
 #define REPORT_INTERVAL 5000    // 5s, how often report to MQTT broker
 #define MAX_PING_TIMEOUT 30000  // Maximum retry delay of 30 seconds, when MQTT broker is not available
 

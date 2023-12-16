@@ -1,4 +1,4 @@
-import { IsNumber, IsString, Length, MaxLength } from 'class-validator';
+import { IsString, Length, MaxLength } from 'class-validator';
 
 export class DeviceRegisterMessage {
   @IsString()
@@ -14,9 +14,6 @@ export class DeviceRegisterMessage {
   name!: string;
 
   @IsString()
-  @MaxLength(256)
-  description!: string;
-
-  @IsNumber()
-  version!: number;
+  @MaxLength(2)
+  version!: string;
 }

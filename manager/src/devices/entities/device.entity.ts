@@ -27,11 +27,11 @@ export class Device {
   @Column({ type: 'varchar', length: 64 })
   name!: string;
 
-  @Column({ type: 'varchar', length: 256 })
-  description!: string;
+  @Column({ type: 'varchar', length: 256, nullable: true })
+  description?: string;
 
-  @Column({ type: 'int' })
-  version!: number;
+  @Column({ type: 'varchar', length: 2 })
+  version!: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt!: Date;

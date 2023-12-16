@@ -13,7 +13,13 @@ export class DevicesService {
   ) {}
 
   async getDeviceByCode(code: string) {
+    // TODO: cache this
     return await this.deviceRepository.findOneBy({ code });
+  }
+
+  async deviceMissing(code: string) {
+    // TODO: cache this
+    return !(await this.deviceRepository.findOneBy({ code }));
   }
 
   async createDevice(device: DeviceRegisterMessage): Promise<Device> {
@@ -23,13 +29,18 @@ export class DevicesService {
         type: device.type,
         name: device.name,
         version: device.version,
-        description: device.description,
       });
     } catch (error) {
       throw new DatabaseException({
         message: `Error creating device with code "${device.code}"`,
         error,
       });
+    }
+  }
+
+  async softCreateDevice(device: DeviceRegisterMessage) {
+    if (await this.deviceMissing(device.code)) {
+      return await this.createDevice(device);
     }
   }
 }

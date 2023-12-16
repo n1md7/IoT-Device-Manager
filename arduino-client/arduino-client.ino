@@ -4,7 +4,7 @@
 #include <AbleButtons.h>
 #include <PubSubClient.h>
 
-#include "Configuration.mega.h"
+#include "Configuration.h"
 #include "Component.h"
 #include "Timer.h"
 
@@ -91,8 +91,10 @@ void publishCurrentState() {
   DynamicJsonDocument payload(128);
 
   payload["status"] = timer.isActive() ? ON : OFF;
-  payload["name"] = DEVICE_NAME;
   payload["code"] = DEVICE_CODE;
+  payload["name"] = DEVICE_NAME;
+  payload["type"] = DEVICE_TYPE;
+  payload["version"] = DEVICE_VERSION;
   payload["time"] = timer.getValue();  // Seconds
 
   char buffer[128];

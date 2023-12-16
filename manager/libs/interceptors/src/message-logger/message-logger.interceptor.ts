@@ -17,7 +17,7 @@ export class MessageLoggerInterceptor implements NestInterceptor {
     const topic = request.getTopic();
     const payload = this.getPayload(request);
 
-    request.logger.log(`Started: ${topic} ${payload}`);
+    request.logger.log(`Started: [${topic}] [${payload}]`);
 
     return next.handle().pipe(
       tap(() => {

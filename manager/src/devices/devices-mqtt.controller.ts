@@ -43,15 +43,11 @@ export class DevicesMqttController {
     // TODO:  Save data to database fo processing
     this.streamService.push(report);
 
-    context.logger.log(JSON.stringify(report));
-  }
-
-  @MessagePattern('home/devices/+/register')
-  async registerDevice(
-    @Payload() payload: DeviceRegisterMessage,
-    @Ctx() context: MqttRequest,
-  ) {
-    // TODO: add Arduino clients to send out initial register request to sign up
-    await this.devicesService.createDevice(payload);
+    await this.devicesService.softCreateDevice({
+      code: report.code,
+      type: report.type,
+      name: report.name,
+      version: report.version,
+    });
   }
 }
