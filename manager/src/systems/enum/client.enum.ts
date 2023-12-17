@@ -1,3 +1,3 @@
 export enum Client {
-  DEVICES = 'DEVICES',
+  SYSTEMS = 'SYSTEMS',
 }

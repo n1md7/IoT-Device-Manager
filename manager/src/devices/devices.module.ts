@@ -13,7 +13,7 @@ import { StreamService } from '/src/devices/stream.service';
     TypeOrmModule.forFeature([Device]),
     ClientsModule.register([
       {
-        name: Client.TIMERS,
+        name: Client.DEVICES,
         transport: Transport.MQTT,
         options: {
           clientId: 'Devices-Module',

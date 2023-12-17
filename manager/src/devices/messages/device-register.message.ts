@@ -1,13 +1,13 @@
-import { IsString, Length, MaxLength } from 'class-validator';
+import { IsEnum, IsString, Length, MaxLength } from 'class-validator';
+import { DeviceType } from '/src/devices/enums/type.enum';
 
 export class DeviceRegisterMessage {
   @IsString()
   @Length(5)
   code!: string;
 
-  @IsString()
-  @MaxLength(32)
-  type!: string;
+  @IsEnum(DeviceType)
+  type!: DeviceType;
 
   @IsString()
   @MaxLength(64)

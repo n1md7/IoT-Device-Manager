@@ -1,14 +1,10 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-} from '@nestjs/common';
-import { Response } from 'express';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
+import { DatabaseException } from '/libs/filters/exceptions/database.exception';
 import { HttpRequest } from '/libs/interceptors/request.type';
+import { Response } from 'express';
 
 @Catch()
-export class GenericExceptionFilter implements ExceptionFilter {
+export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException | Error | unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -17,6 +13,11 @@ export class GenericExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       status.code = exception.getStatus();
+      status.message = exception.message;
+    }
+
+    if (exception instanceof DatabaseException) {
+      status.code = exception.code || 500;
       status.message = exception.message;
     }
 

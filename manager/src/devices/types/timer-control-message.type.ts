@@ -1,7 +1,7 @@
-import { TimerStatus } from '/src/devices/enums/status.enum';
+import { DeviceStatus } from '/src/devices/enums/status.enum';
 
 type DeviceOnMessage = {
-  status: TimerStatus.ON;
+  status: DeviceStatus.ON;
   time: {
     min: number;
     sec: number;
@@ -9,7 +9,7 @@ type DeviceOnMessage = {
 };
 
 type DeviceOffMessage = {
-  status: TimerStatus.OFF;
+  status: DeviceStatus.OFF;
 };
 
 export type TimerControlMessageType = DeviceOnMessage | DeviceOffMessage;

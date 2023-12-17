@@ -1,5 +1,27 @@
 openapi: 3.0.0
 paths:
+  /api/v1/timer/devices:
+    get:
+      operationId: DevicesHttpController_getDevices
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  devices:
+                    type: array
+                    description: List of devices
+                    items:
+                      $ref: '#/components/schemas/Device'
+                  count:
+                    type: integer
+                    description: Total number of devices
+      tags:
+        - Timer
+        - Devices
   /api/v1/timer/control:
     post:
       operationId: DevicesHttpController_updateTimerByDeviceCode
@@ -13,6 +35,8 @@ paths:
       responses:
         '201':
           description: ''
+      tags: &ref_0
+        - Timer
   /api/v1/timer/updates:
     get:
       operationId: DevicesHttpController_updates
@@ -20,6 +44,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_0
   /api/v1/components:
     post:
       operationId: ComponentsController_create
@@ -29,16 +54,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateComponentDto'
+              $ref: '#/components/schemas/CreateComponentRequest'
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+      tags: &ref_1
+        - Components
     get:
       operationId: ComponentsController_findAll
       parameters: []
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  components:
+                    type: array
+                    description: List of components
+                    items:
+                      $ref: '#/components/schemas/Component'
+                  count:
+                    type: integer
+                    description: Total number of components
+      tags: *ref_1
   /api/v1/components/{id}:
     get:
       operationId: ComponentsController_findOne
@@ -47,10 +91,17 @@ paths:
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+        '404':
+          description: Component not found
+      tags: *ref_1
     patch:
       operationId: ComponentsController_update
       parameters:
@@ -58,16 +109,17 @@ paths:
           required: true
           in: path
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateComponentDto'
+              $ref: '#/components/schemas/UpdateComponentRequest'
       responses:
-        '200':
-          description: ''
+        '204':
+          description: Component updated
+      tags: *ref_1
     delete:
       operationId: ComponentsController_remove
       parameters:
@@ -75,11 +127,12 @@ paths:
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
-        '200':
-          description: ''
-  /api/v1/systems:
+        '204':
+          description: Component deleted
+      tags: *ref_1
+  /api/v1/systems/create:
     post:
       operationId: SystemsController_create
       parameters: []
@@ -88,56 +141,105 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateSystemDto'
+              $ref: '#/components/schemas/CreateSystemRequest'
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/System'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpErrorSchema'
+      tags: &ref_2
+        - Systems
+  /api/v1/systems/control:
+    post:
+      operationId: SystemsController_controlSystem
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ControlSystemRequest'
+      responses:
+        '200':
+          description: System control
+        '409':
+          description: System start failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpErrorSchema'
+      tags: *ref_2
+  /api/v1/systems:
     get:
       operationId: SystemsController_findAll
       parameters: []
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  systems:
+                    type: array
+                    description: List of systems
+                    items:
+                      $ref: '#/components/schemas/System'
+                  count:
+                    type: integer
+                    description: Total number of systems
+      tags: *ref_2
   /api/v1/systems/{id}:
     get:
-      operationId: SystemsController_findOne
+      operationId: SystemsController_findById
       parameters:
         - name: id
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: ''
+      tags: *ref_2
     patch:
-      operationId: SystemsController_update
+      operationId: SystemsController_updateById
       parameters:
         - name: id
           required: true
           in: path
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSystemDto'
+              $ref: '#/components/schemas/UpdateSystemRequest'
       responses:
         '200':
           description: ''
+      tags: *ref_2
     delete:
-      operationId: SystemsController_remove
+      operationId: SystemsController_removeById
       parameters:
         - name: id
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: ''
+      tags: *ref_2
 info:
   title: Home Automation API
   description: Home Automation API for IoT devices
@@ -191,15 +293,235 @@ components:
     StatusReportMessage:
       type: object
       properties: {}
-    CreateComponentDto:
+    CreateComponentRequest:
       type: object
-      properties: {}
-    UpdateComponentDto:
+      properties:
+        deviceCode:
+          type: string
+          description: The Device Code of the component.
+          example: D0001
+        systemId:
+          type: number
+          description: The System ID of the component type.
+          example: 1
+        inUse:
+          type: boolean
+          description: This flag is used to determine whether the component is in use.
+          default: false
+        shared:
+          type: boolean
+          description: >-
+            This flag is used to determine whether the component is shared.
+            Usually, this flag is used to mark the component as a sensor. The
+            component that only emits/reports data but not receiving anything
+            back.
+          default: false
+      required:
+        - deviceCode
+        - systemId
+    UpdateComponentRequest:
       type: object
-      properties: {}
-    CreateSystemDto:
+      properties:
+        deviceCode:
+          type: string
+          description: The Device Code of the component.
+          example: D0001
+        systemId:
+          type: number
+          description: The System ID of the component type.
+          example: 1
+        inUse:
+          type: boolean
+          description: This flag is used to determine whether the component is in use.
+          default: false
+        shared:
+          type: boolean
+          description: >-
+            This flag is used to determine whether the component is shared.
+            Usually, this flag is used to mark the component as a sensor. The
+            component that only emits/reports data but not receiving anything
+            back.
+          default: false
+    CreateSystemRequest:
       type: object
-      properties: {}
-    UpdateSystemDto:
+      properties:
+        name:
+          type: string
+          example: Watering System
+          description: The name of the system.
+        description:
+          type: string
+          example: A watering system. It waters plants.
+          description: The description of the system.
+      required:
+        - name
+        - description
+    ControlSystemRequest:
       type: object
-      properties: {}
+      properties:
+        id:
+          type: number
+          example: 1
+          description: System ID
+        action:
+          type: string
+          enum:
+            - START
+            - STOP
+          example: START
+          description: Action to perform
+      required:
+        - id
+        - action
+    UpdateSystemRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Watering System
+          description: The name of the system.
+        description:
+          type: string
+          example: A watering system. It waters plants.
+          description: The description of the system.
+    Component:
+      type: object
+      properties:
+        id:
+          type: number
+          description: The unique identifier of the component.
+        inUse:
+          type: boolean
+          description: >-
+            This flag is used to determine whether the component can be used by
+            multiple systems.
+        shared:
+          type: boolean
+          description: 'This flag is used to determine whether the component is shared. '
+        createdAt:
+          format: date-time
+          type: string
+          example: '2021-01-01T00:00:00.000Z'
+          description: The date(ISO 8601) when the component was created.
+        updatedAt:
+          format: date-time
+          type: string
+          example: '2021-01-01T00:00:00.000Z'
+          description: The date(ISO 8601) when the component was last updated.
+      required:
+        - id
+        - inUse
+        - shared
+        - createdAt
+        - updatedAt
+    System:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+          description: The unique identifier of the system.
+        name:
+          type: string
+          example: Timer
+          description: The name of the system.
+        description:
+          type: string
+          example: A timer system.
+          description: The description of the system.
+        components:
+          type: array
+          items:
+            type: array
+        createdAt:
+          format: date-time
+          type: string
+          description: The date and time the system was created.
+        updatedAt:
+          format: date-time
+          type: string
+          description: The date and time the system was updated.
+      required:
+        - id
+        - name
+        - description
+        - components
+        - createdAt
+        - updatedAt
+    Device:
+      type: object
+      properties:
+        code:
+          type: string
+          example: D0001
+          description: The unique identifier of the device.
+        type:
+          type: string
+          enum:
+            - SWITCH
+            - SENSOR
+            - TIMER
+            - VALVE
+          example: SWITCH
+          description: >-
+            The type of the device. This will be used to determine the
+            configuration of the device
+        name:
+          type: string
+          example: Timer
+          description: The name of the device.
+        description:
+          type: string
+          example: A timer device.
+          description: The description of the device.
+        version:
+          type: string
+          example: '1'
+          description: The version of the device.
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+        createdAt:
+          format: date-time
+          type: string
+          example: '2021-01-01T00:00:00.000Z'
+          description: The date(ISO 8601) when the device was registered.
+        updatedAt:
+          format: date-time
+          type: string
+          example: '2021-01-01T00:00:00.000Z'
+          description: The date(ISO 8601) when the device was last updated.
+      required:
+        - code
+        - type
+        - name
+        - description
+        - version
+        - components
+        - createdAt
+        - updatedAt
+    HttpErrorSchema:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          example: '500'
+          description: Error code
+        message:
+          type: string
+          example: Internal Server Error
+          description: Error message
+        timestamp:
+          type: string
+          example: '2021-09-19T12:00:00.000Z'
+          description: Timestamp
+        path:
+          type: string
+          example: api/v1/systems
+          description: Path
+      required:
+        - statusCode
+        - message
+        - timestamp
+        - path

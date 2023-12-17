@@ -1,17 +1,17 @@
-import { TimerStatus } from '/src/devices/enums/status.enum';
+import { DeviceStatus } from '/src/devices/enums/status.enum';
 import { IsEnum, IsNumber, IsString, Length, MaxLength } from 'class-validator';
+import { DeviceType } from '/src/devices/enums/type.enum';
 
 export class StatusReportMessage {
-  @IsEnum(TimerStatus)
-  status!: TimerStatus;
+  @IsEnum(DeviceStatus)
+  status!: DeviceStatus;
 
   @IsString()
   @Length(5)
   code!: string;
 
-  @IsString()
-  @MaxLength(32)
-  type!: string;
+  @IsEnum(DeviceType)
+  type!: DeviceType;
 
   @IsString()
   @MaxLength(64)

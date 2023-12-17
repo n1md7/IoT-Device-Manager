@@ -8,22 +8,23 @@ import { Cached } from '/libs/decorators/cache/method-cache.decorator';
 
 @Injectable()
 export class DevicesService {
-  constructor(
-    @InjectRepository(Device)
-    private readonly deviceRepository: Repository<Device>,
-  ) {}
+  constructor(@InjectRepository(Device) private readonly deviceRepository: Repository<Device>) {}
 
   @Cached('5m')
   async getDeviceByCode(code: string) {
     return await this.deviceRepository.findOne({
       where: { code },
-      relations: ['components'],
     });
   }
 
   @Cached('5m')
   async deviceMissing(code: string) {
     return !(await this.deviceRepository.findOneBy({ code }));
+  }
+
+  @Cached('5m')
+  async findAll() {
+    return await this.deviceRepository.findAndCount();
   }
 
   async createDevice(device: DeviceRegisterMessage): Promise<Device> {
@@ -43,12 +44,6 @@ export class DevicesService {
   }
 
   async softCreateDevice(device: DeviceRegisterMessage) {
-    console.log(
-      await this.deviceRepository.findOne({
-        where: { code: device.code },
-        relations: ['components'],
-      }),
-    );
     if (await this.deviceMissing(device.code)) {
       return await this.createDevice(device);
     }

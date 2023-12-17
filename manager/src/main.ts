@@ -9,11 +9,15 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
 import { cwd, pid } from 'node:process';
 import { join } from 'node:path';
-import { GenericExceptionFilter } from '/libs/filters';
 import { RequestLoggerInterceptor } from '/libs/interceptors';
 import { RequestIdInterceptor } from '/libs/interceptors/request-id/request-id.interceptor';
 import { ConfigService } from '/libs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Component } from '/src/components/entities/component.entity';
+import { System } from '/src/systems/entities/system.entity';
+import { Device } from '/src/devices/entities/device.entity';
+import { HttpErrorSchema } from '/libs/filters/http-exception/http-error.schema';
+import { HttpExceptionFilter } from '/libs/filters/http-exception/http-exception.filter';
 
 (async function bootstrap() {
   try {
@@ -50,14 +54,11 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 })();
 
 function configureInterceptors(app: NestExpressApplication) {
-  app.useGlobalInterceptors(
-    new RequestIdInterceptor(),
-    new RequestLoggerInterceptor(),
-  );
+  app.useGlobalInterceptors(new RequestIdInterceptor(), new RequestLoggerInterceptor());
 }
 
 function configureFilters(app: NestExpressApplication) {
-  app.useGlobalFilters(new GenericExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter());
 }
 
 function configurePipes(app: NestExpressApplication) {
@@ -95,14 +96,14 @@ function configureSwagger(app: NestExpressApplication) {
       .setDescription('Home Automation API for IoT devices')
       .setVersion(version)
       .build(),
+    {
+      extraModels: [Component, System, Device, HttpErrorSchema],
+    },
   );
   try {
     writeFileSync(join(cwd(), './docs/swagger.yaml'), dump(document));
   } catch (error) {
-    Logger.error(
-      `Error while writing swagger.yaml file: ${error}`,
-      'Bootstrap',
-    );
+    Logger.error(`Error while writing swagger.yaml file: ${error}`, 'Bootstrap');
   }
 
   SwaggerModule.setup('docs', app, document, {

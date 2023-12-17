@@ -1,20 +1,21 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Device } from '/src/devices/entities/device.entity';
 import { System } from '/src/systems/entities/system.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'Components' })
 export class Component {
   @PrimaryGeneratedColumn()
+  @ApiProperty({
+    type: Number,
+    description: 'The unique identifier of the component.',
+  })
   id!: number;
 
+  @ApiProperty({
+    type: Boolean,
+    description: 'This flag is used to determine whether the component can be used by multiple systems.',
+  })
   @Column({ type: 'boolean', default: false })
   /**
    * Sensors can be shared with multiple systems.
@@ -31,6 +32,10 @@ export class Component {
    */
   inUse!: boolean;
 
+  @ApiProperty({
+    type: Boolean,
+    description: 'This flag is used to determine whether the component is shared. ',
+  })
   @Column({ type: 'boolean', default: false })
   /**
    * This flag is used to determine whether the component is shared.
@@ -47,9 +52,19 @@ export class Component {
   @JoinColumn({ name: 'systemId', referencedColumnName: 'id' })
   system!: System;
 
+  @ApiProperty({
+    type: Date,
+    example: '2021-01-01T00:00:00.000Z',
+    description: 'The date(ISO 8601) when the component was created.',
+  })
   @CreateDateColumn({ type: 'timestamp' })
   createdAt!: Date;
 
+  @ApiProperty({
+    type: Date,
+    example: '2021-01-01T00:00:00.000Z',
+    description: 'The date(ISO 8601) when the component was last updated.',
+  })
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt!: Date;
 }

@@ -4,7 +4,7 @@
 #include <AbleButtons.h>
 #include <PubSubClient.h>
 
-#include "Configuration.h"
+#include "Configuration.mega.h"
 #include "Component.h"
 #include "Timer.h"
 

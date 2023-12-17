@@ -1,13 +1,6 @@
-import { TimerStatus } from '/src/devices/enums/status.enum';
+import { DeviceStatus } from '/src/devices/enums/status.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsOptional,
-  IsPositive,
-  IsString,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
 
 export class TimerControlRequest {
   @ApiProperty({
@@ -23,15 +16,14 @@ export class TimerControlRequest {
     description: 'Device state',
     example: 'ON',
     type: String,
-    enum: TimerStatus,
+    enum: DeviceStatus,
     enumName: 'TimerStatus',
   })
-  @IsEnum(TimerStatus)
-  status!: TimerStatus;
+  @IsEnum(DeviceStatus)
+  status!: DeviceStatus;
 
   @ApiProperty({
-    description:
-      'Timer countdown in minutes. Only minutes [0-59] are supported.',
+    description: 'Timer countdown in minutes. Only minutes [0-59] are supported.',
     example: 10,
     default: 15,
     type: Number,
@@ -44,8 +36,7 @@ export class TimerControlRequest {
   minutes: number = 15;
 
   @ApiProperty({
-    description:
-      'Timer countdown in seconds. Only seconds [0-59] are supported',
+    description: 'Timer countdown in seconds. Only seconds [0-59] are supported',
     example: 30,
     default: 0,
     type: Number,

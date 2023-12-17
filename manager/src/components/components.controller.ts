@@ -1,34 +1,74 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { ComponentsService } from './components.service';
-import { CreateComponentDto } from './dto/create-component.dto';
-import { UpdateComponentDto } from './dto/update-component.dto';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
+import { CreateComponentRequest } from '/src/components/requests/create-component.request';
+import { UpdateComponentRequest } from '/src/components/requests/update-component.request';
+import { Component } from '/src/components/entities/component.entity';
 
+@ApiTags('Components')
 @Controller('components')
 export class ComponentsController {
   constructor(private readonly componentsService: ComponentsService) {}
 
   @Post()
-  create(@Body() createComponentDto: CreateComponentDto) {
-    return this.componentsService.create(createComponentDto);
+  @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ schema: { $ref: getSchemaPath(Component) } })
+  async create(@Body() payload: CreateComponentRequest) {
+    return await this.componentsService.create(payload);
   }
 
   @Get()
-  findAll() {
-    return this.componentsService.findAll();
+  @ApiOkResponse({
+    schema: {
+      properties: {
+        components: {
+          type: 'array',
+          description: 'List of components',
+          items: {
+            $ref: getSchemaPath(Component),
+          },
+        },
+        count: {
+          type: 'integer',
+          description: 'Total number of components',
+        },
+      },
+    },
+  })
+  async findAll() {
+    const [components, count] = await this.componentsService.findAll();
+
+    return {
+      components,
+      count,
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.componentsService.findOne(+id);
+  @ApiNotFoundResponse({ description: 'Component not found' })
+  @ApiOkResponse({ schema: { $ref: getSchemaPath(Component) } })
+  async findOne(@Param('id') id: number) {
+    return await this.componentsService.getById(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateComponentDto: UpdateComponentDto) {
-    return this.componentsService.update(+id, updateComponentDto);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({ description: 'Component updated' })
+  async update(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateComponentRequest) {
+    return await this.componentsService.updateById(id, payload);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.componentsService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({ description: 'Component deleted' })
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.componentsService.removeById(id);
   }
 }
