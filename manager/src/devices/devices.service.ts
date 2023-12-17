@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { DatabaseException } from '/libs/filters';
 import { DeviceRegisterMessage } from '/src/devices/messages/device-register.message';
 import { Cached } from '/libs/decorators/cache/method-cache.decorator';
+
 @Injectable()
 export class DevicesService {
   constructor(
@@ -14,7 +15,10 @@ export class DevicesService {
 
   @Cached('5m')
   async getDeviceByCode(code: string) {
-    return await this.deviceRepository.findOneBy({ code });
+    return await this.deviceRepository.findOne({
+      where: { code },
+      relations: ['components'],
+    });
   }
 
   @Cached('5m')
@@ -39,6 +43,12 @@ export class DevicesService {
   }
 
   async softCreateDevice(device: DeviceRegisterMessage) {
+    console.log(
+      await this.deviceRepository.findOne({
+        where: { code: device.code },
+        relations: ['components'],
+      }),
+    );
     if (await this.deviceMissing(device.code)) {
       return await this.createDevice(device);
     }

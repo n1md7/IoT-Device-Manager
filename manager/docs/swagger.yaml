@@ -20,6 +20,124 @@ paths:
       responses:
         '200':
           description: ''
+  /api/v1/components:
+    post:
+      operationId: ComponentsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateComponentDto'
+      responses:
+        '201':
+          description: ''
+    get:
+      operationId: ComponentsController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /api/v1/components/{id}:
+    get:
+      operationId: ComponentsController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+    patch:
+      operationId: ComponentsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateComponentDto'
+      responses:
+        '200':
+          description: ''
+    delete:
+      operationId: ComponentsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /api/v1/systems:
+    post:
+      operationId: SystemsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSystemDto'
+      responses:
+        '201':
+          description: ''
+    get:
+      operationId: SystemsController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /api/v1/systems/{id}:
+    get:
+      operationId: SystemsController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+    patch:
+      operationId: SystemsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSystemDto'
+      responses:
+        '200':
+          description: ''
+    delete:
+      operationId: SystemsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
 info:
   title: Home Automation API
   description: Home Automation API for IoT devices
@@ -71,5 +189,17 @@ components:
         - code
         - status
     StatusReportMessage:
+      type: object
+      properties: {}
+    CreateComponentDto:
+      type: object
+      properties: {}
+    UpdateComponentDto:
+      type: object
+      properties: {}
+    CreateSystemDto:
+      type: object
+      properties: {}
+    UpdateSystemDto:
       type: object
       properties: {}
