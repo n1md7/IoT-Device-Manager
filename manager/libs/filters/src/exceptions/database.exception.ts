@@ -36,18 +36,12 @@ export class DatabaseException extends Error {
     return this.extracted(exception, extracted);
   }
 
-  private extracted(
-    exception: ErrorPayloadType,
-    extracted: { message: string; error: string },
-  ) {
-    if (exception.error instanceof Error)
-      return (extracted.error = exception.error.message);
+  private extracted(exception: ErrorPayloadType, extracted: { message: string; error: string }) {
+    if (exception.error instanceof Error) return (extracted.error = exception.error.message);
 
-    if (typeof exception.error === 'string')
-      return (extracted.error = exception.error);
+    if (typeof exception.error === 'string') return (extracted.error = exception.error);
 
-    if (typeof exception.error === 'object')
-      return (extracted.error = JSON.stringify(exception.error));
+    if (typeof exception.error === 'object') return (extracted.error = JSON.stringify(exception.error));
 
     return extracted;
   }

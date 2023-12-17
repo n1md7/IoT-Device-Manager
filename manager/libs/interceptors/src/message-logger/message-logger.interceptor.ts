@@ -1,10 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  Logger,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
 import { Observable, catchError, tap } from 'rxjs';
 import { MqttRequest } from '/libs/interceptors/request.type';
 
@@ -21,9 +15,7 @@ export class MessageLoggerInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap(() => {
-        request.logger.log(
-          `Completed: ${topic} ${Date.now() - request.startTime}ms`,
-        );
+        request.logger.log(`Completed: ${topic} ${Date.now() - request.startTime}ms`);
       }),
       catchError((err) => {
         request.logger.error(`Failed: ${topic} ${JSON.stringify(err)}`);

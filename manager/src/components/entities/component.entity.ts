@@ -1,4 +1,14 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Device } from '/src/devices/entities/device.entity';
 import { System } from '/src/systems/entities/system.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -44,11 +54,11 @@ export class Component {
    */
   shared!: boolean;
 
-  @OneToOne(() => Device, (device) => device.components)
+  @ManyToOne(() => Device, (device) => device.components)
   @JoinColumn({ name: 'deviceCode', referencedColumnName: 'code' })
   device!: Device;
 
-  @OneToOne(() => System, (system) => system.components)
+  @ManyToOne(() => System, (system) => system.components)
   @JoinColumn({ name: 'systemId', referencedColumnName: 'id' })
   system!: System;
 

@@ -19,7 +19,10 @@ import { StreamService } from '/src/devices/stream.service';
 )
 @Controller('timer')
 export class DevicesMqttController {
-  constructor(private readonly devicesService: DevicesService, private readonly streamService: StreamService) {}
+  constructor(
+    private readonly devicesService: DevicesService,
+    private readonly streamService: StreamService,
+  ) {}
 
   @MessagePattern('home/devices/+/state')
   async handleReport(@Payload() report: StatusReportMessage, @Ctx() context: MqttRequest) {

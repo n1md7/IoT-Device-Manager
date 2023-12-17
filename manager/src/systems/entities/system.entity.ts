@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Component } from '/src/components/entities/component.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { ConflictException } from '@nestjs/common';

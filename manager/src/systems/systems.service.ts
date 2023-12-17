@@ -21,11 +21,11 @@ export class SystemsService implements OnModuleInit {
     @Inject(TimerService) private readonly timerService: TimerService,
     @Inject(SensorService) private readonly sensorService: SensorService,
     @Inject(ValveService) private readonly valveService: ValveService,
-    @Inject(Client.SYSTEMS) private readonly client: ClientMqtt,
+    @Inject(Client.SYSTEMS) private readonly mqttClient: ClientMqtt,
   ) {}
 
   async onModuleInit() {
-    await this.client.connect();
+    await this.mqttClient.connect();
   }
 
   async create(payload: CreateSystemRequest) {

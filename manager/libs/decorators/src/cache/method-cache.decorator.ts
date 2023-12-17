@@ -7,11 +7,7 @@ const cache = new NodeCache({
 });
 
 export function Cached(TTL: Parameters<typeof ms>[0]) {
-  return function (
-    target: any,
-    methodName: string,
-    descriptor: PropertyDescriptor,
-  ) {
+  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     descriptor.value = async function (...args: unknown[]) {
       const key = JSON.stringify(args);
