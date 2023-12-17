@@ -4,7 +4,7 @@ import { Device } from '/src/devices/entities/device.entity';
 import { Repository } from 'typeorm';
 import { DatabaseException } from '/libs/filters';
 import { DeviceRegisterMessage } from '/src/devices/messages/device-register.message';
-
+import { Cached } from '/libs/decorators/cache/method-cache.decorator';
 @Injectable()
 export class DevicesService {
   constructor(
@@ -12,13 +12,13 @@ export class DevicesService {
     private readonly deviceRepository: Repository<Device>,
   ) {}
 
+  @Cached('5m')
   async getDeviceByCode(code: string) {
-    // TODO: cache this
     return await this.deviceRepository.findOneBy({ code });
   }
 
+  @Cached('5m')
   async deviceMissing(code: string) {
-    // TODO: cache this
     return !(await this.deviceRepository.findOneBy({ code }));
   }
 
