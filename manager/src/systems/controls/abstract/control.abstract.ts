@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import { Client } from '/src/systems/enum/client.enum';
 import { ClientMqtt } from '@nestjs/microservices';
 
-export abstract class ControlAbstract {
+export abstract class AbstractControl {
   constructor(@Inject(Client.SYSTEMS) protected readonly mqttClient: ClientMqtt) {}
 
   async start(component: Component): Promise<void> {}

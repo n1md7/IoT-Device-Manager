@@ -135,6 +135,8 @@ paths:
   /api/v1/systems/create:
     post:
       operationId: SystemsController_create
+      summary: Create system
+      description: Create a new system
       parameters: []
       requestBody:
         required: true
@@ -149,17 +151,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/System'
-        '400':
+        '400': &ref_2
           description: ''
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpErrorSchema'
-      tags: &ref_2
+      tags: &ref_3
         - Systems
   /api/v1/systems/control:
     post:
       operationId: SystemsController_controlSystem
+      summary: Control system
+      description: Manually start or stop a system
       parameters: []
       requestBody:
         required: true
@@ -170,16 +174,19 @@ paths:
       responses:
         '200':
           description: System control
+        '400': *ref_2
         '409':
           description: System start failure
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpErrorSchema'
-      tags: *ref_2
+      tags: *ref_3
   /api/v1/systems:
     get:
       operationId: SystemsController_findAll
+      summary: Get all systems
+      description: Get all systems with their components
       parameters: []
       responses:
         '200':
@@ -196,10 +203,13 @@ paths:
                   count:
                     type: integer
                     description: Total number of systems
-      tags: *ref_2
+        '400': *ref_2
+      tags: *ref_3
   /api/v1/systems/{id}:
     get:
       operationId: SystemsController_findById
+      summary: Get system by id
+      description: Get system by id with no components
       parameters:
         - name: id
           required: true
@@ -209,9 +219,16 @@ paths:
       responses:
         '200':
           description: ''
-      tags: *ref_2
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/System'
+        '400': *ref_2
+      tags: *ref_3
     patch:
       operationId: SystemsController_updateById
+      summary: Update system by id
+      description: Update system by id
       parameters:
         - name: id
           required: true
@@ -227,9 +244,12 @@ paths:
       responses:
         '200':
           description: ''
-      tags: *ref_2
+        '400': *ref_2
+      tags: *ref_3
     delete:
       operationId: SystemsController_removeById
+      summary: Delete system by id
+      description: Delete system by id
       parameters:
         - name: id
           required: true
@@ -239,7 +259,73 @@ paths:
       responses:
         '200':
           description: ''
-      tags: *ref_2
+        '400': *ref_2
+      tags: *ref_3
+  /api/v1/scheduler:
+    post:
+      operationId: SchedulerController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSchedulerDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_4
+        - Scheduler
+    get:
+      operationId: SchedulerController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /api/v1/scheduler/{id}:
+    get:
+      operationId: SchedulerController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+    patch:
+      operationId: SchedulerController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSchedulerDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+    delete:
+      operationId: SchedulerController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
 info:
   title: Home Automation API
   description: Home Automation API for IoT devices
@@ -384,6 +470,12 @@ components:
           type: string
           example: A watering system. It waters plants.
           description: The description of the system.
+    CreateSchedulerDto:
+      type: object
+      properties: {}
+    UpdateSchedulerDto:
+      type: object
+      properties: {}
     Component:
       type: object
       properties:
@@ -520,8 +612,13 @@ components:
           type: string
           example: api/v1/systems
           description: Path
+        details:
+          type: string
+          example: Error details
+          description: Error details
       required:
         - statusCode
         - message
         - timestamp
         - path
+        - details

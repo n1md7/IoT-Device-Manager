@@ -5,10 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { System } from '/src/systems/entities/system.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { Client } from '/src/systems/enum/client.enum';
-import { SwitchService } from './switch/switch.service';
-import { TimerService } from './timer/timer.service';
-import { SensorService } from './sensor/sensor.service';
-import { ValveService } from './valve/valve.service';
+import { SwitchService } from '/src/systems/controls/switch/switch.service';
+import { TimerService } from '/src/systems/controls/timer/timer.service';
+import { SensorService } from '/src/systems/controls/sensor/sensor.service';
+import { ValveService } from '/src/systems/controls/valve/valve.service';
 
 @Module({
   imports: [

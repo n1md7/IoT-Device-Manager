@@ -18,4 +18,12 @@ export class ControlSystemRequest {
   })
   @IsEnum(Action)
   action!: Action;
+
+  startRequested() {
+    return this.action === Action.START;
+  }
+
+  stopRequested() {
+    return this.action === Action.STOP;
+  }
 }

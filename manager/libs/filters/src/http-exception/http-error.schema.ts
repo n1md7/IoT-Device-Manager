@@ -28,4 +28,11 @@ export class HttpErrorSchema {
     description: 'Path',
   })
   path!: string;
+
+  @ApiProperty({
+    example: 'Error details',
+    type: String,
+    description: 'Error details',
+  })
+  details?: string;
 }

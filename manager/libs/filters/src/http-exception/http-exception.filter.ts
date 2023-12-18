@@ -9,11 +9,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<HttpRequest>();
-    const status = { code: 500, message: 'Internal Server Error' };
+    const status = { code: 500, message: 'Internal Server Error', details: '' };
 
     if (exception instanceof HttpException) {
       status.code = exception.getStatus();
       status.message = exception.message;
+      status.details = this.extractDetails(exception);
     }
 
     if (exception instanceof DatabaseException) {
@@ -26,6 +27,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message: status.message,
       timestamp: new Date().toISOString(),
       path: request.url,
+      details: status.details,
     });
+  }
+
+  private extractDetails(exception: HttpException) {
+    const response = exception.getResponse();
+    if (typeof response === 'string') return response;
+
+    if (typeof response === 'object') {
+      const { message } = response as Record<string, unknown>;
+      if (typeof message === 'string') return message;
+      if (Array.isArray(message)) return message.join(', ');
+    }
+
+    return '';
   }
 }

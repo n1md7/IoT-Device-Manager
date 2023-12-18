@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ControlAbstract } from '/src/systems/control/control.abstract';
+import { AbstractControl } from '/src/systems/controls/abstract/control.abstract';
 import { Component } from '/src/components/entities/component.entity';
 import { TimerControlMessageType } from '/src/devices/types/timer-control-message.type';
 import { DeviceStatus } from '/src/devices/enums/status.enum';
 
 @Injectable()
-export class TimerService extends ControlAbstract {
+export class TimerService extends AbstractControl {
   async start(component: Component): Promise<void> {
     console.info('TimerService.start');
     const topic = this.getEmitTopic(component);

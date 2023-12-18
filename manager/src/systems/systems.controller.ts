@@ -18,6 +18,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
@@ -30,12 +31,17 @@ import { HttpErrorSchema } from '/libs/filters/http-exception/http-error.schema'
 
 @ApiTags('Systems')
 @Controller('systems')
+@ApiBadRequestResponse({
+  schema: {
+    $ref: getSchemaPath(HttpErrorSchema),
+  },
+})
 export class SystemsController {
   constructor(@Inject(SystemsService) private readonly systemsService: SystemsService) {}
 
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
-  @ApiBadRequestResponse({ schema: { $ref: getSchemaPath(HttpErrorSchema) } })
+  @ApiOperation({ summary: 'Create system', description: 'Create a new system' })
   @ApiCreatedResponse({ schema: { $ref: getSchemaPath(System) } })
   async create(@Body() payload: CreateSystemRequest) {
     return await this.systemsService.create(payload);
@@ -44,16 +50,15 @@ export class SystemsController {
   @Post('control')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'System control' })
+  @ApiOperation({ summary: 'Control system', description: 'Manually start or stop a system' })
   @ApiConflictResponse({ description: 'System start failure', schema: { $ref: getSchemaPath(HttpErrorSchema) } })
   async controlSystem(@Body() payload: ControlSystemRequest) {
     const system = await this.systemsService.getById(payload.id);
 
-    if (payload.action === Action.START) {
-      for (const component of system.components) {
-        if (component.inUse && !component.shared) {
-          throw new ConflictException(`System ${system.name} is already in use`);
-        }
-      }
+    this.systemsService.assertSystemComponents(system);
+
+    if (payload.startRequested()) {
+      this.systemsService.assertSystemComponentsInUse(system);
 
       return await this.systemsService.componentsStart(system);
     }
@@ -79,6 +84,7 @@ export class SystemsController {
       },
     },
   })
+  @ApiOperation({ summary: 'Get all systems', description: 'Get all systems with their components' })
   async findAll() {
     const [systems, count] = await this.systemsService.findAll();
 
@@ -89,16 +95,20 @@ export class SystemsController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ schema: { $ref: getSchemaPath(System) } })
+  @ApiOperation({ summary: 'Get system by id', description: 'Get system by id with no components' })
   async findById(@Param('id', ParseIntPipe) id: number) {
     return await this.systemsService.findById(id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update system by id', description: 'Update system by id' })
   updateById(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateSystemRequest) {
     return this.systemsService.updateById(id, payload);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete system by id', description: 'Delete system by id' })
   removeById(@Param('id', ParseIntPipe) id: number) {
     return this.systemsService.removeById(id);
   }
