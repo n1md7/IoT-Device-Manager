@@ -24,6 +24,6 @@ import { ControlService } from './control.service';
   ],
   controllers: [SystemsController],
   providers: [SystemsService, SwitchService, SensorService, ControlService],
-  exports: [SystemsService],
+  exports: [SystemsService, ControlService],
 })
 export class SystemsModule {}

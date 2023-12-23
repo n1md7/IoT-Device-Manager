@@ -27,7 +27,15 @@ export class SchedulerService {
 
   async findAll() {
     try {
-      return await this.schedulerRepository.findAndCount();
+      return await this.schedulerRepository.findAndCount({
+        relations: {
+          system: {
+            components: {
+              device: true,
+            },
+          },
+        },
+      });
     } catch (error) {
       throw new DatabaseException({
         message: `Error finding schedules`,
@@ -64,6 +72,17 @@ export class SchedulerService {
     } catch (error) {
       throw new DatabaseException({
         message: `Error deleting schedule with id "${id}"`,
+        error,
+      });
+    }
+  }
+
+  async decrementCountById(id: number) {
+    try {
+      return await this.schedulerRepository.decrement({ id }, 'removeAfterCount', 1);
+    } catch (error) {
+      throw new DatabaseException({
+        message: `Error decrementing count of schedule with id "${id}"`,
         error,
       });
     }

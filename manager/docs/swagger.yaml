@@ -487,20 +487,25 @@ components:
           type: string
           example: Timer schedule
           description: The name of the schedule.
-        expression:
+        startExpression:
           type: string
           example: 5 * * * * *
-          description: The cron expression of the schedule.
+          description: The cron expression of the schedule to START.
+        stopExpression:
+          type: string
+          example: 5 * * * * *
+          description: The cron expression of the schedule to STOP.
         removeAfterCount:
           type: number
-          example: 5
+          example: -1
           description: >-
             The number of times the schedule will run. -1 means infinite. It
             will be removed after the last run.
       required:
         - systemId
         - name
-        - expression
+        - startExpression
+        - stopExpression
         - removeAfterCount
     UpdateScheduleRequest:
       type: object
@@ -513,13 +518,17 @@ components:
           type: string
           example: Timer schedule
           description: The name of the schedule.
-        expression:
+        startExpression:
           type: string
           example: 5 * * * * *
-          description: The cron expression of the schedule.
+          description: The cron expression of the schedule to START.
+        stopExpression:
+          type: string
+          example: 5 * * * * *
+          description: The cron expression of the schedule to STOP.
         removeAfterCount:
           type: number
-          example: 5
+          example: -1
           description: >-
             The number of times the schedule will run. -1 means infinite. It
             will be removed after the last run.
@@ -564,10 +573,14 @@ components:
           type: string
           example: Timer
           description: The name of the schedule.
-        expression:
+        startExpression:
           type: string
           example: 5 * * * * *
-          description: The cron expression of the schedule.
+          description: The cron expression of the schedule to START.
+        stopExpression:
+          type: string
+          example: 5 * * * * *
+          description: The cron expression of the schedule to STOP.
         removeAfterCount:
           type: number
           example: 5
@@ -581,7 +594,8 @@ components:
       required:
         - id
         - name
-        - expression
+        - startExpression
+        - stopExpression
         - removeAfterCount
         - system
     System:

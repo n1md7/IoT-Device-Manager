@@ -23,10 +23,18 @@ export class Schedule {
   @ApiProperty({
     type: String,
     example: '5 * * * * *',
-    description: 'The cron expression of the schedule.',
+    description: 'The cron expression of the schedule to START.',
   })
   @Column({ type: 'varchar', length: 32 })
-  expression!: string;
+  startExpression!: string;
+
+  @ApiProperty({
+    type: String,
+    example: '5 * * * * *',
+    description: 'The cron expression of the schedule to STOP.',
+  })
+  @Column({ type: 'varchar', length: 32 })
+  stopExpression!: string;
 
   @ApiProperty({
     type: Number,

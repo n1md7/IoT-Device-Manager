@@ -25,4 +25,15 @@ export class SystemTime {
   getTotalSeconds() {
     return this.sec + this.min * 60;
   }
+
+  static from(payload: Partial<SystemTime>) {
+    const time = new SystemTime();
+    Object.assign(time, payload);
+
+    return time;
+  }
+
+  toString() {
+    return `"${this.min}:${this.sec}"`;
+  }
 }

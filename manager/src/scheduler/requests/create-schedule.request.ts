@@ -1,5 +1,6 @@
+import { IsInt, IsString, Matches, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsString, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateScheduleRequest {
   @ApiProperty({
@@ -22,17 +23,27 @@ export class CreateScheduleRequest {
   @ApiProperty({
     type: String,
     example: '5 * * * * *',
-    description: 'The cron expression of the schedule.',
+    description: 'The cron expression of the schedule to START.',
   })
   @IsString()
   @MaxLength(32)
-  expression!: string;
+  startExpression!: string;
+
+  @ApiProperty({
+    type: String,
+    example: '5 * * * * *',
+    description: 'The cron expression of the schedule to STOP.',
+  })
+  @IsString()
+  @MaxLength(32)
+  stopExpression!: string;
 
   @ApiProperty({
     type: Number,
-    example: 5,
+    example: -1,
     description: 'The number of times the schedule will run. -1 means infinite. It will be removed after the last run.',
   })
-  @IsInt()
+  @Type(() => Number)
+  @Matches(/^-?([1-9]\d{0,2}|99)$/)
   removeAfterCount!: number;
 }

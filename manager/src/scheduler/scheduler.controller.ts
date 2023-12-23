@@ -21,7 +21,7 @@ export class SchedulerController {
   @ApiCreatedResponse({ schema: { $ref: getSchemaPath(Schedule) } })
   async create(@Body() payload: CreateScheduleRequest) {
     const system = await this.systemsService.getById(payload.systemId);
-
+    // TODO: create a cron job, for start - stop system
     return await this.schedulerService.createBySystem(system, payload);
   }
 
