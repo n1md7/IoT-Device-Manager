@@ -1,5 +1,4 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { UpdateComponentDto } from './dto/update-component.dto';
 import { CreateComponentRequest } from '/src/components/requests/create-component.request';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Component } from '/src/components/entities/component.entity';
@@ -23,8 +22,6 @@ export class ComponentsService {
       const system = await this.systemRepository.findOneByOrFail({ id: payload.systemId });
       const device = await this.deviceRepository.findOneByOrFail({ code: payload.deviceCode });
       const component = this.componentRepository.create({
-        inUse: payload.inUse,
-        shared: payload.shared,
         device,
         system,
       });

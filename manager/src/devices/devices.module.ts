@@ -6,7 +6,7 @@ import { Client } from '/src/devices/enums/client.enum';
 import { DevicesMqttController } from '/src/devices/devices-mqtt.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Device } from '/src/devices/entities/device.entity';
-import { StreamService } from '/src/devices/stream.service';
+import { FeedModule } from '/src/feed/feed.module';
 
 @Module({
   imports: [
@@ -20,8 +20,9 @@ import { StreamService } from '/src/devices/stream.service';
         },
       },
     ]),
+    FeedModule,
   ],
   controllers: [DevicesHttpController, DevicesMqttController],
-  providers: [DevicesService, StreamService],
+  providers: [DevicesService],
 })
 export class DevicesModule {}

@@ -1,8 +1,10 @@
 openapi: 3.0.0
 paths:
-  /api/v1/timer/devices:
+  /api/v1/devices:
     get:
       operationId: DevicesHttpController_getDevices
+      summary: Get devices
+      description: Get a list of devices
       parameters: []
       responses:
         '200':
@@ -20,34 +22,25 @@ paths:
                     type: integer
                     description: Total number of devices
       tags:
-        - Timer
         - Devices
-  /api/v1/timer/control:
-    post:
-      operationId: DevicesHttpController_updateTimerByDeviceCode
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TimerControlRequest'
-      responses:
-        '201':
-          description: ''
-      tags: &ref_0
-        - Timer
-  /api/v1/timer/updates:
+  /api/v1/feed/updates:
     get:
-      operationId: DevicesHttpController_updates
+      operationId: FeedController_updates
+      summary: Get feed
+      description: >-
+        Get a dynamic real-time feed of system events. This endpoint is SSE
+        enabled.
       parameters: []
       responses:
         '200':
           description: ''
-      tags: *ref_0
+      tags:
+        - Feed
   /api/v1/components:
     post:
       operationId: ComponentsController_create
+      summary: Create component
+      description: Create a new component
       parameters: []
       requestBody:
         required: true
@@ -62,10 +55,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Component'
-      tags: &ref_1
+      tags: &ref_0
         - Components
     get:
       operationId: ComponentsController_findAll
+      summary: Get components
+      description: Get a list of components
       parameters: []
       responses:
         '200':
@@ -82,10 +77,12 @@ paths:
                   count:
                     type: integer
                     description: Total number of components
-      tags: *ref_1
+      tags: *ref_0
   /api/v1/components/{id}:
     get:
       operationId: ComponentsController_findOne
+      summary: Get component
+      description: Get a component by id
       parameters:
         - name: id
           required: true
@@ -101,9 +98,11 @@ paths:
                 $ref: '#/components/schemas/Component'
         '404':
           description: Component not found
-      tags: *ref_1
+      tags: *ref_0
     patch:
       operationId: ComponentsController_update
+      summary: Update component
+      description: Update a component by id
       parameters:
         - name: id
           required: true
@@ -119,9 +118,11 @@ paths:
       responses:
         '204':
           description: Component updated
-      tags: *ref_1
+      tags: *ref_0
     delete:
       operationId: ComponentsController_remove
+      summary: Delete component
+      description: Delete a component by id
       parameters:
         - name: id
           required: true
@@ -131,7 +132,7 @@ paths:
       responses:
         '204':
           description: Component deleted
-      tags: *ref_1
+      tags: *ref_0
   /api/v1/systems/create:
     post:
       operationId: SystemsController_create
@@ -151,13 +152,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/System'
-        '400': &ref_2
+        '400': &ref_1
           description: ''
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpErrorSchema'
-      tags: &ref_3
+      tags: &ref_2
         - Systems
   /api/v1/systems/control:
     post:
@@ -174,14 +175,14 @@ paths:
       responses:
         '200':
           description: System control
-        '400': *ref_2
+        '400': *ref_1
         '409':
           description: System start failure
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpErrorSchema'
-      tags: *ref_3
+      tags: *ref_2
   /api/v1/systems:
     get:
       operationId: SystemsController_findAll
@@ -203,8 +204,8 @@ paths:
                   count:
                     type: integer
                     description: Total number of systems
-        '400': *ref_2
-      tags: *ref_3
+        '400': *ref_1
+      tags: *ref_2
   /api/v1/systems/{id}:
     get:
       operationId: SystemsController_findById
@@ -223,8 +224,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/System'
-        '400': *ref_2
-      tags: *ref_3
+        '400': *ref_1
+      tags: *ref_2
     patch:
       operationId: SystemsController_updateById
       summary: Update system by id
@@ -244,8 +245,8 @@ paths:
       responses:
         '200':
           description: ''
-        '400': *ref_2
-      tags: *ref_3
+        '400': *ref_1
+      tags: *ref_2
     delete:
       operationId: SystemsController_removeById
       summary: Delete system by id
@@ -259,72 +260,104 @@ paths:
       responses:
         '200':
           description: ''
-        '400': *ref_2
-      tags: *ref_3
+        '400': *ref_1
+      tags: *ref_2
   /api/v1/scheduler:
     post:
       operationId: SchedulerController_create
+      summary: Create schedule
+      description: Create a new schedule
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateSchedulerDto'
+              $ref: '#/components/schemas/CreateScheduleRequest'
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '404': &ref_3
+          description: Schedule not found
       tags: &ref_4
         - Scheduler
     get:
       operationId: SchedulerController_findAll
+      summary: Get all schedules
+      description: Get a list of all schedules
       parameters: []
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  systems:
+                    type: array
+                    description: List of schedules
+                    items:
+                      $ref: '#/components/schemas/Schedule'
+                  count:
+                    type: integer
+                    description: Total number of schedules
+        '404': *ref_3
       tags: *ref_4
   /api/v1/scheduler/{id}:
     get:
-      operationId: SchedulerController_findOne
+      operationId: SchedulerController_findById
       parameters:
         - name: id
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '404': *ref_3
       tags: *ref_4
     patch:
-      operationId: SchedulerController_update
+      operationId: SchedulerController_updateById
       parameters:
         - name: id
           required: true
           in: path
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSchedulerDto'
+              $ref: '#/components/schemas/UpdateScheduleRequest'
       responses:
         '200':
           description: ''
+        '404': *ref_3
       tags: *ref_4
     delete:
-      operationId: SchedulerController_remove
+      operationId: SchedulerController_removeById
+      summary: Delete schedule
+      description: Delete a schedule by id
       parameters:
         - name: id
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: ''
+        '404': *ref_3
       tags: *ref_4
 info:
   title: Home Automation API
@@ -343,39 +376,6 @@ components:
       description: Enter JWT auth token
       in: header
   schemas:
-    TimerStatus:
-      type: string
-      enum:
-        - 'ON'
-        - 'OFF'
-    TimerControlRequest:
-      type: object
-      properties:
-        code:
-          type: string
-          description: Device code. Must be unique
-          examples:
-            - D0001
-            - D0002
-            - D0003
-          example: D0001
-        status:
-          description: Device state
-          example: 'ON'
-          $ref: '#/components/schemas/TimerStatus'
-        minutes:
-          type: number
-          description: Timer countdown in minutes. Only minutes [0-59] are supported.
-          example: 10
-          default: 15
-        seconds:
-          type: number
-          description: Timer countdown in seconds. Only seconds [0-59] are supported
-          example: 30
-          default: 0
-      required:
-        - code
-        - status
     StatusReportMessage:
       type: object
       properties: {}
@@ -390,18 +390,6 @@ components:
           type: number
           description: The System ID of the component type.
           example: 1
-        inUse:
-          type: boolean
-          description: This flag is used to determine whether the component is in use.
-          default: false
-        shared:
-          type: boolean
-          description: >-
-            This flag is used to determine whether the component is shared.
-            Usually, this flag is used to mark the component as a sensor. The
-            component that only emits/reports data but not receiving anything
-            back.
-          default: false
       required:
         - deviceCode
         - systemId
@@ -442,6 +430,20 @@ components:
       required:
         - name
         - description
+    SystemTime:
+      type: object
+      properties:
+        sec:
+          type: number
+          example: 15
+          description: value of seconds. Only the seconds part of the time [0, 59]
+        min:
+          type: number
+          example: 15
+          description: value of minutes. Only the minutes part of the time [0, 99]
+      required:
+        - sec
+        - min
     ControlSystemRequest:
       type: object
       properties:
@@ -456,6 +458,10 @@ components:
             - STOP
           example: START
           description: Action to perform
+        time:
+          description: Time to run the system. Only required when action is START
+          allOf:
+            - $ref: '#/components/schemas/SystemTime'
       required:
         - id
         - action
@@ -470,12 +476,53 @@ components:
           type: string
           example: A watering system. It waters plants.
           description: The description of the system.
-    CreateSchedulerDto:
+    CreateScheduleRequest:
       type: object
-      properties: {}
-    UpdateSchedulerDto:
+      properties:
+        systemId:
+          type: number
+          example: 1
+          description: The unique identifier of the system.
+        name:
+          type: string
+          example: Timer schedule
+          description: The name of the schedule.
+        expression:
+          type: string
+          example: 5 * * * * *
+          description: The cron expression of the schedule.
+        removeAfterCount:
+          type: number
+          example: 5
+          description: >-
+            The number of times the schedule will run. -1 means infinite. It
+            will be removed after the last run.
+      required:
+        - systemId
+        - name
+        - expression
+        - removeAfterCount
+    UpdateScheduleRequest:
       type: object
-      properties: {}
+      properties:
+        systemId:
+          type: number
+          example: 1
+          description: The unique identifier of the system.
+        name:
+          type: string
+          example: Timer schedule
+          description: The name of the schedule.
+        expression:
+          type: string
+          example: 5 * * * * *
+          description: The cron expression of the schedule.
+        removeAfterCount:
+          type: number
+          example: 5
+          description: >-
+            The number of times the schedule will run. -1 means infinite. It
+            will be removed after the last run.
     Component:
       type: object
       properties:
@@ -506,6 +553,37 @@ components:
         - shared
         - createdAt
         - updatedAt
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+          description: The unique identifier of the schedule.
+        name:
+          type: string
+          example: Timer
+          description: The name of the schedule.
+        expression:
+          type: string
+          example: 5 * * * * *
+          description: The cron expression of the schedule.
+        removeAfterCount:
+          type: number
+          example: 5
+          description: >-
+            The number of times the schedule will run. -1 means infinite. It
+            will be removed after the last run.
+        system:
+          type: array
+          items:
+            type: object
+      required:
+        - id
+        - name
+        - expression
+        - removeAfterCount
+        - system
     System:
       type: object
       properties:
@@ -525,6 +603,10 @@ components:
           type: array
           items:
             type: array
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schedule'
         createdAt:
           format: date-time
           type: string
@@ -538,6 +620,7 @@ components:
         - name
         - description
         - components
+        - schedules
         - createdAt
         - updatedAt
     Device:
@@ -552,8 +635,6 @@ components:
           enum:
             - SWITCH
             - SENSOR
-            - TIMER
-            - VALVE
           example: SWITCH
           description: >-
             The type of the device. This will be used to determine the

@@ -28,6 +28,7 @@ import { Action } from '/src/systems/enum/action.enum';
 import { CreateSystemRequest } from '/src/systems/requests/create-system.request';
 import { UpdateSystemRequest } from '/src/systems/requests/update-system.request';
 import { HttpErrorSchema } from '/libs/filters/http-exception/http-error.schema';
+import { ControlService } from '/src/systems/control.service';
 
 @ApiTags('Systems')
 @Controller('systems')
@@ -37,7 +38,10 @@ import { HttpErrorSchema } from '/libs/filters/http-exception/http-error.schema'
   },
 })
 export class SystemsController {
-  constructor(@Inject(SystemsService) private readonly systemsService: SystemsService) {}
+  constructor(
+    @Inject(SystemsService) private readonly systemsService: SystemsService,
+    @Inject(ControlService) private readonly controlService: ControlService,
+  ) {}
 
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
@@ -55,15 +59,15 @@ export class SystemsController {
   async controlSystem(@Body() payload: ControlSystemRequest) {
     const system = await this.systemsService.getById(payload.id);
 
-    this.systemsService.assertSystemComponents(system);
+    this.controlService.assertSystemComponents(system);
 
     if (payload.startRequested()) {
-      this.systemsService.assertSystemComponentsInUse(system);
+      this.controlService.assertSystemComponentsInUse(system);
 
-      return await this.systemsService.componentsStart(system);
+      return await this.controlService.componentsStart(system, payload.time);
     }
 
-    return await this.systemsService.componentsStop(system);
+    return await this.controlService.componentsStop(system);
   }
 
   @Get()

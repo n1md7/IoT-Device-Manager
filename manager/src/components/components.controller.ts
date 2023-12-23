@@ -5,6 +5,7 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
@@ -19,6 +20,7 @@ export class ComponentsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create component', description: 'Create a new component' })
   @ApiCreatedResponse({ schema: { $ref: getSchemaPath(Component) } })
   async create(@Body() payload: CreateComponentRequest) {
     return await this.componentsService.create(payload);
@@ -42,6 +44,7 @@ export class ComponentsController {
       },
     },
   })
+  @ApiOperation({ summary: 'Get components', description: 'Get a list of components' })
   async findAll() {
     const [components, count] = await this.componentsService.findAll();
 
@@ -54,6 +57,7 @@ export class ComponentsController {
   @Get(':id')
   @ApiNotFoundResponse({ description: 'Component not found' })
   @ApiOkResponse({ schema: { $ref: getSchemaPath(Component) } })
+  @ApiOperation({ summary: 'Get component', description: 'Get a component by id' })
   async findOne(@Param('id') id: number) {
     return await this.componentsService.getById(id);
   }
@@ -61,6 +65,7 @@ export class ComponentsController {
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'Component updated' })
+  @ApiOperation({ summary: 'Update component', description: 'Update a component by id' })
   async update(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateComponentRequest) {
     return await this.componentsService.updateById(id, payload);
   }
@@ -68,6 +73,7 @@ export class ComponentsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'Component deleted' })
+  @ApiOperation({ summary: 'Delete component', description: 'Delete a component by id' })
   async remove(@Param('id', ParseIntPipe) id: number) {
     return await this.componentsService.removeById(id);
   }

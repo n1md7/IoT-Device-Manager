@@ -1,4 +1,4 @@
-import { Controller, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Inject, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Ctx, MessagePattern, Payload } from '@nestjs/microservices';
 import { StatusReportMessage } from '/src/devices/messages/status-report.message';
 import { RpcExceptionFilter } from '/libs/filters';
@@ -7,7 +7,7 @@ import { MessageLoggerInterceptor } from '/libs/interceptors/message-logger/mess
 import { TimeoutInterceptor } from '/libs/interceptors/timeout/timeout.interceptor';
 import { MessageIdInterceptor } from '/libs/interceptors/message-id/message-id.interceptor';
 import { MqttRequest } from '/libs/interceptors/request.type';
-import { StreamService } from '/src/devices/stream.service';
+import { FeedService } from '/src/feed/feed.service';
 
 @UseFilters(RpcExceptionFilter)
 @UseInterceptors(MessageIdInterceptor, MessageLoggerInterceptor, TimeoutInterceptor)
@@ -17,17 +17,17 @@ import { StreamService } from '/src/devices/stream.service';
     whitelist: true,
   }),
 )
-@Controller('timer')
+@Controller('devices')
 export class DevicesMqttController {
   constructor(
-    private readonly devicesService: DevicesService,
-    private readonly streamService: StreamService,
+    @Inject(DevicesService) private readonly devicesService: DevicesService,
+    @Inject(FeedService) private readonly feedService: FeedService,
   ) {}
 
   @MessagePattern('home/devices/+/state')
   async handleReport(@Payload() report: StatusReportMessage, @Ctx() context: MqttRequest) {
     // TODO:  Save data to database fo processing
-    this.streamService.push(report);
+    this.feedService.push(report);
 
     await this.devicesService.softCreateDevice({
       code: report.code,

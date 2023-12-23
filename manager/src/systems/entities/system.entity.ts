@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGenerat
 import { Component } from '/src/components/entities/component.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { ConflictException } from '@nestjs/common';
+import { Schedule } from '/src/scheduler/entities/scheduler.entity';
 
 @Entity({ name: 'Systems' })
 export class System {
@@ -33,8 +34,23 @@ export class System {
     isArray: true,
     type: Component,
   })
-  @OneToMany(() => Component, (component) => component.system)
+  @OneToMany(() => Component, (component) => component.system, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   components!: Component[];
+
+  @ApiProperty({
+    isArray: true,
+    type: Schedule,
+  })
+  @OneToMany(() => Schedule, (schedule) => schedule.system, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  schedules!: Schedule[];
 
   @ApiProperty({
     type: Date,

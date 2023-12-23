@@ -1,10 +1,10 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@nestjs/common';
 import { Observable, ReplaySubject } from 'rxjs';
 import { StatusReportMessage } from '/src/devices/messages/status-report.message';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class StreamService {
+export class FeedService {
   private readonly streams: Map<
     string,
     {

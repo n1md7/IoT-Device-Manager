@@ -1,36 +1,72 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { SchedulerService } from './scheduler.service';
-import { CreateSchedulerDto } from './dto/create-scheduler.dto';
-import { UpdateSchedulerDto } from './dto/update-scheduler.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { UpdateScheduleRequest } from '/src/scheduler/requests/update-schedule.request';
+import { Schedule } from '/src/scheduler/entities/scheduler.entity';
+import { CreateScheduleRequest } from '/src/scheduler/requests/create-schedule.request';
+import { SystemsService } from '/src/systems/systems.service';
 
 @ApiTags('Scheduler')
 @Controller('scheduler')
+@ApiNotFoundResponse({ description: 'Schedule not found' })
 export class SchedulerController {
-  constructor(private readonly schedulerService: SchedulerService) {}
+  constructor(
+    @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
+    @Inject(SystemsService) private readonly systemsService: SystemsService,
+  ) {}
 
   @Post()
-  create(@Body() createSchedulerDto: CreateSchedulerDto) {
-    return this.schedulerService.create(createSchedulerDto);
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create schedule', description: 'Create a new schedule' })
+  @ApiCreatedResponse({ schema: { $ref: getSchemaPath(Schedule) } })
+  async create(@Body() payload: CreateScheduleRequest) {
+    const system = await this.systemsService.getById(payload.systemId);
+
+    return await this.schedulerService.createBySystem(system, payload);
   }
 
   @Get()
-  findAll() {
-    return this.schedulerService.findAll();
+  @ApiOkResponse({
+    schema: {
+      properties: {
+        systems: {
+          type: 'array',
+          description: 'List of schedules',
+          items: {
+            $ref: getSchemaPath(Schedule),
+          },
+        },
+        count: {
+          type: 'integer',
+          description: 'Total number of schedules',
+        },
+      },
+    },
+  })
+  @ApiOperation({ summary: 'Get all schedules', description: 'Get a list of all schedules' })
+  async findAll() {
+    const [schedules, count] = await this.schedulerService.findAll();
+
+    return {
+      count,
+      schedules,
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.schedulerService.findOne(+id);
+  @ApiOkResponse({ schema: { $ref: getSchemaPath(Schedule) } })
+  async findById(@Param('id', ParseIntPipe) id: number) {
+    return await this.schedulerService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSchedulerDto: UpdateSchedulerDto) {
-    return this.schedulerService.update(+id, updateSchedulerDto);
+  async updateById(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateScheduleRequest) {
+    return this.schedulerService.update(+id, payload);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.schedulerService.remove(+id);
+  @ApiOperation({ summary: 'Delete schedule', description: 'Delete a schedule by id' })
+  async removeById(@Param('id', ParseIntPipe) id: number) {
+    return this.schedulerService.removeById(id);
   }
 }
