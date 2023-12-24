@@ -22,15 +22,15 @@ export class SystemTime {
   @Max(99)
   min!: number;
 
-  getTotalSeconds() {
-    return this.sec + this.min * 60;
-  }
-
   static from(payload: Partial<SystemTime>) {
     const time = new SystemTime();
     Object.assign(time, payload);
 
     return time;
+  }
+
+  getTotalSeconds() {
+    return this.sec + this.min * 60;
   }
 
   toString() {

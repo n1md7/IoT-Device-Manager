@@ -4,7 +4,8 @@ import { SchedulerModule } from '/src/scheduler/scheduler.module';
 import { SystemsModule } from '/src/systems/systems.module';
 
 @Module({
-  imports: [SchedulerModule, SystemsModule],
+  imports: [SystemsModule],
   providers: [CronService],
+  exports: [CronService],
 })
 export class CronModule {}

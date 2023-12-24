@@ -1,7 +1,8 @@
 import { Action } from '/src/systems/enum/action.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, ValidateIf, ValidateNested } from 'class-validator';
+import { IsDefined, IsEnum, IsInt, ValidateIf, ValidateNested } from 'class-validator';
 import { SystemTime } from '/src/systems/requests/properties/system-time.property';
+import { Type } from 'class-transformer';
 
 export class ControlSystemRequest {
   @ApiProperty({
@@ -25,11 +26,13 @@ export class ControlSystemRequest {
     description: 'Time to run the system. Only required when action is START',
     required: false,
   })
+  @IsDefined()
   @ValidateNested()
+  @Type(() => SystemTime)
   @ValidateIf(({ action }) => action === Action.START)
-  time?: SystemTime;
+  duration?: SystemTime;
 
-  startRequested(): this is { time: SystemTime } {
+  startRequested(): this is { duration: SystemTime } {
     return this.action === Action.START;
   }
 

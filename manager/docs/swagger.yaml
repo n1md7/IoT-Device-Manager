@@ -458,7 +458,7 @@ components:
             - STOP
           example: START
           description: Action to perform
-        time:
+        duration:
           description: Time to run the system. Only required when action is START
           allOf:
             - $ref: '#/components/schemas/SystemTime'
@@ -491,22 +491,18 @@ components:
           type: string
           example: 5 * * * * *
           description: The cron expression of the schedule to START.
-        stopExpression:
-          type: string
-          example: 5 * * * * *
-          description: The cron expression of the schedule to STOP.
-        removeAfterCount:
-          type: number
-          example: -1
-          description: >-
-            The number of times the schedule will run. -1 means infinite. It
-            will be removed after the last run.
+        duration:
+          example: &ref_5
+            min: 10
+            sec: 0
+          description: Duration of the component to run.
+          allOf:
+            - $ref: '#/components/schemas/SystemTime'
       required:
         - systemId
         - name
         - startExpression
-        - stopExpression
-        - removeAfterCount
+        - duration
     UpdateScheduleRequest:
       type: object
       properties:
@@ -522,16 +518,11 @@ components:
           type: string
           example: 5 * * * * *
           description: The cron expression of the schedule to START.
-        stopExpression:
-          type: string
-          example: 5 * * * * *
-          description: The cron expression of the schedule to STOP.
-        removeAfterCount:
-          type: number
-          example: -1
-          description: >-
-            The number of times the schedule will run. -1 means infinite. It
-            will be removed after the last run.
+        duration:
+          example: *ref_5
+          description: Duration of the component to run.
+          allOf:
+            - $ref: '#/components/schemas/SystemTime'
     Component:
       type: object
       properties:
@@ -577,27 +568,33 @@ components:
           type: string
           example: 5 * * * * *
           description: The cron expression of the schedule to START.
-        stopExpression:
-          type: string
-          example: 5 * * * * *
-          description: The cron expression of the schedule to STOP.
-        removeAfterCount:
-          type: number
-          example: 5
-          description: >-
-            The number of times the schedule will run. -1 means infinite. It
-            will be removed after the last run.
+        duration:
+          example:
+            min: 10
+            sec: 0
+          description: Duration how long the system has to run.
+          allOf:
+            - $ref: '#/components/schemas/SystemTime'
         system:
           type: array
           items:
             type: object
+        createdAt:
+          format: date-time
+          type: string
+          description: The date and time the system was created.
+        updatedAt:
+          format: date-time
+          type: string
+          description: The date and time the system was updated.
       required:
         - id
         - name
         - startExpression
-        - stopExpression
-        - removeAfterCount
+        - duration
         - system
+        - createdAt
+        - updatedAt
     System:
       type: object
       properties:

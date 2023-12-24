@@ -1,6 +1,7 @@
-import { IsInt, IsString, Matches, MaxLength } from 'class-validator';
+import { IsDefined, IsInt, IsString, Matches, MaxLength, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { SystemTime } from '/src/systems/requests/properties/system-time.property';
 
 export class CreateScheduleRequest {
   @ApiProperty({
@@ -30,20 +31,15 @@ export class CreateScheduleRequest {
   startExpression!: string;
 
   @ApiProperty({
-    type: String,
-    example: '5 * * * * *',
-    description: 'The cron expression of the schedule to STOP.',
+    type: SystemTime,
+    example: {
+      min: 10,
+      sec: 0,
+    },
+    description: 'Duration of the component to run.',
   })
-  @IsString()
-  @MaxLength(32)
-  stopExpression!: string;
-
-  @ApiProperty({
-    type: Number,
-    example: -1,
-    description: 'The number of times the schedule will run. -1 means infinite. It will be removed after the last run.',
-  })
-  @Type(() => Number)
-  @Matches(/^-?([1-9]\d{0,2}|99)$/)
-  removeAfterCount!: number;
+  @ValidateNested()
+  @IsDefined()
+  @Type(() => SystemTime)
+  duration!: SystemTime;
 }

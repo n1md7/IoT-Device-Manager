@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { System } from '/src/systems/entities/system.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { SystemTime } from '/src/systems/requests/properties/system-time.property';
 
 @Entity({ name: 'Schedules' })
 export class Schedule {
@@ -29,20 +30,15 @@ export class Schedule {
   startExpression!: string;
 
   @ApiProperty({
-    type: String,
-    example: '5 * * * * *',
-    description: 'The cron expression of the schedule to STOP.',
+    type: SystemTime,
+    example: {
+      min: 10,
+      sec: 0,
+    },
+    description: 'Duration how long the system has to run.',
   })
-  @Column({ type: 'varchar', length: 32 })
-  stopExpression!: string;
-
-  @ApiProperty({
-    type: Number,
-    example: 5,
-    description: 'The number of times the schedule will run. -1 means infinite. It will be removed after the last run.',
-  })
-  @Column({ type: 'integer', default: -1 })
-  removeAfterCount!: number;
+  @Column({ type: 'simple-json' })
+  duration!: SystemTime;
 
   @ApiProperty({
     type: System,
@@ -50,4 +46,18 @@ export class Schedule {
   })
   @ManyToOne(() => System, (system) => system.schedules)
   system!: System;
+
+  @ApiProperty({
+    type: Date,
+    description: 'The date and time the system was created.',
+  })
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt!: Date;
+
+  @ApiProperty({
+    type: Date,
+    description: 'The date and time the system was updated.',
+  })
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt!: Date;
 }

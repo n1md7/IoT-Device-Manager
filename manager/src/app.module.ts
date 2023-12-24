@@ -9,7 +9,6 @@ import { CronService } from './cron/cron.service';
 import { CronModule } from './cron/cron.module';
 
 @Module({
-  imports: [SetupModule, DevicesModule, ComponentsModule, SystemsModule, SchedulerModule, FeedModule, CronModule],
-  providers: [CronService],
+  imports: [SetupModule, DevicesModule, ComponentsModule, SystemsModule, SchedulerModule, FeedModule],
 })
 export class AppModule {}

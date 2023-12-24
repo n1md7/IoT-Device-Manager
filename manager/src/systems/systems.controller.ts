@@ -64,7 +64,7 @@ export class SystemsController {
     if (payload.startRequested()) {
       this.controlService.assertSystemComponentsInUse(system);
 
-      return await this.controlService.componentsStart(system, payload.time);
+      return await this.controlService.componentsStart(system, payload.duration);
     }
 
     return await this.controlService.componentsStop(system);
