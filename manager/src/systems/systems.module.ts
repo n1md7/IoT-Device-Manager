@@ -8,9 +8,11 @@ import { Client } from '/src/systems/enum/client.enum';
 import { SwitchService } from '/src/systems/controls/switch/switch.service';
 import { SensorService } from '/src/systems/controls/sensor/sensor.service';
 import { ControlService } from './control.service';
+import { ComponentsModule } from '/src/components/components.module';
 
 @Module({
   imports: [
+    ComponentsModule,
     TypeOrmModule.forFeature([System]),
     ClientsModule.register([
       {

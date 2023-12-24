@@ -65,7 +65,7 @@ export class ComponentsService {
     }
   }
 
-  async updateById(id: number, payload: UpdateComponentRequest) {
+  async updateById(id: number, payload: Partial<UpdateComponentRequest>) {
     return await this.componentRepository.update({ id }, payload);
   }
 
@@ -75,6 +75,39 @@ export class ComponentsService {
     } catch (error) {
       throw new DatabaseException({
         message: `Error deleting component with id: "${id}"`,
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      });
+    }
+  }
+
+  async updateManyBy(components: Component[], payload: Partial<UpdateComponentRequest>) {
+    try {
+      for (const { id } of components) {
+        await this.updateById(id, payload);
+      }
+    } catch (error) {
+      throw new DatabaseException({
+        message: `Error in bulk updating components`,
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      });
+    }
+  }
+
+  async updateManyByDeviceCode(deviceCode: string, payload: Partial<UpdateComponentRequest>) {
+    try {
+      const components = await this.componentRepository.find({
+        where: {
+          device: {
+            code: deviceCode,
+          },
+        },
+      });
+      await this.updateManyBy(components, payload);
+    } catch (error) {
+      throw new DatabaseException({
+        message: `Error in bulk updating components`,
         code: HttpStatus.INTERNAL_SERVER_ERROR,
         error,
       });

@@ -23,19 +23,6 @@ paths:
                     description: Total number of devices
       tags:
         - Devices
-  /api/v1/feed/updates:
-    get:
-      operationId: FeedController_updates
-      summary: Get feed
-      description: >-
-        Get a dynamic real-time feed of system events. This endpoint is SSE
-        enabled.
-      parameters: []
-      responses:
-        '200':
-          description: ''
-      tags:
-        - Feed
   /api/v1/components:
     post:
       operationId: ComponentsController_create
@@ -133,6 +120,19 @@ paths:
         '204':
           description: Component deleted
       tags: *ref_0
+  /api/v1/feed/updates:
+    get:
+      operationId: FeedController_updates
+      summary: Get feed
+      description: >-
+        Get a dynamic real-time feed of system events. This endpoint is SSE
+        enabled.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Feed
   /api/v1/systems/create:
     post:
       operationId: SystemsController_create

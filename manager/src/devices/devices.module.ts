@@ -7,9 +7,11 @@ import { DevicesMqttController } from '/src/devices/devices-mqtt.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Device } from '/src/devices/entities/device.entity';
 import { FeedModule } from '/src/feed/feed.module';
+import { ComponentsModule } from '/src/components/components.module';
 
 @Module({
   imports: [
+    ComponentsModule,
     TypeOrmModule.forFeature([Device]),
     ClientsModule.register([
       {
