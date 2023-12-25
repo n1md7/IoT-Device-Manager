@@ -9,6 +9,7 @@ import { MessageIdInterceptor } from '/libs/interceptors/message-id/message-id.i
 import { MqttRequest } from '/libs/interceptors/request.type';
 import { FeedService } from '/src/feed/feed.service';
 import { ComponentsService } from '/src/components/components.service';
+import { DeviceStatus } from '/src/devices/enums/status.enum';
 
 @UseFilters(RpcExceptionFilter)
 @UseInterceptors(MessageIdInterceptor, MessageLoggerInterceptor, TimeoutInterceptor)
@@ -28,11 +29,12 @@ export class DevicesMqttController {
 
   @MessagePattern('home/devices/+/state')
   async handleReport(@Payload() report: StatusReportMessage, @Ctx() context: MqttRequest) {
-    // TODO:  Save data to database fo processing
-    // TODO: Invalidate cache?
+    // TODO:  Save data to database for processing
     this.feedService.push(report);
 
-    await this.componentsService.updateManyByDeviceCode(report.code, { inUse: false });
+    await this.componentsService.updateManyByDeviceCode(report.code, {
+      inUse: report.status === DeviceStatus.ON,
+    });
 
     await this.devicesService.softCreateDevice({
       code: report.code,

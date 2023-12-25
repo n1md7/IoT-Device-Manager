@@ -107,9 +107,32 @@ function reportState(status) {
   });
   console.info('Publishing message to topic: ' + publishTopic);
   console.info('Message: ' + message);
-  client.publish(publishTopic, message, { qos: 1 }, (err) => {
-    if (!err) return console.info('Published message to ' + publishTopic);
+  client.publish(
+    publishTopic,
+    message,
+    {
+      qos: 1,
+      retain: true,
+      will: {
+        topic: publishTopic,
+        payload: JSON.stringify({
+          data: {
+            status: Status.OFF,
+            code: params.code,
+            name: params.name,
+            type: 'SWITCH',
+            version: '1',
+            time: 1234,
+          },
+        }),
+        qos: 1,
+        retain: true,
+      },
+    },
+    (err) => {
+      if (!err) return console.info('Published message to ' + publishTopic);
 
-    console.error('Error occurred while publishing message to ' + publishTopic);
-  });
+      console.error('Error occurred while publishing message to ' + publishTopic);
+    },
+  );
 }
