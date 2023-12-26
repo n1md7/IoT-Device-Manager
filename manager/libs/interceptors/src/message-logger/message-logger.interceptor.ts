@@ -11,14 +11,14 @@ export class MessageLoggerInterceptor implements NestInterceptor {
     const topic = request.getTopic();
     const payload = this.getPayload(request);
 
-    request.logger.log(`Started: [${topic}] [${payload}]`);
+    request.logger.log(`Started: Event ${topic} ${payload}`);
 
     return next.handle().pipe(
       tap(() => {
-        request.logger.log(`Completed: ${topic} ${Date.now() - request.startTime}ms`);
+        request.logger.log(`Completed: Event ${topic} ${Date.now() - request.startTime}ms`);
       }),
       catchError((err) => {
-        request.logger.error(`Failed: ${topic} ${JSON.stringify(err)}`);
+        request.logger.error(`Failed: Event ${topic} ${JSON.stringify(err)}`);
 
         throw err; // rethrow error to be caught by the GenericExceptionFilter
       }),

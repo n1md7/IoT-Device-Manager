@@ -17,6 +17,11 @@ export class SystemsService implements OnModuleInit {
 
   async onModuleInit() {
     await this.mqttClient.connect();
+    await this.requestUpdates();
+  }
+
+  async requestUpdates() {
+    return this.mqttClient.emit('home/devices/+/request-update', {});
   }
 
   async create(payload: CreateSystemRequest) {

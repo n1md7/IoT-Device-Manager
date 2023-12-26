@@ -37,6 +37,8 @@ while (commands.length > 0) {
 
 const publishTopic = `home/devices/${params.code}/state`;
 const subscribeTopic = `home/devices/${params.code}/set`;
+const requestUpdateTopic = `home/devices/${params.code}/request-update`;
+const deviceManagerDisconnectedTopic = 'home/device-manager/disconnected';
 const Status = Object.freeze({
   ON: 'ON',
   OFF: 'OFF',
@@ -47,7 +49,7 @@ const port = env.MQTT_PORT;
 const username = env.MQTT_USERNAME;
 const password = env.MQTT_PASSWORD;
 const protocol = env.MQTT_PROTOCOL;
-const clientId = env.MQTT_CLIENT_ID || 'Arduino-Emulator';
+const clientId = env.MQTT_CLIENT_ID;
 
 console.info('Connecting to MQTT broker at ' + host);
 
@@ -56,10 +58,25 @@ const client = mqtt.connect({
   port,
   clientId,
   protocol,
-  keepalive: 60,
+  keepalive: 10,
   reconnectPeriod: 1000,
   connectTimeout: 10 * 1000,
   clean: false,
+  will: {
+    topic: publishTopic,
+    payload: JSON.stringify({
+      data: {
+        status: Status.OFF,
+        code: params.code,
+        name: params.name,
+        type: 'SWITCH',
+        version: '1',
+        time: 0,
+      },
+    }),
+    qos: 1,
+    retain: true,
+  },
 });
 
 try {
@@ -70,37 +87,10 @@ try {
 }
 
 console.info('Connected to MQTT broker');
-client.subscribe(
-  subscribeTopic,
-  {
-    qos: 1,
-    clean: false,
-    retain: true,
-    will: {
-      // Fallback plan to turn off device when manager is offline or connection is lost
-      topic: publishTopic,
-      payload: JSON.stringify({
-        data: {
-          status: Status.OFF,
-        },
-      }),
-      qos: 1,
-      retain: true,
-    },
-  },
-  (err) => {
-    if (!err) return console.info('Subscribed to ' + subscribeTopic);
 
-    console.error('Error occurred while subscribing to ' + subscribeTopic);
-    exit(1);
-  },
-);
-
-client.subscribe('home/device-manager/disconnected', { qos: 1 }, (err) => {
-  if (err) return console.info(err);
-});
-
-reportState(Status.ON);
+client.subscribe(subscribeTopic, { qos: 1 });
+client.subscribe(deviceManagerDisconnectedTopic, { qos: 1 });
+client.subscribe(requestUpdateTopic, { qos: 1 });
 
 let timer = null;
 client.on('message', (topic, message) => {
@@ -120,7 +110,12 @@ client.on('message', (topic, message) => {
       timer = setTimeout(() => {
         console.info('Timer callback triggered');
         reportState(Status.OFF);
+        timer = null;
       }, millis);
+    } else if (topic === requestUpdateTopic) {
+      reportState(timer ? Status.ON : Status.OFF);
+    } else if (topic === deviceManagerDisconnectedTopic) {
+      console.info('Device manager disconnected, Not further action performed. Just logged here');
     }
   } catch (error) {
     console.error(error);
@@ -138,21 +133,6 @@ function reportState(status) {
       time: 1234,
     },
   });
-  const will = {
-    topic: publishTopic,
-    payload: JSON.stringify({
-      data: {
-        status: Status.OFF,
-        code: params.code,
-        name: params.name,
-        type: 'SWITCH',
-        version: '1',
-        time: 1234,
-      },
-    }),
-    qos: 1,
-    retain: true,
-  };
   console.info('Publishing message to topic: ' + publishTopic);
   console.info('Message: ' + message);
   client.publish(
@@ -161,7 +141,6 @@ function reportState(status) {
     {
       qos: 1,
       retain: true,
-      will,
     },
     (err) => {
       if (!err) return console.info('Published message to ' + publishTopic);
