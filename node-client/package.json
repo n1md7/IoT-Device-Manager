@@ -5,7 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node --env-file .env.development --watch index.js",
+    "dev": "node --watch .",
+    "arduino:client": "node . -n Arduino -c D0003",
     "start": "node --title 'MQTT Node client' index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --write **/*.js"
@@ -30,6 +31,7 @@
     "prettier": "2.8.8"
   },
   "dependencies": {
+    "dotenv": "^16.3.1",
     "mqtt": "^4.3.7"
   }
 }

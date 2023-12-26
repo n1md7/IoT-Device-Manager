@@ -20,6 +20,13 @@ import { ComponentsModule } from '/src/components/components.module';
         transport: Transport.MQTT,
         options: {
           clientId: 'Systems-Module',
+          clean: true,
+          will: {
+            topic: 'home/device-manager/disconnected',
+            payload: '{"data": "Systems-Module"}',
+            qos: 1,
+            retain: true,
+          },
         },
       },
     ]),

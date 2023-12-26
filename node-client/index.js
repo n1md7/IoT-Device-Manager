@@ -1,6 +1,10 @@
 import mqtt from 'mqtt';
 import { once } from 'events';
 import { argv, env, exit } from 'node:process';
+import { config } from 'dotenv';
+import { start } from 'node:repl';
+
+config({ path: '.env.development' });
 
 /**
  * MQTT Client for Node.js, mocks Arduino device
@@ -54,8 +58,8 @@ const client = mqtt.connect({
   protocol,
   keepalive: 60,
   reconnectPeriod: 1000,
-  connectTimeout: 30 * 1000,
-  clean: true,
+  connectTimeout: 10 * 1000,
+  clean: false,
 });
 
 try {
@@ -66,11 +70,34 @@ try {
 }
 
 console.info('Connected to MQTT broker');
-client.subscribe(subscribeTopic, { qos: 1 }, (err) => {
-  if (!err) return console.info('Subscribed to ' + subscribeTopic);
+client.subscribe(
+  subscribeTopic,
+  {
+    qos: 1,
+    clean: false,
+    retain: true,
+    will: {
+      // Fallback plan to turn off device when manager is offline or connection is lost
+      topic: publishTopic,
+      payload: JSON.stringify({
+        data: {
+          status: Status.OFF,
+        },
+      }),
+      qos: 1,
+      retain: true,
+    },
+  },
+  (err) => {
+    if (!err) return console.info('Subscribed to ' + subscribeTopic);
 
-  console.error('Error occurred while subscribing to ' + subscribeTopic);
-  exit(1);
+    console.error('Error occurred while subscribing to ' + subscribeTopic);
+    exit(1);
+  },
+);
+
+client.subscribe('home/device-manager/disconnected', { qos: 1 }, (err) => {
+  if (err) return console.info(err);
 });
 
 reportState(Status.ON);
@@ -80,17 +107,23 @@ client.on('message', (topic, message) => {
   console.info(`Received message from Topic: ` + topic);
   console.info('Message: ' + message.toString());
 
-  const payload = JSON.parse(message.toString());
-  console.info('Parsed: ' + message.toString());
-  const { status, time } = payload.data;
-  const millis = (time.min * 60 + +time.sec) * 1000;
-  if (topic === subscribeTopic) {
-    console.info('Setting up timer...');
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => {
-      console.info('Timer callback triggered');
-      reportState(Status.OFF);
-    }, millis);
+  try {
+    const payload = JSON.parse(message.toString());
+    console.info('Parsed: ' + message.toString());
+    if (topic === subscribeTopic) {
+      const { status, time } = payload.data;
+      reportState(status); // Report new state back to broker
+      if (status === Status.OFF) return console.info('Timer cancelled');
+      const millis = (time.min * 60 + +time.sec) * 1000;
+      console.info('Setting up timer...');
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        console.info('Timer callback triggered');
+        reportState(Status.OFF);
+      }, millis);
+    }
+  } catch (error) {
+    console.error(error);
   }
 });
 
@@ -105,6 +138,21 @@ function reportState(status) {
       time: 1234,
     },
   });
+  const will = {
+    topic: publishTopic,
+    payload: JSON.stringify({
+      data: {
+        status: Status.OFF,
+        code: params.code,
+        name: params.name,
+        type: 'SWITCH',
+        version: '1',
+        time: 1234,
+      },
+    }),
+    qos: 1,
+    retain: true,
+  };
   console.info('Publishing message to topic: ' + publishTopic);
   console.info('Message: ' + message);
   client.publish(
@@ -113,21 +161,7 @@ function reportState(status) {
     {
       qos: 1,
       retain: true,
-      will: {
-        topic: publishTopic,
-        payload: JSON.stringify({
-          data: {
-            status: Status.OFF,
-            code: params.code,
-            name: params.name,
-            type: 'SWITCH',
-            version: '1',
-            time: 1234,
-          },
-        }),
-        qos: 1,
-        retain: true,
-      },
+      will,
     },
     (err) => {
       if (!err) return console.info('Published message to ' + publishTopic);
@@ -136,3 +170,15 @@ function reportState(status) {
     },
   );
 }
+
+const local = start();
+local.useColors = true;
+local.context.client = client;
+local.context.reportState = reportState;
+local.context.on = () => reportState(Status.ON);
+local.context.off = () => reportState(Status.OFF);
+local.context.Status = Status;
+local.on('exit', () => {
+  console.log('exiting repl');
+  exit(0);
+});
