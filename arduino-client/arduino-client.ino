@@ -63,7 +63,28 @@ void reconnect() {
 
   Serial.println("Attempting MQTT connection...");
 
-  if (client.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS)) {
+  DynamicJsonDocument payload(128);
+
+  payload["status"] = timer.isActive() ? ON : OFF;
+  payload["code"] = DEVICE_CODE;
+  payload["name"] = DEVICE_NAME;
+  payload["type"] = DEVICE_TYPE;
+  payload["version"] = DEVICE_VERSION;
+  payload["time"] = timer.getValue();  // Seconds
+
+  char MQTT_PAYLOAD[128];
+  serializeJson(payload, MQTT_PAYLOAD);
+
+  if (client.connect(
+        MQTT_CLIENT_ID,  // Client ID
+        MQTT_USER,       // Username
+        MQTT_PASS,       // Password
+        PUBLISH_TOPIC,   // Will topic
+        MQTT_QOS,        // Will QoS
+        MQTT_RETAIN,     // Will retain
+        MQTT_PAYLOAD,    // Will payload
+        false            // Clean session
+        )) {
     Serial.println("Connected to MQTT broker!");
     Serial.print("Subscribing to topic: ");
     Serial.println(SUBSCRIBE_TOPIC);
@@ -72,6 +93,7 @@ void reconnect() {
     lastReconnectAttempt = 0;                     // Reset the reconnect attempt counter
     PING_INTERVAL = REPORT_INTERVAL;              // Reset the retry delay
     connectingLight.off();                        // Turn off when connected
+    publishCurrentState();
   } else {
     Serial.print("Failed to connect, rc=");
     Serial.print(client.state());
@@ -84,8 +106,6 @@ void reconnect() {
     connectingLight.on();  // Turn on when trying to reconnect
   }
 }
-
-unsigned long lastPublishedAt = 0;
 
 void publishCurrentState() {
   DynamicJsonDocument payload(128);
@@ -101,14 +121,6 @@ void publishCurrentState() {
   serializeJson(payload, buffer);
 
   client.publish(PUBLISH_TOPIC, buffer);
-
-  lastPublishedAt = millis();
-}
-
-void evaluateIntervalForMQTT() {
-  if (millis() - lastPublishedAt < PING_INTERVAL) return;
-
-  publishCurrentState();
 }
 
 void setup() {
@@ -151,6 +163,4 @@ void loop() {
   // Only sets the relay state when the timer state changes
   // Otherwise, it skips the evaluation internally, to avoid unnecessary relay state change
   externalRelay.setState(timer.isActive());
-
-  evaluateIntervalForMQTT();
 }
