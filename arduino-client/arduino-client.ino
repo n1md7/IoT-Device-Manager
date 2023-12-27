@@ -4,7 +4,7 @@
 #include <AbleButtons.h>
 #include <PubSubClient.h>
 
-#include "Configuration.mega.h"
+#include "Configuration.h"
 #include "Component.h"
 #include "Timer.h"
 
@@ -13,7 +13,7 @@
 
 using Button = AblePullupClickerButton;
 
-const Component connectingLight(CON_LED_PIN, HIGH, LOW);
+const Component connectingLight(CON_LED_PIN);
 const Component externalRelay(RELAY_PIN);
 const Button startButton(BUTTON_PIN);
 const Timer timer(TIMER_INIT_VALUE);
@@ -143,7 +143,8 @@ void loop() {
 
   // Button click event
   if (startButton.resetClicked()) {
-    timer.toggle();         // Start or Pause the timer on button click (no reset)
+    timer.reset();          // Reset the timer, start over on button click
+    timer.toggle();         // Toggle the timer state
     publishCurrentState();  // Notify MQTT broker of the change
   }
 

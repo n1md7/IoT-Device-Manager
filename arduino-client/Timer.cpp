@@ -32,7 +32,6 @@ void Timer::toggle() {
 }
 
 void Timer::reset() {
-  status = TimerStatus::OFF;
   remainingTime = initialTime;
 }
 
