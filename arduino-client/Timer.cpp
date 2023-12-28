@@ -54,7 +54,8 @@ void Timer::handle() {
     }
 
     if (remainingTime <= Timer::MIN_TIME) {
-      return reset();
+      stop();
+      reset();
     }
   }
 }

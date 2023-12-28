@@ -46,8 +46,10 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 
   const bool turnOn = strcmp(status, ON) == 0;
 
-  if (!turnOn) timer.reset();
-  else {
+  if (!turnOn) {
+    timer.stop();
+    timer.reset();
+  } else {
     timer.set(minutes, seconds);
     timer.start();
   }
