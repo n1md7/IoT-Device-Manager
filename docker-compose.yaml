@@ -3,7 +3,7 @@ version: "3.8"
 services:
   device-manager:
     build:
-      context: ./device-manager
+      context: ./manager
       dockerfile: Dockerfile
       args:
         - PORT=8000
@@ -22,6 +22,7 @@ services:
       - mqtt-server
     ports:
       - "8000:8000"
+    restart: unless-stopped
   mysql:
     image: mysql:8.2
     container_name: mysql-database
@@ -34,6 +35,7 @@ services:
       MYSQL_DATABASE: device_manager
       MYSQL_USER: device_manager
       MYSQL_PASSWORD: device_manager
+    restart: unless-stopped
   mqtt-server:
     image: eclipse-mosquitto:2.0
     container_name: mqtt-server
@@ -42,3 +44,4 @@ services:
     ports:
       - "1883:1883" # Default MQTT port
       - "9001:9001" # Default MQTT port for websockets
+    restart: unless-stopped
