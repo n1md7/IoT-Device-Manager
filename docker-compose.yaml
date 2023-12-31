@@ -1,6 +1,39 @@
 version: "3.8"
 
 services:
+  device-manager:
+    build:
+      context: ./device-manager
+      dockerfile: Dockerfile
+      args:
+        - PORT=8000
+        - BUILD_ENV=production
+    container_name: device-manager
+    environment:
+      NODE_ENV: production
+      PORT: 8000
+      ORIGIN: http://localhost:3000
+      MYSQL_HOST: mysql
+      MYSQL_USER: device_manager
+      MYSQL_PASSWORD: device_manager
+      MYSQL_DATABASE: device_manager
+      MQTT_URL: mqtt://mqtt-server:1883
+    depends_on:
+      - mqtt-server
+    ports:
+      - "8000:8000"
+  mysql:
+    image: mysql:8.2
+    container_name: mysql-database
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: device_manager
+      MYSQL_USER: device_manager
+      MYSQL_PASSWORD: device_manager
   mqtt-server:
     image: eclipse-mosquitto:2.0
     container_name: mqtt-server
@@ -9,10 +42,3 @@ services:
     ports:
       - "1883:1883" # Default MQTT port
       - "9001:9001" # Default MQTT port for websockets
-  mqtt-web-client:
-    image: emqx/mqttx-web
-    container_name: mqtt-web-client
-    depends_on:
-      - mqtt-server
-    ports:
-      - "8080:80"
