@@ -33,16 +33,9 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 
   // NestJS MQTT message emitter adds "data" property
   const char *status = decoded["data"]["status"];
-  const int minutes = decoded["data"]["time"]["min"];
-  const int seconds = decoded["data"]["time"]["sec"];
 
   Serial.print("Status: ");
   Serial.print(status);
-  Serial.print("; Time: ");
-  Serial.print(minutes);
-  Serial.print(":");
-  Serial.print(seconds);
-  Serial.println();
 
   const bool turnOn = strcmp(status, ON) == 0;
 
@@ -50,6 +43,15 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
     timer.stop();
     timer.reset();
   } else {
+    const int minutes = decoded["data"]["time"]["min"];
+    const int seconds = decoded["data"]["time"]["sec"];
+
+    Serial.print("; Time: ");
+    Serial.print(minutes);
+    Serial.print(":");
+    Serial.print(seconds);
+    Serial.println();
+
     timer.set(minutes, seconds);
     timer.start();
   }
@@ -58,7 +60,7 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 }
 
 void reconnect() {
-  static unsigned long lastReconnectAttempt = 0;
+  unsigned long lastReconnectAttempt = 0;
   unsigned long currentMillis = millis();
 
   if (currentMillis - lastReconnectAttempt < PING_INTERVAL) return;
