@@ -57,6 +57,8 @@ const client = mqtt.connect({
   host,
   port,
   clientId,
+  username,
+  password,
   protocol,
   keepalive: 10,
   reconnectPeriod: 1000,
