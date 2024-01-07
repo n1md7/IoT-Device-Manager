@@ -13,17 +13,21 @@ services:
       NODE_ENV: production
       PORT: 8000
       ORIGIN: http://localhost:3000
-      MYSQL_HOST: mysql
-      MYSQL_USER: device_manager
-      MYSQL_PASSWORD: device_manager
-      MYSQL_DATABASE: device_manager
-      MQTT_URL: mqtt://mqtt-server:1883
+      MQTT_HOST: mqtt-server
+      DB_USER: device_manager
+      DB_PASS: device_manager
+      DB_NAME: device_manager
+      DB_HOST: mysql-database
+      DB_PORT: 3306
     depends_on:
       - mqtt-server
+      - mysql-database
     ports:
       - "8000:8000"
     restart: unless-stopped
-  mysql:
+    networks:
+      - IoT
+  mysql-database:
     image: mysql:8.2
     container_name: mysql-database
     ports:
@@ -36,6 +40,8 @@ services:
       MYSQL_USER: device_manager
       MYSQL_PASSWORD: device_manager
     restart: unless-stopped
+    networks:
+      - IoT
   mqtt-server:
     image: eclipse-mosquitto:2.0
     container_name: mqtt-server
@@ -45,3 +51,8 @@ services:
       - "1883:1883" # Default MQTT port
       - "9001:9001" # Default MQTT port for websockets
     restart: unless-stopped
+    networks:
+      - IoT
+networks:
+  IoT:
+    driver: bridge

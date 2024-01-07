@@ -11,7 +11,10 @@ export const Configuration = () => ({
   mqtt: {
     transport: Transport.MQTT,
     options: {
-      url: env.MQTT_URL,
+      host: env.MQTT_HOST,
+      port: parseInt(env.MQTT_PORT!, 10),
+      username: env.MQTT_USER,
+      password: env.MQTT_PASS,
       clientId: 'IoT-Manager',
       subscribeOptions: {
         /**
