@@ -22,6 +22,8 @@ EthernetClient ethClient;
 PubSubClient client;
 
 unsigned long PING_INTERVAL = REPORT_INTERVAL;
+unsigned long lastReconnectAttempt = 0;
+
 
 void onMessage(char *topic, byte *payload, unsigned int length) {
   Serial.print("Message arrived [ ");
@@ -60,7 +62,6 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 }
 
 void reconnect() {
-  unsigned long lastReconnectAttempt = 0;
   unsigned long currentMillis = millis();
 
   if (currentMillis - lastReconnectAttempt < PING_INTERVAL) return;
