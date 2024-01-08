@@ -5,7 +5,6 @@ import { ControlService } from '/src/systems/control.service';
 import { plainToInstance } from 'class-transformer';
 import { CronJob } from 'cron';
 import { ReportService } from '/libs/setup/report/report.service';
-import { ComponentsService } from '/src/components/components.service';
 
 @Injectable()
 export class CronService {
