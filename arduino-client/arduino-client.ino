@@ -4,6 +4,7 @@
 #include <AbleButtons.h>
 #include <PubSubClient.h>
 
+#include "ReconnectionManager.h"
 #include "Configuration.h"
 #include "Component.h"
 #include "Timer.h"
@@ -18,12 +19,10 @@ const Component externalRelay(RELAY_PIN);
 const Button startButton(BUTTON_PIN);
 const Timer timer(TIMER_INIT_VALUE);
 
+ReconnectionManager connectionManager(RECONNECT_TIMEOUT);
+
 EthernetClient ethClient;
 PubSubClient client;
-
-unsigned long PING_INTERVAL = REPORT_INTERVAL;
-unsigned long lastReconnectAttempt = 0;
-
 
 void onMessage(char *topic, byte *payload, unsigned int length) {
   Serial.print("Message arrived [ ");
@@ -61,11 +60,7 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
   publishCurrentState();
 }
 
-void reconnect() {
-  unsigned long currentMillis = millis();
-
-  if (currentMillis - lastReconnectAttempt < PING_INTERVAL) return;
-
+void mqttBrokerConnect() {
   Serial.println("Attempting MQTT connection...");
 
   DynamicJsonDocument payload(128);
@@ -95,18 +90,12 @@ void reconnect() {
     Serial.println(SUBSCRIBE_TOPIC);
 
     client.subscribe(SUBSCRIBE_TOPIC, MQTT_QOS);  // QoS 1, at least once delivery
-    lastReconnectAttempt = 0;                     // Reset the reconnect attempt counter
-    PING_INTERVAL = REPORT_INTERVAL;              // Reset the retry delay
     connectingLight.off();                        // Turn off when connected
     publishCurrentState();
   } else {
     Serial.print("Failed to connect, rc=");
     Serial.print(client.state());
-    Serial.println(" Retrying in " + String(PING_INTERVAL / 1000) + " seconds");
-
-    // Use exponential backoff for retry delay
-    lastReconnectAttempt = currentMillis;
-    PING_INTERVAL = min(2 * PING_INTERVAL, MAX_PING_TIMEOUT);  // Maximum retry delay of 30 seconds
+    Serial.println(" Retrying in " + String(RECONNECT_TIMEOUT / 1000) + " seconds");
 
     connectingLight.on();  // Turn on when trying to reconnect
   }
@@ -125,7 +114,7 @@ void publishCurrentState() {
   char buffer[128];
   serializeJson(payload, buffer);
 
-  client.publish(PUBLISH_TOPIC, buffer);
+  client.publish(PUBLISH_TOPIC, buffer, true);
 }
 
 void setup() {
@@ -152,7 +141,12 @@ void setup() {
 }
 
 void loop() {
-  if (!client.connected()) reconnect();
+
+  if (!client.connected() && connectionManager.shouldReconnect()) {
+    Serial.println("Attempting reconnection...");
+    mqttBrokerConnect();
+    connectionManager.updateTimestamp();
+  }
 
   client.loop();
   timer.handle();
