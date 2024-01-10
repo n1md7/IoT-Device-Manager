@@ -52,8 +52,9 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 
     if (timer.set(minutes, seconds)) {
       timer.start();
+      Serial.println("Timer started");
     } else {
-      Serial.println("Invalid time value");
+      Serial.println("Error: Invalid time value");
     }
   } else {
     timer.stop();
@@ -66,17 +67,8 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 void mqttBrokerConnect() {
   Serial.println("Attempting MQTT connection...");
 
-  DynamicJsonDocument payload(128);
-
-  payload["status"] = timer.isActive() ? ON : OFF;
-  payload["code"] = DEVICE_CODE;
-  payload["name"] = DEVICE_NAME;
-  payload["type"] = DEVICE_TYPE;
-  payload["version"] = DEVICE_VERSION;
-  payload["time"] = timer.getValue();  // Seconds
-
   char MQTT_PAYLOAD[128];
-  serializeJson(payload, MQTT_PAYLOAD);
+  serializeJson(forgePayload(timer), MQTT_PAYLOAD);
 
   const bool connected = mqttClient.connect(
     MQTT_CLIENT_ID,     // Client ID
@@ -95,7 +87,7 @@ void mqttBrokerConnect() {
     Serial.println(SUBSCRIBE_TOPIC);
 
     mqttClient.subscribe(SUBSCRIBE_TOPIC, MQTT_QOS);  // QoS 1, at least once delivery
-    networkErrorLed.off();                        // Turn off when connected
+    networkErrorLed.off();                            // Turn off when connected
     publishCurrentState();
   } else {
     Serial.print("Failed to connect, rc=");
@@ -107,19 +99,26 @@ void mqttBrokerConnect() {
 }
 
 void publishCurrentState() {
+  char MQTT_PAYLOAD[128];
+  serializeJson(forgePayload(timer), MQTT_PAYLOAD);
+
+  Serial.print("Publishing current state: ");
+  Serial.println(MQTT_PAYLOAD);
+
+  mqttClient.publish(PUBLISH_TOPIC, MQTT_PAYLOAD, MQTT_RETAIN);
+}
+
+DynamicJsonDocument forgePayload(Timer currentTimer) {
   DynamicJsonDocument payload(128);
 
-  payload["status"] = timer.isActive() ? ON : OFF;
+  payload["status"] = currentTimer.isActive() ? ON : OFF;
   payload["code"] = DEVICE_CODE;
   payload["name"] = DEVICE_NAME;
   payload["type"] = DEVICE_TYPE;
   payload["version"] = DEVICE_VERSION;
-  payload["time"] = timer.getValue();  // Seconds
+  payload["time"] = currentTimer.getValue();  // Seconds
 
-  char buffer[128];
-  serializeJson(payload, buffer);
-
-  mqttClient.publish(PUBLISH_TOPIC, buffer, true);
+  return payload;
 }
 
 void setup() {
