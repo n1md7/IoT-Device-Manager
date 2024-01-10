@@ -60,17 +60,19 @@ void Timer::handle() {
   }
 }
 
-void Timer::set(unsigned long seconds) {
+bool Timer::set(unsigned long seconds) {
   if (seconds > Timer::MAX_TIME || seconds < Timer::MIN_TIME) {
-    return;
+    return false;
   }
 
   remainingTime = seconds;
+
+  return true;
 }
 
-void Timer::set(int minutes, int seconds) {
+bool Timer::set(int minutes, int seconds) {
   // Convert to seconds
-  set((unsigned long)minutes * 60 + seconds);
+  return set((unsigned long)minutes * 60 + seconds);
 }
 
 unsigned long Timer::getValue() {

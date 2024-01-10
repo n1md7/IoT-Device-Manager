@@ -14,15 +14,15 @@
 
 using Button = AblePullupClickerButton;
 
-const Component connectingLight(CON_LED_PIN);
+const Component networkErrorLed(CON_LED_PIN);
 const Component externalRelay(RELAY_PIN);
 const Button startButton(BUTTON_PIN);
 const Timer timer(TIMER_INIT_VALUE);
 
 ReconnectionManager connectionManager(RECONNECT_TIMEOUT);
 
-EthernetClient ethClient;
-PubSubClient client;
+EthernetClient ethernetClient;
+PubSubClient mqttClient;
 
 void onMessage(char *topic, byte *payload, unsigned int length) {
   Serial.print("Message arrived [ ");
@@ -40,10 +40,7 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 
   const bool turnOn = strcmp(status, ON) == 0;
 
-  if (!turnOn) {
-    timer.stop();
-    timer.reset();
-  } else {
+  if (turnOn) {
     const int minutes = decoded["data"]["time"]["min"];
     const int seconds = decoded["data"]["time"]["sec"];
 
@@ -53,8 +50,14 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
     Serial.print(seconds);
     Serial.println();
 
-    timer.set(minutes, seconds);
-    timer.start();
+    if (timer.set(minutes, seconds)) {
+      timer.start();
+    } else {
+      Serial.println("Invalid time value");
+    }
+  } else {
+    timer.stop();
+    timer.reset();
   }
 
   publishCurrentState();
@@ -75,29 +78,31 @@ void mqttBrokerConnect() {
   char MQTT_PAYLOAD[128];
   serializeJson(payload, MQTT_PAYLOAD);
 
-  if (client.connect(
-        MQTT_CLIENT_ID,  // Client ID
-        MQTT_USER,       // Username
-        MQTT_PASS,       // Password
-        PUBLISH_TOPIC,   // Will topic
-        MQTT_QOS,        // Will QoS
-        MQTT_RETAIN,     // Will retain
-        MQTT_PAYLOAD,    // Will payload
-        false            // Clean session
-        )) {
+  const bool connected = mqttClient.connect(
+    MQTT_CLIENT_ID,     // Client ID
+    MQTT_USER,          // Username
+    MQTT_PASS,          // Password
+    PUBLISH_TOPIC,      // Will topic
+    MQTT_QOS,           // Will QoS
+    MQTT_RETAIN,        // Will retain
+    MQTT_PAYLOAD,       // Will payload
+    MQTT_CLEAN_SESSION  // Clean session
+  );
+
+  if (connected) {
     Serial.println("Connected to MQTT broker!");
     Serial.print("Subscribing to topic: ");
     Serial.println(SUBSCRIBE_TOPIC);
 
-    client.subscribe(SUBSCRIBE_TOPIC, MQTT_QOS);  // QoS 1, at least once delivery
-    connectingLight.off();                        // Turn off when connected
+    mqttClient.subscribe(SUBSCRIBE_TOPIC, MQTT_QOS);  // QoS 1, at least once delivery
+    networkErrorLed.off();                        // Turn off when connected
     publishCurrentState();
   } else {
     Serial.print("Failed to connect, rc=");
-    Serial.print(client.state());
+    Serial.print(mqttClient.state());
     Serial.println(" Retrying in " + String(RECONNECT_TIMEOUT / 1000) + " seconds");
 
-    connectingLight.on();  // Turn on when trying to reconnect
+    networkErrorLed.on();  // Turn on when trying to reconnect
   }
 }
 
@@ -114,7 +119,7 @@ void publishCurrentState() {
   char buffer[128];
   serializeJson(payload, buffer);
 
-  client.publish(PUBLISH_TOPIC, buffer, true);
+  mqttClient.publish(PUBLISH_TOPIC, buffer, true);
 }
 
 void setup() {
@@ -128,27 +133,27 @@ void setup() {
   Serial.print("Default gateway is: ");
   Serial.println(Ethernet.gatewayIP());
 
-  client.setServer(MQTT_HOST, MQTT_PORT);
-  client.setClient(ethClient);
-  client.setCallback(onMessage);
+  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
+  mqttClient.setClient(ethernetClient);
+  mqttClient.setCallback(onMessage);
 
   startButton.begin();
 
   // Turn on when starting up
   // Indicates that device is trying to connect to MQTT broker
   // Once connected, it will turn off
-  connectingLight.on();
+  networkErrorLed.on();
+  mqttBrokerConnect();
 }
 
 void loop() {
 
-  if (!client.connected() && connectionManager.shouldReconnect()) {
-    Serial.println("Attempting reconnection...");
+  if (!mqttClient.connected() && connectionManager.shouldReconnect()) {
     mqttBrokerConnect();
     connectionManager.updateTimestamp();
   }
 
-  client.loop();
+  mqttClient.loop();
   timer.handle();
   startButton.handle();
 

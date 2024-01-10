@@ -16,8 +16,8 @@ public:
 
   void toggle();
 
-  void set(unsigned long seconds);
-  void set(int minutes, int seconds);
+  bool set(unsigned long seconds);
+  bool set(int minutes, int seconds);
 
   unsigned long getValue();
 
