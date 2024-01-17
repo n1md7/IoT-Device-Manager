@@ -36,6 +36,8 @@ export class DevicesMqttController {
       inUse: report.status === DeviceStatus.ON,
     });
 
+    // Todo Update inUse to false after duration
+
     await this.devicesService.softCreateDevice({
       code: report.code,
       type: report.type,

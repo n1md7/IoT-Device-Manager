@@ -29,7 +29,7 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
   Serial.print(topic);
   Serial.println(" ] ");
 
-  DynamicJsonDocument decoded(64);
+  DynamicJsonDocument decoded(256);
   deserializeJson(decoded, payload);
 
   // NestJS MQTT message emitter adds "data" property
@@ -68,7 +68,7 @@ void mqttBrokerConnect() {
   Serial.println("Attempting MQTT connection...");
 
   char MQTT_PAYLOAD[128];
-  serializeJson(forgePayload(timer), MQTT_PAYLOAD);
+  serializeJson(forgePayload(), MQTT_PAYLOAD);
 
   const bool connected = mqttClient.connect(
     MQTT_CLIENT_ID,     // Client ID
@@ -100,23 +100,25 @@ void mqttBrokerConnect() {
 
 void publishCurrentState() {
   char MQTT_PAYLOAD[128];
-  serializeJson(forgePayload(timer), MQTT_PAYLOAD);
+  serializeJson(forgePayload(), MQTT_PAYLOAD);
 
+  Serial.println("Serializing done.");
   Serial.print("Publishing current state: ");
   Serial.println(MQTT_PAYLOAD);
 
   mqttClient.publish(PUBLISH_TOPIC, MQTT_PAYLOAD, MQTT_RETAIN);
+  Serial.println("Published");
 }
 
-DynamicJsonDocument forgePayload(Timer currentTimer) {
-  DynamicJsonDocument payload(128);
+DynamicJsonDocument forgePayload() {
+  DynamicJsonDocument payload(256);
 
-  payload["status"] = currentTimer.isActive() ? ON : OFF;
+  payload["status"] = timer.isActive() ? ON : OFF;
   payload["code"] = DEVICE_CODE;
   payload["name"] = DEVICE_NAME;
   payload["type"] = DEVICE_TYPE;
   payload["version"] = DEVICE_VERSION;
-  payload["time"] = currentTimer.getValue();  // Seconds
+  payload["time"] = timer.getValue();  // Seconds
 
   return payload;
 }
@@ -135,6 +137,7 @@ void setup() {
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   mqttClient.setClient(ethernetClient);
   mqttClient.setCallback(onMessage);
+  mqttClient.setKeepAlive(60); // Seconds
 
   startButton.begin();
 
@@ -146,15 +149,15 @@ void setup() {
 }
 
 void loop() {
+  mqttClient.loop();
+  timer.handle();
+  startButton.handle();
 
   if (!mqttClient.connected() && connectionManager.shouldReconnect()) {
     mqttBrokerConnect();
     connectionManager.updateTimestamp();
   }
 
-  mqttClient.loop();
-  timer.handle();
-  startButton.handle();
 
   // Button click event
   if (startButton.resetClicked()) {
