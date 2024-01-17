@@ -19,6 +19,8 @@ const Component externalRelay(RELAY_PIN);
 const Button startButton(BUTTON_PIN);
 const Timer timer(TIMER_INIT_VALUE);
 
+bool timerState = timer.isActive();
+
 ReconnectionManager connectionManager(RECONNECT_TIMEOUT);
 
 EthernetClient ethernetClient;
@@ -159,7 +161,6 @@ void loop() {
     connectionManager.updateTimestamp();
   }
 
-
   // Button click event
   if (startButton.resetClicked()) {
     timer.reset();          // Reset the timer, start over on button click
@@ -170,4 +171,9 @@ void loop() {
   // Only sets the relay state when the timer state changes
   // Otherwise, it skips the evaluation internally, to avoid unnecessary relay state change
   externalRelay.setState(timer.isActive());
+  // Report only when state changes
+  if (timerState != timer.isActive()) {
+    timerState = timer.isActive();
+    publishCurrentState();
+  }
 }
