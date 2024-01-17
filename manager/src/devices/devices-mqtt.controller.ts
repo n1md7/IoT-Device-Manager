@@ -1,6 +1,6 @@
 import { Controller, Inject, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
-import { Ctx, MessagePattern, Payload } from '@nestjs/microservices';
-import { StatusReportMessage } from '/src/devices/messages/status-report.message';
+import { Ctx, MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import { StatusReportMessage, StatusReportPayload } from '/src/devices/messages/status-report.message';
 import { RpcExceptionFilter } from '/libs/filters';
 import { DevicesService } from '/src/devices/devices.service';
 import { MessageLoggerInterceptor } from '/libs/interceptors/message-logger/message-logger.interceptor';
@@ -10,6 +10,7 @@ import { MqttRequest } from '/libs/interceptors/request.type';
 import { FeedService } from '/src/feed/feed.service';
 import { ComponentsService } from '/src/components/components.service';
 import { DeviceStatus } from '/src/devices/enums/status.enum';
+import { validateSync } from 'class-validator';
 
 @UseFilters(RpcExceptionFilter)
 @UseInterceptors(MessageIdInterceptor, MessageLoggerInterceptor, TimeoutInterceptor)
@@ -28,8 +29,12 @@ export class DevicesMqttController {
   ) {}
 
   @MessagePattern('home/devices/+/state')
-  async handleReport(@Payload() report: StatusReportMessage, @Ctx() context: MqttRequest) {
+  async handleReport(@Payload() payload: StatusReportPayload, @Ctx() context: MqttRequest) {
     // TODO:  Save data to database for processing
+    const report = StatusReportMessage.fromPayload(payload);
+    const error = validateSync(report);
+    if (error.length > 0) throw new RpcException(error);
+
     this.feedService.push(report);
 
     await this.componentsService.updateManyByDeviceCode(report.code, {

@@ -376,9 +376,6 @@ components:
       description: Enter JWT auth token
       in: header
   schemas:
-    StatusReportMessage:
-      type: object
-      properties: {}
     CreateComponentRequest:
       type: object
       properties:

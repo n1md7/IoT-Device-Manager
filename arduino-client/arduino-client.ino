@@ -67,18 +67,16 @@ void onMessage(char *topic, byte *payload, unsigned int length) {
 void mqttBrokerConnect() {
   Serial.println("Attempting MQTT connection...");
 
-  char MQTT_PAYLOAD[128];
-  serializeJson(forgePayload(), MQTT_PAYLOAD);
-
+  const String MQTT_PAYLOAD = forgeCsvPayload();
   const bool connected = mqttClient.connect(
-    MQTT_CLIENT_ID,     // Client ID
-    MQTT_USER,          // Username
-    MQTT_PASS,          // Password
-    PUBLISH_TOPIC,      // Will topic
-    MQTT_QOS,           // Will QoS
-    MQTT_RETAIN,        // Will retain
-    MQTT_PAYLOAD,       // Will payload
-    MQTT_CLEAN_SESSION  // Clean session
+    MQTT_CLIENT_ID,        // Client ID
+    MQTT_USER,             // Username
+    MQTT_PASS,             // Password
+    PUBLISH_TOPIC,         // Will topic
+    MQTT_QOS,              // Will QoS
+    MQTT_RETAIN,           // Will retain
+    MQTT_PAYLOAD.c_str(),  // Will payload
+    MQTT_CLEAN_SESSION     // Clean session
   );
 
   if (connected) {
@@ -99,28 +97,31 @@ void mqttBrokerConnect() {
 }
 
 void publishCurrentState() {
-  char MQTT_PAYLOAD[128];
-  serializeJson(forgePayload(), MQTT_PAYLOAD);
+  const String CSV_PAYLOAD = forgeCsvPayload();
 
-  Serial.println("Serializing done.");
-  Serial.print("Publishing current state: ");
-  Serial.println(MQTT_PAYLOAD);
+  Serial.println("Publishing current state...");
+  Serial.println(CSV_PAYLOAD);
 
-  mqttClient.publish(PUBLISH_TOPIC, MQTT_PAYLOAD, MQTT_RETAIN);
-  Serial.println("Published");
+  mqttClient.publish(PUBLISH_TOPIC, CSV_PAYLOAD.c_str(), MQTT_RETAIN);
+  Serial.println("Published!");
 }
 
-DynamicJsonDocument forgePayload() {
-  DynamicJsonDocument payload(256);
+String forgeCsvPayload() {
+  String csvPayload;
 
-  payload["status"] = timer.isActive() ? ON : OFF;
-  payload["code"] = DEVICE_CODE;
-  payload["name"] = DEVICE_NAME;
-  payload["type"] = DEVICE_TYPE;
-  payload["version"] = DEVICE_VERSION;
-  payload["time"] = timer.getValue();  // Seconds
+  csvPayload += timer.isActive() ? "ON" : "OFF";
+  csvPayload += ",";
+  csvPayload += DEVICE_CODE;
+  csvPayload += ",";
+  csvPayload += DEVICE_TYPE;
+  csvPayload += ",";
+  csvPayload += DEVICE_NAME;
+  csvPayload += ",";
+  csvPayload += DEVICE_VERSION;
+  csvPayload += ",";
+  csvPayload += timer.getValue();
 
-  return payload;
+  return csvPayload;
 }
 
 void setup() {
@@ -137,7 +138,7 @@ void setup() {
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   mqttClient.setClient(ethernetClient);
   mqttClient.setCallback(onMessage);
-  mqttClient.setKeepAlive(60); // Seconds
+  mqttClient.setKeepAlive(60);  // Seconds
 
   startButton.begin();
 
