@@ -4,6 +4,7 @@ import { DeviceStatus } from '/src/devices/enums/status.enum';
 import { AbstractControl } from '/src/systems/controls/abstract/control.abstract';
 import { SystemTime } from '/src/systems/requests/properties/system-time.property';
 import { DeviceOffMessage, DeviceOnMessage } from '/src/devices/types/device-control-message.type';
+import { MqttRecordBuilder } from '@nestjs/microservices';
 
 @Injectable()
 export class SwitchService extends AbstractControl {
@@ -13,7 +14,7 @@ export class SwitchService extends AbstractControl {
       status: DeviceStatus.ON,
       time,
     };
-    this.mqttClient.emit(topic, payload);
+    this.mqttClient.emit(topic, new MqttRecordBuilder(payload).setQoS(1).setRetain(true).build());
   }
 
   override async stop(component: Component): Promise<void> {
@@ -21,6 +22,7 @@ export class SwitchService extends AbstractControl {
     const payload: DeviceOffMessage = {
       status: DeviceStatus.OFF,
     };
-    this.mqttClient.emit(topic, payload);
+
+    this.mqttClient.emit(topic, new MqttRecordBuilder(payload).setQoS(1).setRetain(true));
   }
 }
