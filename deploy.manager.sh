@@ -4,6 +4,7 @@
 git pull origin master
 
 # 2. Install dependencies
+cd /home/pi/services/IoT-Device-Manager/manager
 nvm use
 npm install
 
