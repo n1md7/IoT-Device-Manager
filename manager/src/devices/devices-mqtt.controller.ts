@@ -40,10 +40,6 @@ export class DevicesMqttController {
 
     this.feedService.push(report);
 
-    if (report.status === DeviceStatus.ON) {
-      this.clearRetainedMessage(`home/devices/${report.code}/set`);
-    }
-
     await this.componentsService.updateManyByDeviceCode(report.code, {
       inUse: report.status === DeviceStatus.ON,
     });
@@ -54,9 +50,5 @@ export class DevicesMqttController {
       name: report.name,
       version: report.version,
     });
-  }
-
-  private clearRetainedMessage(topic: string) {
-    return this.client.emit(topic, new MqttRecordBuilder().setQoS(1).setRetain(true).build());
   }
 }

@@ -14,7 +14,7 @@ export class SwitchService extends AbstractControl {
       status: DeviceStatus.ON,
       time,
     };
-    this.mqttClient.emit(topic, new MqttRecordBuilder(payload).setQoS(1).setRetain(true).build());
+    this.mqttClient.emit(topic, new MqttRecordBuilder(payload).setQoS(1).setRetain(false).build());
   }
 
   override async stop(component: Component): Promise<void> {
@@ -23,6 +23,6 @@ export class SwitchService extends AbstractControl {
       status: DeviceStatus.OFF,
     };
 
-    this.mqttClient.emit(topic, new MqttRecordBuilder(payload).setQoS(1).setRetain(true));
+    this.mqttClient.emit(topic, new MqttRecordBuilder(payload).setQoS(1).setRetain(false));
   }
 }
