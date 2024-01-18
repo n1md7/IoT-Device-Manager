@@ -13,3 +13,4 @@ npm run build
 
 # 4. Restart server
 pm2 restart all
+pm2 save
