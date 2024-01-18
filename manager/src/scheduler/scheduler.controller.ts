@@ -5,6 +5,7 @@ import { UpdateScheduleRequest } from '/src/scheduler/requests/update-schedule.r
 import { Schedule } from '/src/scheduler/entities/scheduler.entity';
 import { CreateScheduleRequest } from '/src/scheduler/requests/create-schedule.request';
 import { SystemsService } from '/src/systems/systems.service';
+import { CronService } from '/src/cron/cron.service';
 
 @ApiTags('Scheduler')
 @Controller('scheduler')
@@ -13,6 +14,7 @@ export class SchedulerController {
   constructor(
     @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
     @Inject(SystemsService) private readonly systemsService: SystemsService,
+    @Inject(CronService) private readonly cronService: CronService,
   ) {}
 
   @Post()
@@ -61,12 +63,17 @@ export class SchedulerController {
 
   @Patch(':id')
   async updateById(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateScheduleRequest) {
-    return this.schedulerService.update(+id, payload);
+    return await this.schedulerService.update(+id, payload);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete schedule', description: 'Delete a schedule by id' })
   async removeById(@Param('id', ParseIntPipe) id: number) {
-    return this.schedulerService.removeById(id);
+    const scheduler = await this.schedulerService.findOne(id);
+
+    return {
+      deleteResult: await this.schedulerService.removeById(id),
+      cronUnregistered: this.cronService.removeCronJob(scheduler.name),
+    };
   }
 }

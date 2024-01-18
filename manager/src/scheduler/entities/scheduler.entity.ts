@@ -18,7 +18,7 @@ export class Schedule {
     example: 'Timer',
     description: 'The name of the schedule.',
   })
-  @Column({ type: 'varchar', length: 32 })
+  @Column({ type: 'varchar', length: 32, unique: true })
   name!: string;
 
   @ApiProperty({

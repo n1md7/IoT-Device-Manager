@@ -20,6 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (exception instanceof DatabaseException) {
       status.code = exception.code || 500;
       status.message = exception.message;
+      status.details = JSON.stringify(exception.details);
     }
 
     return response.status(status.code).json({

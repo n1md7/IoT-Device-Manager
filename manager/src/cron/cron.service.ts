@@ -19,7 +19,7 @@ export class CronService {
   async addCronJob(schedule: Schedule) {
     const cron = new CronJob(schedule.startExpression, this.componentStart.bind(this, schedule));
 
-    this.logger.log(`Added cron job for schedule "${schedule.name}"`);
+    this.logger.log(`Added cron job for schedule "${schedule.name}, ${schedule.startExpression}"`);
 
     this.crons.set(schedule.name, cron);
 
@@ -38,6 +38,7 @@ export class CronService {
       this.logger.verbose(`Starting system "${schedule.system.name}" for ${duration.toString()}`);
       await this.controlService.componentsStart(schedule.system, duration);
     } catch (error) {
+      this.logger.error(error);
       this.reportService.sentryReport(error);
     }
   }
