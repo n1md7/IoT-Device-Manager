@@ -4,3 +4,5 @@ log
 .env.development
 node_modules
 mysql-data
+
+manager/iot

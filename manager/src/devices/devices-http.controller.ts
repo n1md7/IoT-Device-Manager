@@ -4,7 +4,6 @@ import { DevicesService } from '/src/devices/devices.service';
 import { ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { Device } from '/src/devices/entities/device.entity';
 import { ClientMqtt } from '@nestjs/microservices';
-import { FeedService } from '/src/feed/feed.service';
 
 @ApiTags('Devices')
 @Controller('devices')
