@@ -18,7 +18,7 @@ export class Device {
     example: DeviceType.SWITCH,
     description: 'The type of the device. This will be used to determine the configuration of the device',
   })
-  @Column({ type: 'enum', enum: DeviceType })
+  @Column({ type: 'varchar' })
   type!: DeviceType;
 
   @ApiProperty({
@@ -61,7 +61,7 @@ export class Device {
     example: '2021-01-01T00:00:00.000Z',
     description: 'The date(ISO 8601) when the device was registered.',
   })
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'datetime' })
   createdAt!: Date;
 
   @ApiProperty({
@@ -69,6 +69,6 @@ export class Device {
     example: '2021-01-01T00:00:00.000Z',
     description: 'The date(ISO 8601) when the device was last updated.',
   })
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'datetime' })
   updatedAt!: Date;
 }

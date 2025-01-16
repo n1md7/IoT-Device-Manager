@@ -51,13 +51,13 @@ export class Schedule {
     type: Date,
     description: 'The date and time the system was created.',
   })
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'datetime' })
   createdAt!: Date;
 
   @ApiProperty({
     type: Date,
     description: 'The date and time the system was updated.',
   })
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'datetime' })
   updatedAt!: Date;
 }

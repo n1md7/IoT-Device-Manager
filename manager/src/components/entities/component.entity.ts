@@ -67,7 +67,7 @@ export class Component {
     example: '2021-01-01T00:00:00.000Z',
     description: 'The date(ISO 8601) when the component was created.',
   })
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'datetime' })
   createdAt!: Date;
 
   @ApiProperty({
@@ -75,6 +75,6 @@ export class Component {
     example: '2021-01-01T00:00:00.000Z',
     description: 'The date(ISO 8601) when the component was last updated.',
   })
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'datetime' })
   updatedAt!: Date;
 }
