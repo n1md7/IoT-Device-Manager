@@ -26,6 +26,15 @@ docker compose up
 docker compose up mqtt-server
 ```
 
+Run backend service
+
+```bash
+cd ./server
+nvm use
+npm install
+npm run start:dev
+```
+
 #### Arduino
 
 Refer to the [README.md](arduino-client/README.md) in the `arduino-client` directory.

@@ -8,7 +8,7 @@ services:
       args:
         - PORT=8000
         - BUILD_ENV=production
-    container_name: device-manager
+    container_name: iot-device-manager
     environment:
       NODE_ENV: production
       PORT: 8000
@@ -21,30 +21,30 @@ services:
       DB_PORT: 3306
     depends_on:
       - mqtt-server
-      - mysql-database
+#      - mysql-database
     ports:
       - "8000:8000"
     restart: unless-stopped
     networks:
       - IoT
-  mysql-database:
-    image: mysql:8.2
-    container_name: mysql-database
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./mysql-data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: device_manager
-      MYSQL_USER: device_manager
-      MYSQL_PASSWORD: device_manager
-    restart: unless-stopped
-    networks:
-      - IoT
+#  mysql-database:
+#    image: mysql:8.2
+#    container_name: mysql-database
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - ./mysql-data:/var/lib/mysql
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: device_manager
+#      MYSQL_USER: device_manager
+#      MYSQL_PASSWORD: device_manager
+#    restart: unless-stopped
+#    networks:
+#      - IoT
   mqtt-server:
     image: eclipse-mosquitto:2.0
-    container_name: mqtt-server
+    container_name: iot-mqtt-server
     volumes:
       - ./config/:/mosquitto/config/
     ports:
