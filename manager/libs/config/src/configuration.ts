@@ -48,4 +48,3 @@ export const Configuration = () => ({
   } satisfies TypeOrmModuleOptions,
 });
 export type Configuration = ReturnType<typeof Configuration>;
-
