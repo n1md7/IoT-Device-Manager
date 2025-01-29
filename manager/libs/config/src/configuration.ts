@@ -2,6 +2,7 @@ import { MqttOptions, Transport } from '@nestjs/microservices';
 import { env, cwd } from 'node:process';
 import { join } from 'node:path';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Env } from '/libs/env';
 
 export const Configuration = () => ({
   http: {
@@ -41,9 +42,10 @@ export const Configuration = () => ({
     type: 'sqlite',
     database: env.DB_NAME,
     synchronize: true,
-    logging: true,
+    logging: Env.isDev,
     autoLoadEntities: true,
     entities: [join(cwd(), 'dist', '**', '*.entity.js')],
   } satisfies TypeOrmModuleOptions,
 });
 export type Configuration = ReturnType<typeof Configuration>;
+
