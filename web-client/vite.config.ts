@@ -9,6 +9,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
 
   return {
+    preview: {
+      port: 3000,
+      host: '0.0.0.0',
+    },
     publicDir: 'public',
     envPrefix: 'VITE_',
     outDir: 'dist',
