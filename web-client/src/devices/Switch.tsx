@@ -1,31 +1,32 @@
-import { OffType, OnType, useControl } from '/src/components/hooks/useControl';
-import { code, isOn } from '/src/stores/pump.store';
+import { useControl } from '/src/components/hooks/useControl';
+import { isOn, setIsOn } from '/src/stores/pump.store';
 import { useDelayFn } from '/src/common/hooks/useDelayFn';
 import { createEffect, createSignal, Show } from 'solid-js';
 import { On } from '/src/components/status/On';
 import { Off } from '/src/components/status/Off';
 import { useTime } from '/src/components/hooks/useTime';
 import { Timer } from '/src/components/Timer';
+import { DeviceType } from '/src/types/device.type';
+import { ComponentType } from '/src/types/component.type';
 
-const onPayload: OnType = {
-  code: code,
-  status: 'ON',
-  minutes: 10,
-  seconds: 30,
-};
-const offPayload: OffType = {
-  code: 'D0001',
-  status: 'OFF',
+type Props = {
+  systemId: number;
+  device: DeviceType;
+  component: ComponentType;
 };
 
-export function WaterPump() {
+export function Switch({ systemId, component, device }: Props) {
   const [min, setMin] = createSignal(15);
   const [sec, setSec] = createSignal(0);
 
-  const { sendRequest } = useControl();
+  if (component.inUse) {
+    setIsOn(true);
+  }
+
+  const { sendStopRequest, sendStartRequest } = useControl();
   const time = useTime();
   const send = useDelayFn(() => {
-    sendRequest(isOn() ? offPayload : onPayload);
+    isOn() ? sendStopRequest(systemId) : sendStartRequest(systemId, min(), sec());
   }, 1000); // Throttle to 1 second, avoid rapid clicks
 
   const handleSec = (e: Event) => {
@@ -42,15 +43,10 @@ export function WaterPump() {
     };
   });
 
-  createEffect(() => {
-    onPayload.minutes = min();
-    onPayload.seconds = sec();
-  }, [min, sec]);
-
   return (
     <div class="device">
       <h2>
-        Water Pump is:{' '}
+        {device.name} is:{' '}
         <Show when={isOn()} fallback={<Off />}>
           <On />
         </Show>

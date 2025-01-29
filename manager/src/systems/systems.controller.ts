@@ -1,17 +1,4 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { SystemsService } from './systems.service';
 import {
   ApiBadRequestResponse,

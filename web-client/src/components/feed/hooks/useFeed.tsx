@@ -1,5 +1,4 @@
-import { createStore } from 'solid-js/store';
-import { createEffect } from 'solid-js';
+import { createEffect, createSignal } from 'solid-js';
 import * as pump from '/src/stores/pump.store';
 import * as sprinkler from '/src/stores/sprinkler.store';
 
@@ -11,8 +10,8 @@ export type FeedItem = {
 };
 
 export function useFeed() {
-  const [feed, setFeed] = createStore<FeedItem[]>([]);
-  const source = new EventSource('/api/v1/timer/updates');
+  const [feed, setFeed] = createSignal<FeedItem[]>([]);
+  const source = new EventSource('/api/v1/feed/updates');
 
   createEffect(() => {
     source.onmessage = event => {
