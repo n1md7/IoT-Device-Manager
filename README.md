@@ -15,32 +15,44 @@ Dependencies:
 Clone the repository:
 
 ```bash
-git clone https://github.com/n1md7/mqtt-client.git IoT-device-manager
+  git clone https://github.com/n1md7/mqtt-client.git IoT-device-manager
 ```
-
-Run MQTT broker:
+ 
+Run **MQTT** broker:
 
 ```bash
-docker compose up
-# If you don't want WebBased UI, run:
-docker compose up mqtt-server
+  docker compose up
+  # If you don't want WebBased UI, run:
+  docker compose up mqtt-server
 ```
 
-Run backend service
+Run **backend** service
 
 ```bash
-cd ./server
-nvm use
-npm install
-npm run start:dev
+  cd ./manager
+  nvm use
+  npm install
+  npm run start:dev
+```
+
+Run **node** client
+```bash
+  cd ./node-client
+  # D0001 sample device
+  node index.js -c D0001
+```
+Run **frontend** service
+
+```bash
+  cd ./web-client
+  npm install
+  npm run dev
 ```
 
 #### Arduino
-
 Refer to the [README.md](arduino-client/README.md) in the `arduino-client` directory.
 
 #### Device manager
-
 Refer to the [README.md](node-client/README.md) in the `node-client` directory.
 
 
