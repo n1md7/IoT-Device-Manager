@@ -42,7 +42,7 @@ export const Configuration = () => ({
     type: 'sqlite',
     database: env.DB_NAME,
     synchronize: true,
-    logging: Env.isDev,
+    logging: ['error', 'migration'],
     autoLoadEntities: true,
     entities: [join(cwd(), 'dist', '**', '*.entity.js')],
   } satisfies TypeOrmModuleOptions,

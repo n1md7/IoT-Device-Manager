@@ -1,0 +1,37 @@
+{
+  "name": "node-mqtt-client",
+  "version": "1.0.0",
+  "description": "NodeJS MQTT client",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch ",
+    "arduino:client": "node  -n Arduino -c D0003",
+    "start": "node --title 'MQTT Node client' index.js",
+    "test": "echo \"Error: no ../../manager/test specified\" && exit 1",
+    "prettier": "node_modules/.bin/prettier --write **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n1md7/mqtt-client.git"
+  },
+  "keywords": [
+    "mqtt",
+    "iot",
+    "arduino",
+    "event-broker"
+  ],
+  "author": "n1md7",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/n1md7/mqtt-client/issues"
+  },
+  "homepage": "https://github.com/n1md7/mqtt-client#readme",
+  "devDependencies": {
+    "prettier": "2.8.8"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "mqtt": "^4.3.7"
+  }
+}
