@@ -17,7 +17,7 @@ Clone the repository:
 ```bash
   git clone https://github.com/n1md7/mqtt-client.git IoT-device-manager
 ```
- 
+
 Run **MQTT** broker:
 
 ```bash
@@ -50,10 +50,10 @@ Run **frontend** service
 ```
 
 #### Arduino
-Refer to the [README.md](arduino-client/README.md) in the `arduino-client` directory.
+Refer to the [README.md](clients/iot/SWITCH/README.md) in the `arduino-client` directory.
 
 #### Device manager
-Refer to the [README.md](node-client/README.md) in the `node-client` directory.
+Refer to the [README.md](clients/node-client/README.md) in the `node-client` directory.
 
 
 ![image](https://github.com/n1md7/IoT-Device-Manager/assets/6734058/959ec731-b737-42c7-8736-18180dfe1587)
