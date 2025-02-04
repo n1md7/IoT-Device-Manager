@@ -3,29 +3,29 @@
 To install dependencies:
 
 ```bash
-bun install
+  bun install
 ```
 
 Run IoT emulators:
 
 Do only first time:
 ```bash
-cp .env.example .env.development
+  cp .env.example .env.development
 ```
 
 Run pump 01
 ```bash
-bun run pump01
+  bun run pump01
 ```
 
 Run pump 02
 ```bash
-bun run pump02
+  bun run pump02
 ```
 
 Run pump 03
 ```bash
-bun run pump03
+  bun run pump03
 ```
 
 
