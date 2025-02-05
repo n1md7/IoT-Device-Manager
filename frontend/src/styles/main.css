@@ -1,3 +1,15 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@theme {
+    --color-dark: #101010;
+    --color-light-dark: #242424;
+    --color-orange: #FF6600;
+    --color-green: #7CEB1A;
+    --color-purple: #6B34CB;
+    --color-light-purle: #C3A0FF;
+    --color-light-gray: #C9C9C9;
+}
+
+.nav-item {
+    @apply size-12 bg-cover;
+}
