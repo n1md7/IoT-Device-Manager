@@ -7,9 +7,91 @@
     --color-green: #7CEB1A;
     --color-purple: #6B34CB;
     --color-light-purle: #C3A0FF;
-    --color-light-gray: #C9C9C9;
+    --color-light-gray: #e7e7e7;
+}
+
+@font-face {
+    font-family: 'Akatab-Black';
+    src: url('fonts/Akatab-Black.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Akatab-Bold';
+    src: url('fonts/Akatab-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Akatab-ExtraBold';
+    src: url('fonts/Akatab-ExtraBold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Akatab-Medium';
+    src: url('fonts/Akatab-Medium.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Akatab-Regular';
+    src: url('fonts/Akatab-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Akatab-SemiBold';
+    src: url('fonts/Akatab-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Michroma';
+    src: url('fonts/Michroma-Regular.ttf') format('truetype');
+}
+
+/*TO DO: for enhancement, please make a block for defaults*/
+@layer components {
+    font-family: 'Akatab-Black', sans-serif;
+    h1 {
+        @apply text-sm sm:text-[30px];
+    }
+}
+
+.page-main {
+    font-family: 'Akatab-Regular', sans-serif;
+
 }
 
 .nav-item {
     @apply size-12 bg-cover;
+}
+
+.page-header {
+   @apply text-center h-full text-light-gray py-4 md:py-6;
+    font-family: 'Michroma', sans-serif;
+}
+
+.page-body {
+    @apply h-full text-white rounded-lg;
+    border: 1px solid #242424;
+    box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+}
+
+.page-bottom {
+    @apply flex flex-row h-full justify-between text-center pt-4 sm:w-90 sm:m-auto;
+    .button {
+        @apply w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2;
+        font-family: 'Akatab-Bold', sans-serif;
+    }
+}
+
+.welcome-container {
+    @apply flex flex-col text-center justify-center px-20 min-h-full w-full;
+
+    .icon {
+        @apply size-25 bg-cover mx-auto;
+    }
+    .header {
+        @apply text-2xl;
+    }
+    .text {
+        @apply mb-15;
+    }
 }
