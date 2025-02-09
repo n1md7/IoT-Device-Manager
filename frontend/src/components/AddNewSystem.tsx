@@ -1,7 +1,15 @@
+import { useState } from 'react';
 
 const AddNewSystem = () => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="button bg-purple text-white">Add System</div>
+    <>
+      <button className="button bg-purple text-white" onClick={() => setIsOpen(true)}>Add System</button>
+
+      {isOpen && (
+        <div className='h-full bg-amber-50'>Test</div>
+      )}
+    </>
   )
 }
 

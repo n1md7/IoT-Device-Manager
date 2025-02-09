@@ -8,6 +8,8 @@
     --color-purple: #6B34CB;
     --color-light-purle: #C3A0FF;
     --color-light-gray: #e7e7e7;
+    --color-modal-bg: #000000cc;
+    --color-input: #151515;
 }
 
 @font-face {
@@ -46,16 +48,12 @@
 }
 
 /*TO DO: for enhancement, please make a block for defaults*/
-@layer components {
-    font-family: 'Akatab-Black', sans-serif;
-    h1 {
-        @apply text-sm sm:text-[30px];
-    }
+body {
+    font-family: 'Akatab-Regular', sans-serif;
 }
 
 .page-main {
     font-family: 'Akatab-Regular', sans-serif;
-
 }
 
 .nav-item {
@@ -94,4 +92,32 @@
     .text {
         @apply mb-15;
     }
+}
+
+.modal-wrapper {
+    @apply flex justify-center items-center h-screen bg-modal-bg absolute inset-0 p-8;
+}
+
+.modal-container {
+    @apply flex flex-col text-white rounded-lg w-full md:w-100 h-auto bg-dark p-8;
+    border: 1px solid #242424;
+    box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
+    h2 {
+        @apply text-2xl pb-8;
+        font-family: 'Michroma', sans-serif;
+    }
+    .input-group {
+        @apply flex items-center rounded-md bg-input pl-3 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:outline-light-dark;
+        .input-field {
+            @apply bg-input block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
+        }
+    }
+    .button-container {
+        @apply flex flex-row h-full justify-between text-center pt-4 sm:w-auto sm:m-auto;
+        .button {
+            @apply min-w-25 sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2;
+            font-family: 'Akatab-Bold', sans-serif;
+        }
+    }
+
 }

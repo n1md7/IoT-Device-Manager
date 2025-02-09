@@ -1,7 +1,7 @@
 
 const AddNewComponent = () => {
   return (
-    <div className="button bg-light-gray text-purple">Add Component</div>
+    <button className="button bg-light-gray text-purple">Add Component</button>
   )
 }
 

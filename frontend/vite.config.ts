@@ -9,5 +9,6 @@ export default defineConfig({
   server: {
     port: 4096,
     host: '0.0.0.0',
+    open: true
   },
 })
