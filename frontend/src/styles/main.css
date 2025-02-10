@@ -107,10 +107,26 @@ body {
         font-family: 'Michroma', sans-serif;
     }
     .input-group {
-        @apply flex items-center rounded-md bg-input pl-3 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:outline-light-dark;
+        @apply flex w-full items-center rounded-lg bg-input outline-gray-300 focus-within:outline-2 focus-within:outline-purple;
+        box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
+        border: 1px solid #242424;
+
         .input-field {
-            @apply bg-input block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
+            @apply bg-input rounded-lg block min-w-0 grow py-1.5 pr-3 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
         }
+        .select-field {
+            @apply col-start-1 row-start-1 w-full min-w-full rounded-lg bg-input py-1.5 pr-8 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
+            box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
+            border: 0 solid #242424;
+        }
+        select:invalid {
+            @apply placeholder:text-gray-600 text-gray-600;
+        }
+    }
+    .button-add-system {
+        @apply  bg-purple text-white text-2xl rounded-sm h-9 w-9 mt-3 flex items-center justify-center;
+        box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
+        border: 0 solid #242424;
     }
     .button-container {
         @apply flex flex-row h-full justify-between text-center pt-4 sm:w-auto sm:m-auto;
