@@ -6,7 +6,7 @@ import { useState } from 'react';
 function App() {
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
-  const [isToggled, setToggleOn] = useState(false);
+  const [isToggled, setIsToggled] = useState(false);
 
   return (
     <>
@@ -36,7 +36,7 @@ function App() {
       <div className={`${isNewSystemOpen ? "block" : "hidden"}`}>
         <div className="modal-wrapper">
           <div className='modal-container'>
-            <h2>Create New System</h2>
+            <h2>Create System</h2>
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="mb-5">
                 <label htmlFor="systemName" className="block">System name:</label>
@@ -72,7 +72,7 @@ function App() {
       <div className={`${isNewComponentOpen ? "block" : "hidden"}`}>
         <div className="modal-wrapper">
           <div className='modal-container'>
-            <h2>Create New Component</h2>
+            <h2>Create Component</h2>
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="mb-5">
                 <label htmlFor="componentName" className="block">Component name:</label>
@@ -97,7 +97,7 @@ function App() {
                 <div className="mt-2 grid grid-cols-1">
                   <div className="input-group">
                     <select id="selectedDevice" name="selectedDevice" autoComplete="" className="select-field" required>
-                      <option value="" disabled selected>Please select...</option>
+                      <option value="" disabled selected>please select...</option>
                       <option value="">Router</option>
                     </select>
                   </div>
@@ -110,7 +110,7 @@ function App() {
                     <div className="input-group">
                       <select id="selectedSystem" name="selectedSystem" autoComplete="" className="select-field"
                               required>
-                        <option value="" disabled selected>Please select...</option>
+                        <option value="" disabled selected>please select...</option>
                         <option value="">Water system</option>
                       </select>
                     </div>
@@ -126,7 +126,7 @@ function App() {
                   className={`toggle ${isToggled ? 'bg-purple' : 'bg-gray-700'}`}>
                   <input type="checkbox" name="shareable" id="shareable"
                          checked={isToggled}
-                         onChange={() => setToggleOn(!isToggled)}
+                         onChange={() => setIsToggled(!isToggled)}
                          className="hidden" />
                   <div className={`toggle-icon ${isToggled ? 'translate-x-6' : ''}`}></div>
                   <span className="sr-only">Toggle switch</span>
