@@ -115,25 +115,35 @@ body {
             @apply bg-input rounded-lg block min-w-0 grow py-1.5 pr-3 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
         }
         .select-field {
-            @apply col-start-1 row-start-1 w-full min-w-full rounded-lg bg-input py-1.5 pr-8 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
-            box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
-            border: 0 solid #242424;
+            @apply col-start-1 row-start-1 w-full min-w-full cursor-pointer rounded-lg bg-input py-1.5 pr-8 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
         }
         select:invalid {
             @apply placeholder:text-gray-600 text-gray-600;
         }
+        option:disabled {
+            @apply text-dark bg-gray-100;
+        }
+    }
+    .toggle {
+        @apply w-14 h-8 flex items-center rounded-full p-1 cursor-pointer transition-all;
+        .toggle-icon {
+            @apply w-6 h-6 bg-white rounded-full shadow-md transform transition-all;
+        }
+    }
+    .select-with-btn-group {
+        @apply flex flex-row justify-between items-center w-full;
     }
     .button-add-system {
-        @apply  bg-purple text-white text-2xl rounded-sm h-9 w-9 mt-3 flex items-center justify-center;
+        @apply bg-purple cursor-pointer text-white text-2xl rounded-sm h-9 w-9 mt-3 flex items-center justify-center;
         box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
         border: 0 solid #242424;
     }
     .button-container {
         @apply flex flex-row h-full justify-between text-center pt-4 sm:w-auto sm:m-auto;
-        .button {
-            @apply min-w-25 sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2;
-            font-family: 'Akatab-Bold', sans-serif;
-        }
     }
+}
 
+.button {
+    @apply min-w-25 cursor-pointer sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2 cursor-pointer;
+    font-family: 'Akatab-Bold', sans-serif;
 }

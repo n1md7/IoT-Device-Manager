@@ -6,6 +6,7 @@ import { useState } from 'react';
 function App() {
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
+  const [isToggled, setToggleOn] = useState(false);
 
   return (
     <>
@@ -102,10 +103,10 @@ function App() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-row justify-between items-center">
-                <div className="mb-5">
+              <div className="select-with-btn-group">
+                <div className="mb-5 w-full">
                   <label htmlFor="selectedSystem" className="block">Select system:</label>
-                  <div className="mt-2 grid grid-cols-1">
+                  <div className="mt-2">
                     <div className="input-group">
                       <select id="selectedSystem" name="selectedSystem" autoComplete="" className="select-field"
                               required>
@@ -115,10 +116,22 @@ function App() {
                     </div>
                   </div>
                 </div>
-                <div
-                  className="button-add-system">+
+                <div className="flex justify-end w-1/6">
+                  <div className="button-add-system">+
+                  </div>
                 </div>
-
+              </div>
+              <div className="mb-5 flex items-center">
+                <label
+                  className={`toggle ${isToggled ? 'bg-purple' : 'bg-gray-700'}`}>
+                  <input type="checkbox" name="shareable" id="shareable"
+                         checked={isToggled}
+                         onChange={() => setToggleOn(!isToggled)}
+                         className="hidden" />
+                  <div className={`toggle-icon ${isToggled ? 'translate-x-6' : ''}`}></div>
+                  <span className="sr-only">Toggle switch</span>
+                </label>
+                <label htmlFor="shareable" className="block ml-3">Make component shareable</label>
               </div>
               <div>
 
