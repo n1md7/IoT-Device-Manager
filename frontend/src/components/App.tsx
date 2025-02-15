@@ -1,6 +1,6 @@
 import NavBar from './components/NavBar.tsx';
 import PageHeader from './components/PageHeader.tsx';
-import Welcome from './components/Welcome.tsx';
+import SystemControlView from './components/SystemControlView.tsx'
 import { useState } from 'react';
 
 function App() {
@@ -10,28 +10,29 @@ function App() {
 
   return (
     <>
-      <div className="@container/main page-main h-dvh p-5 flex flex-col bg-dark">
-        <div className="@container/nav">
+      <div className="container-main page-main">
+        <div className="container-nav">
           <NavBar />
         </div>
-        <div className="@container/header">
+        <div className="container-header">
           <PageHeader />
         </div>
-        <div className="@container/body h-dvh">
+        <div className="container-body h-dvh">
           <div className='page-body'>
-            <Welcome />
+            <SystemControlView />
+            {/*<Welcome />*/}
           </div>
         </div>
-        <div className="@container/toolbar h-15">
+        <div className="container-toolbar h-15">
           <div className="page-bottom">
             <button className="button bg-purple text-white" onClick={() => setIsNewSystemOpen(true)}>Add System</button>
             <button className="button bg-light-gray text-purple" onClick={() => setIsNewComponentOpen(true)}>Add
               Component
             </button>
-
           </div>
         </div>
       </div>
+
     {/*adding new system*/}
       <div className={`${isNewSystemOpen ? "block" : "hidden"}`}>
         <div className="modal-wrapper">
@@ -145,7 +146,6 @@ function App() {
           </div>
         </div>
       </div>
-
     </>
   )
 }
