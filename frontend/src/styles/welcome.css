@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+.welcome-container {
+    @apply flex flex-col text-center justify-center px-20 min-h-full w-full text-white rounded-lg;
+    border: 1px solid #242424;
+    box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+
+    .icon {
+        @apply size-25 bg-cover mx-auto;
+    }
+    .header {
+        @apply text-2xl;
+    }
+    .text {
+        @apply mb-15;
+    }
+}

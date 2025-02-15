@@ -1,6 +1,6 @@
-import NavBar from './components/NavBar.tsx';
-import PageHeader from './components/PageHeader.tsx';
-import SystemControlView from './components/SystemControlView.tsx'
+import NavBar from './NavBar.tsx';
+import PageHeader from './PageHeader.tsx';
+import SystemControlView from './SystemControlView.tsx'
 import { useState } from 'react';
 
 function App() {
@@ -42,8 +42,7 @@ function App() {
               <div className="mb-5">
                 <label htmlFor="systemName" className="block">System name:</label>
                 <div className="mt-2">
-                  <div
-                    className="input-group">
+                  <div className="input-group">
                     <input type="text" name="systemName" id="systemName" className="input-field"
                            placeholder="e.g. water system" />
                   </div>

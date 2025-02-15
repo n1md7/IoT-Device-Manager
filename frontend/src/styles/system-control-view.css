@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+.control-view-container {
+    @apply h-auto flex flex-col sm:flex-row text-white rounded-lg gap-5 md:gap-7 lg:gap-8 justify-center flex-wrap;
+    overflow: auto;
+
+    .card-item {
+        @apply h-auto w-full text-white rounded-lg p-5 sm:w-1/2 md:w-1/3 lg:w-1/4;
+        border: 1px solid #242424;
+        box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
+
+        .card-header {
+            @apply flex flex-col justify-between pb-5;
+            border-bottom: 1px solid #242424;
+        }
+
+        .card-body {
+            @apply flex flex-col justify-between py-5;
+        }
+
+        .card-tool {
+            @apply flex flex-row justify-between w-full;
+
+            .control-button {
+                @apply w-30 cursor-pointer sm:w-40 p-3 text-sm bg-orange text-dark w-full rounded-md font-bold;
+            }
+            .edit-button {
+                @apply rounded-md bg-light-gray bg-no-repeat h-12 w-12 flex items-center justify-center;
+                background-image: url("edit.svg");
+                background-position: center;
+            }
+        }
+    }
+
+
+    .system-details {
+        @apply flex flex-row justify-between text-lg text-orange font-bold;
+    }
+}
