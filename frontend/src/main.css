@@ -57,16 +57,11 @@ body {
     font-family: 'Akatab-Regular', sans-serif;
 }
 
-.page-main {
-    @apply flex flex-col h-dvh bg-dark h-dvh p-5 flex flex-col bg-dark;
-    font-family: 'Akatab-Regular', sans-serif;
+.nav-item {
+    @apply size-12 bg-cover;
 }
 
 .container-nav {
-    @apply flex-none;
-}
-
-.container-header {
     @apply flex-none;
 }
 
@@ -77,8 +72,10 @@ body {
 .container-body {
     @apply flex-1 overflow-auto;
 }
-.nav-item {
-    @apply size-12 bg-cover;
+
+.page-main {
+    @apply flex flex-col h-dvh bg-dark p-5;
+    font-family: 'Akatab-Regular', sans-serif;
 }
 
 .page-body {
@@ -94,6 +91,49 @@ body {
 }
 
 .button {
-    @apply min-w-25 cursor-pointer sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2;
+    @apply min-w-25 cursor-pointer sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-md gap-2;
     font-family: 'Akatab-Bold', sans-serif;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--color-light-dark);
+    outline: none;
+    transition: background 0.15s ease-in-out;
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: var(--color-purple);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    top: -2px;
+    position: relative;
+}
+
+/* Track Color Before Thumb */
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 10px;
+    border-radius: 5px;
+    background-color: var(--color-light-dark);
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background-color: var(--color-purple);
+}
+
+input[type="range"]::-moz-range-progress {
+    background: var(--color-purple);
 }
