@@ -10,6 +10,9 @@ const files = {
   script: new Resource('script.mjs'),
   style: new Resource('style.css'),
   favicon: new Resource('favicon.ico'),
+  name: 'name.txt',
+  title: 'title.txt',
+  version: 'version.txt',
 };
 const bytes = {
   index: new Uint8Array(files.index),
@@ -33,6 +36,13 @@ const responses = {
   favicon: {
     headers: ['Content-type', 'image/x-icon', 'Content-Length', bytes.favicon.length],
     body: bytes.favicon,
+  },
+  apiError: (message) => {
+    return {
+      headers: ['Content-type', 'application/json'],
+      body: `{"message": "${message}"}`,
+      status: 400,
+    };
   },
 };
 const API = '/api';
@@ -65,7 +75,13 @@ const routes = {
   '/favicon.ico': () => responses.favicon,
   [API]: {
     '/on': (ctx) => {
-      const seconds = toSeconds(ctx.params.min || 0, ctx.params.sec || 10);
+      const { min = 0, sec = 0 } = ctx.params;
+      if (!min || !sec) {
+        return responses.apiError(`Invalid query parameters. 'min' and 'sec' are required!`);
+      }
+      const seconds = toSeconds(min, sec || 10);
+      if (seconds < 10) return responses.apiError(`You must set a duration of at least 10 seconds!`);
+
       timer.start(seconds);
 
       return {

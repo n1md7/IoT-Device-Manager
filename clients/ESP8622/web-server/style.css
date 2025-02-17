@@ -63,8 +63,8 @@ button:hover {
     color: #45a049;
 }
 
-#errorText {
-    color: #f59001;
+#error-text {
+    color: #f51501;
     font-weight: bold;
     font-size: 1.2rem;
 }
