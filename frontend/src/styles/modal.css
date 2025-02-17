@@ -16,7 +16,7 @@
         border: 1px solid #242424;
 
         .input-field {
-            @apply bg-input rounded-lg block min-w-0 grow py-1.5 pr-3 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
+            @apply bg-input rounded-lg block min-w-0 grow py-1.5 pr-3 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none;
         }
         .select-field {
             @apply col-start-1 row-start-1 w-full min-w-full cursor-pointer rounded-lg bg-input py-1.5 pr-8 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;

@@ -63,6 +63,9 @@ button {
     cursor: pointer;
 }
 
+/*TO DO: add hover color to icons */
+/*TO DO: add transition/ animation */
+
 .nav-icon {
     @apply size-12 bg-cover flex justify-end;
 }
