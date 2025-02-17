@@ -45,7 +45,6 @@
         @apply text-center text-5xl w-40 text-green;
         border-bottom: 1px solid darkslategray;
         font-family: 'Akatab-Black', sans-serif;
-
     }
 
     .input-range {
