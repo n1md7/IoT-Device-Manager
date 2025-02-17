@@ -11,10 +11,12 @@
     --color-orange: #FF6600;
     --color-green: #7CEB1A;
     --color-purple: #6B34CB;
-    --color-light-purle: #C3A0FF;
+    --color-light-purple: #C3A0FF;
     --color-light-gray: #e7e7e7;
     --color-modal-bg: #000000cc;
+    --color-menu-bg: #000000fa;
     --color-input: #151515;
+
 }
 
 @font-face {
@@ -57,8 +59,30 @@ body {
     font-family: 'Akatab-Regular', sans-serif;
 }
 
-.nav-item {
-    @apply size-12 bg-cover;
+button {
+    cursor: pointer;
+}
+
+.nav-icon {
+    @apply size-12 bg-cover flex justify-end;
+}
+
+.close {
+    @apply flex justify-end flex-none h-15;
+}
+
+.menu-wrapper {
+    @apply flex flex-col justify-center h-screen absolute inset-0 p-8;
+    background-color: var(--color-menu-bg);
+    z-index: 100;
+
+    .nav-items {
+        @apply flex flex-col flex-1 justify-center text-white text-center gap-5 cursor-pointer;
+
+        .nav-item {
+            @apply cursor-pointer hover:text-light-purple;
+        }
+    }
 }
 
 .container-nav {
