@@ -20,3 +20,9 @@ started [here](https://www.moddable.com/documentation/Moddable%20SDK%20-%20Getti
 ```bash
 mcconfig -d -m -p esp/nodemcu ssid="YOUR-WIFI-NAME" password="PASSWORD-HERE"
 ```
+
+### Screenshots
+
+![img.png](docs/img.png)
+![img_1.png](docs/img_1.png)
+![img_2.png](docs/img_2.png)
