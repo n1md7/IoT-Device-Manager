@@ -45,6 +45,8 @@ const startCountdown = () => {
 const handleClick = (e) => {
   return fetch(addQueryString(e.target.dataset.path))
     .then((res) => {
+      errorText.innerText = '';
+
       if (res.status === 400) return res.json().then((r) => Promise.reject(r));
       if (res.ok) return res.json();
 
