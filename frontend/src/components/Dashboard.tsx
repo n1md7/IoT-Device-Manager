@@ -1,4 +1,4 @@
-const SystemControlView = () => {
+const Dashboard = () => {
   return (
     <div className="control-view-container">
       <div className="card-item">
@@ -52,4 +52,4 @@ const SystemControlView = () => {
   )
 }
 
-export default SystemControlView;
+export default Dashboard;

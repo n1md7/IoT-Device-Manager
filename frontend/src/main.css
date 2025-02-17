@@ -16,6 +16,7 @@
     --color-modal-bg: #000000cc;
     --color-menu-bg: #000000fa;
     --color-input: #151515;
+    --color-data-bg: #181818;
 
 }
 
@@ -114,6 +115,7 @@ button {
     .button {
         @apply w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2;
         font-family: 'Akatab-Bold', sans-serif;
+        box-shadow: 0px 3px 3px 3px rgba(0, 0, 0, 0.3);
     }
 }
 
