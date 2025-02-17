@@ -3,13 +3,13 @@ import PageHeader from './PageHeader.tsx';
 import Welcome from './Welcome.tsx';
 import AddNewSystem from './AddNewSystem.tsx';
 import AddNewComponent from './AddNewComponent.tsx';
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 
 function App() {
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
-  const [activeView, setActiveView] = useState<JSX.Element>(<Welcome />);
-  const [showModal, setShowModal] = useState<JSX.Element | null>(null);
+  const [activeView, setActiveView] = useState<ReactElement>(<Welcome />);
+  const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
@@ -21,7 +21,7 @@ function App() {
     setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
   }
 
-  const handleMenuClick = (component: JSX.Element) => {
+  const handleMenuClick = (component: ReactElement) => {
     setActiveView(component);
   }
 
@@ -47,7 +47,6 @@ function App() {
         </div>
       </div>
 
-
       {isNewSystemOpen && (
         <div className="block">
           {showModal}
@@ -59,7 +58,6 @@ function App() {
           {showModal}
         </div>
       )}
-
     </>
   )
 }

@@ -9,10 +9,10 @@ const ManageComponent = () => {
           </div>
         </div>
         <div className="card-body">
-          <span className="">Device code: </span> <span>LOOO1</span>
-          <span className="">Device type: </span> <span>Switch</span>
-          <span className="">System: </span> <span>Water System</span>
-          <span className="">Shareable: </span> <span>Yes</span>
+          <div className="item-data">Device code: LOOO1</div>
+          <div className="item-data">Device type: Switch</div>
+          <div className="item-data">System: Water System</div>
+          <div className="item-data">Shareable: Yes</div>
         </div>
       </div>
     </div>

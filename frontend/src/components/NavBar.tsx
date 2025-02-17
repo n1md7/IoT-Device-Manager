@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ManageComponent from './ManageComponent.tsx';
-import SystemControlView from './SystemControlView.tsx';
+import Dashboard from './Dashboard.tsx';
 
 interface Props {
   onMenuClick: (component: JSX.Element) => void;
@@ -36,7 +36,7 @@ const NavBar = ({ onMenuClick } : Props) => {
             <button className="nav-icon bg-[url(close.svg)]" onClick={() => setIsMenuOpen(false)}></button>
           </div>
           <div className="nav-items">
-            <button className="nav-item" onClick={() => onMenuClick(<SystemControlView />)}>Dashboard</button>
+            <button className="nav-item" onClick={() => onMenuClick(<Dashboard />)}>Dashboard</button>
             <button className="nav-item">Manage systems</button>
             <button className="nav-item" onClick={() => onMenuClick(<ManageComponent />)}>Manage components</button>
             <button className="nav-item">Report a bug</button>
