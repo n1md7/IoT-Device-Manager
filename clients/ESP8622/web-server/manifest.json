@@ -1,0 +1,23 @@
+{
+	"include": [
+		"$(MODDABLE)/examples/manifest_base.json",
+		"$(MODDABLE)/examples/manifest_net.json",
+		"$(MODULES)/pins/digital/manifest.json"
+	],
+	"modules": {
+		"*": [
+			"./main",
+			"./utils",
+			"./ticker",
+			"./switch",
+			"./counter",
+			"$(MODULES)/network/http/*"
+		]
+	},
+	"data":{
+		"*": [
+			"./index.html"
+		]
+	},
+	"preload": "http"
+}
