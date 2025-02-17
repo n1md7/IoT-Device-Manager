@@ -4,16 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home Automation</title>
-  <style>
-      body, h1, h2, p { margin: 0; padding: 0; font-family: Arial, sans-serif; }
-      body { background: #f4f4f9; color: #333; text-align: center; line-height: 1.5; }
-      header { background: #4CAF50; color: #fff; padding: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-      main { padding: 2rem; }
-      .button-container { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; }
-      button { background: #4CAF50; color: #fff; border: none; border-radius: 5px; padding: 0.75rem 1.5rem; cursor: pointer; transition: 0.3s; }
-      button:hover { background: #45a049; }
-      footer { margin-top: 2rem; font-size: 0.9rem; color: #666; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
@@ -22,29 +13,38 @@
 <main>
   <h2>Smart things</h2>
   <p>Status: <span id="status">OFF</span></p>
-  <p>Time: <span id="time">00:00</span></p>
-  <div class="button-container">
-    <button id="on" data-path="/on">Turn ON</button>
-    <button id="off" data-path="/off">Turn OFF</button>
+  <p id="preview-time">Auto-shutdown in: <span id="time">00:00</span></p>
+  <div id="select-time" style="display: none">
+    <label for="minutes">Minutes:</label>
+    <select id="minutes">
+      <option selected value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
+      <option value="30">30</option>
+      <option value="45">45</option>
+    </select>
+    <label for="seconds">Seconds:</label>
+    <select id="seconds">
+      <option value="0">00</option>
+      <option selected value="10">10</option>
+      <option value="20">20</option>
+      <option value="30">30</option>
+      <option value="45">45</option>
+    </select>
   </div>
+  <div class="button-container">
+    <button id="on" data-path="/api/on">Turn ON</button>
+    <button id="off" data-path="/api/off">Turn OFF</button>
+  </div>
+  <div id="errorText"></div>
 </main>
-<footer>Smart Automation | Powered by your server</footer>
-<script>
-  const [on, off, status, time] = ["on", "off", "status", "time"].map(id => document.getElementById(id));
-
-  const handleClick = (e) => fetch(e.target.dataset.path).catch(console.error);
-  const formatTime = (value) => new Date(value * 1000).toISOString().substr(11, 8);
-
-  fetch('/status')
-    .then(res => res.ok ? res.json() : Promise.reject(res.statusText))
-    .then(timer => {
-      status.innerText = timer.active ? 'ON' : 'OFF';
-      time.innerText = formatTime(timer.time);
-    })
-    .catch(console.error);
-
-  on.onclick = handleClick;
-  off.onclick = handleClick;
-</script>
+<footer>Smart Automation | Powered by GG-Software</footer>
+<script src="script.mjs" type="module"></script>
 </body>
 </html>

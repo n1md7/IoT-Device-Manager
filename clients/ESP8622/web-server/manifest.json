@@ -16,7 +16,10 @@
 	},
 	"data":{
 		"*": [
-			"./index.html"
+			"./index.html",
+			"./script.mjs",
+			"./style.css",
+			"./favicon.ico"
 		]
 	},
 	"preload": "http"

@@ -1,15 +1,41 @@
-import { Server } from 'http';
 import { HIGH, LOW, console } from './utils';
+import { Server } from 'http';
 import Switch from './switch';
 import Ticker from './ticker';
 import Net from 'net';
 import Resource from 'Resource';
 
-const index = new Resource('index.html');
-const index2 = new Resource('index.html');
-const index3 = new Resource('index.html');
-const index4 = new Resource('index.html');
-const bytes = new Uint8Array(index);
+const files = {
+  index: new Resource('index.html'),
+  script: new Resource('script.mjs'),
+  style: new Resource('style.css'),
+  favicon: new Resource('favicon.ico'),
+};
+const bytes = {
+  index: new Uint8Array(files.index),
+  script: new Uint8Array(files.script),
+  style: new Uint8Array(files.style),
+  favicon: new Uint8Array(files.favicon),
+};
+const responses = {
+  index: {
+    headers: ['Content-type', 'text/html', 'Content-Length', bytes.index.length],
+    body: bytes.index,
+  },
+  script: {
+    headers: ['Content-type', 'application/javascript', 'Content-Length', bytes.script.length],
+    body: bytes.script,
+  },
+  style: {
+    headers: ['Content-type', 'text/css', 'Content-Length', bytes.style.length],
+    body: bytes.style,
+  },
+  favicon: {
+    headers: ['Content-type', 'image/x-icon', 'Content-Length', bytes.favicon.length],
+    body: bytes.favicon,
+  },
+};
+const API = '/api';
 
 console.log('Length', bytes.length);
 
@@ -30,35 +56,37 @@ const timer = new Ticker({
     relay.stop();
   },
 });
+const toSeconds = (min, sec) => min * 60 + +sec;
 
 const routes = {
-  '/': () => {
-    return {
-      headers: ['Content-type', 'text/html', 'Content-Length', bytes.length],
-      body: index,
-    };
-  },
-  '/on': () => {
-    timer.start(10);
+  '/': () => responses.index,
+  '/script.mjs': () => responses.script,
+  '/style.css': () => responses.style,
+  '/favicon.ico': () => responses.favicon,
+  [API]: {
+    '/on': (ctx) => {
+      const seconds = toSeconds(ctx.params.min || 0, ctx.params.sec || 10);
+      timer.start(seconds);
 
-    return {
-      headers: ['Content-type', 'application/json'],
-      body: `{"active": true, "time": ${10}}`,
-    };
-  },
-  '/off': () => {
-    timer.stop();
+      return {
+        headers: ['Content-type', 'application/json'],
+        body: `{"active": true, "time": ${seconds}}`,
+      };
+    },
+    '/off': () => {
+      timer.stop();
 
-    return {
-      headers: ['Content-type', 'application/json'],
-      body: `{"active": false}`,
-    };
-  },
-  '/status': () => {
-    return {
-      headers: ['Content-type', 'application/json'],
-      body: `{"active": ${timer.getStatus()}, "time": ${timer.getCurrentTime()}}`,
-    };
+      return {
+        headers: ['Content-type', 'application/json'],
+        body: `{"active": false}`,
+      };
+    },
+    '/status': () => {
+      return {
+        headers: ['Content-type', 'application/json'],
+        body: `{"active": ${timer.getStatus()}, "time": ${timer.getCurrentTime()}}`,
+      };
+    },
   },
   404: (ctx) => {
     return {
@@ -84,9 +112,16 @@ server.callback = function (message, value) {
       }
       break;
     case Server.prepareResponse:
-      if (!routes[this.route]) return routes['404'](this);
+      if (routes[this.route]) return routes[this.route](this);
 
-      return routes[this.route](this);
+      if (this.path.startsWith(API)) {
+        const [, second] = this.path.split(API);
+        const [method] = second.split('?'); // Remove query string
+
+        if (routes[API][method]) return routes[API][method](this);
+      }
+
+      return routes['404'](this);
   }
 };
 
