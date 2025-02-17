@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 .welcome-container {
     @apply flex flex-col text-center justify-center px-20 min-h-full w-full text-white rounded-lg;
     border: 1px solid #242424;
