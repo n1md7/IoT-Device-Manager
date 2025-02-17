@@ -21,6 +21,12 @@ started [here](https://www.moddable.com/documentation/Moddable%20SDK%20-%20Getti
 mcconfig -d -m -p esp/nodemcu ssid="YOUR-WIFI-NAME" password="PASSWORD-HERE"
 ```
 
+Config can be overridden, but it defaults to manifest values
+
+```bash
+mcconfig -d -m -p esp/nodemcu ssid="YOUR-WIFI-NAME" password="PASSWORD-HERE" name="My device" description="My device description" code="D0001"
+```
+
 ### Screenshots
 
 ![img.png](docs/img.png)

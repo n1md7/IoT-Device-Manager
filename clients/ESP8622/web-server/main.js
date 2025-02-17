@@ -4,15 +4,19 @@ import Switch from './switch';
 import Ticker from './ticker';
 import Net from 'net';
 import Resource from 'Resource';
+import config from 'mc/config';
+
+const name = config['name'];
+const version = config['version'];
+const description = config['description'];
+
+console.log(`Device ${name} v${version} (${description}) is ready!`);
 
 const files = {
   index: new Resource('index.html'),
   script: new Resource('script.mjs'),
   style: new Resource('style.css'),
   favicon: new Resource('favicon.ico'),
-  name: 'name.txt',
-  title: 'title.txt',
-  version: 'version.txt',
 };
 const bytes = {
   index: new Uint8Array(files.index),
@@ -46,8 +50,6 @@ const responses = {
   },
 };
 const API = '/api';
-
-console.log('Length', bytes.length);
 
 const status = new Switch({ pin: 2, signal: LOW });
 const relay = new Switch({ pin: 4, signal: HIGH });

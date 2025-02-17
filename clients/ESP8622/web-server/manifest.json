@@ -2,6 +2,7 @@
 	"include": [
 		"$(MODDABLE)/examples/manifest_base.json",
 		"$(MODDABLE)/examples/manifest_net.json",
+		"$(MODDABLE)/modules/files/preference/manifest.json",
 		"$(MODULES)/pins/digital/manifest.json"
 	],
 	"modules": {
@@ -22,5 +23,10 @@
 			"./favicon.ico"
 		]
 	},
-	"preload": "http"
+	"preload": "http",
+	"config": {
+		"version": "1.0.0",
+		"name": "D0001",
+		"description": "Home automation"
+	}
 }
