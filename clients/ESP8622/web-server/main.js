@@ -5,6 +5,8 @@ import Ticker from './ticker';
 import Net from 'net';
 import Resource from 'Resource';
 import config from 'mc/config';
+import Storage from './storage';
+import Counter from './counter';
 
 const name = config['name'];
 const version = config['version'];
@@ -51,11 +53,15 @@ const responses = {
 };
 const API = '/api';
 
+const remainingTime = new Counter('time');
+const isRunning = new Storage('ticker', 'isRunning', false);
 const status = new Switch({ pin: 2, signal: LOW });
 const relay = new Switch({ pin: 4, signal: HIGH });
 const server = new Server({ port: 80 });
 const timer = new Ticker({
-  startTime: 1_200_000,
+  remainingTime,
+  isRunning,
+  startTime: 1200, // 20m
   onTick: (time, logger) => {
     logger.log(`Time is remaining: ${time} seconds`);
   },
@@ -143,4 +149,16 @@ server.callback = function (message, value) {
   }
 };
 
-console.log(`http server ready at ${Net.get('IP')}`);
+console.log(`[http] server ready at ${Net.get('IP')}`);
+
+const wasRunning = isRunning.getValue();
+const prevTime = timer.getCurrentTime();
+
+console.log(`[db] remaining time: ${prevTime}`);
+console.log(`[db] timer is running: ${wasRunning}`);
+
+if (wasRunning && prevTime > 0) {
+  console.log(`Timer was running before. Restoring state...`);
+  timer.start(prevTime);
+  console.log(`Timer restored`);
+}

@@ -3,6 +3,7 @@
 		"$(MODDABLE)/examples/manifest_base.json",
 		"$(MODDABLE)/examples/manifest_net.json",
 		"$(MODDABLE)/modules/files/preference/manifest.json",
+		"$(MODDABLE)/examples/manifest_typings.json",
 		"$(MODULES)/pins/digital/manifest.json"
 	],
 	"modules": {
@@ -11,6 +12,7 @@
 			"./utils",
 			"./ticker",
 			"./switch",
+			"./storage",
 			"./counter",
 			"$(MODULES)/network/http/*"
 		]

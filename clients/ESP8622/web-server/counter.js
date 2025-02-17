@@ -1,31 +1,36 @@
-export default class Counter {
-  #count = 0;
+import Storage from './storage';
 
-  constructor(start = 0) {
-    this.#count = start;
+export default class Counter {
+  /**
+   * @type {Storage}
+   */
+  #storage;
+
+  constructor(name, start = 0) {
+    this.#storage = new Storage('counter', name, start);
   }
 
-  setValue(value) {
-    this.#count = value;
+  setValue(value = 0) {
+    this.#storage.setValue(value);
   }
 
   getValue() {
-    return this.#count;
+    return this.#storage.getValue(0);
   }
 
   increment() {
-    return ++this.#count;
+    return this.#storage.setValue(+this.#storage.getValue(0) + 1);
   }
 
   decrement() {
-    return --this.#count;
+    return this.#storage.setValue(+this.#storage.getValue(0) - 1);
   }
 
   isZero() {
-    return this.#count === 0;
+    return this.#storage.getValue(0) === 0;
   }
 
   isFinished() {
-    return this.#count <= 0;
+    return this.#storage.getValue(0) <= 0;
   }
 }
