@@ -4,12 +4,14 @@
 		"$(MODDABLE)/examples/manifest_net.json",
 		"$(MODDABLE)/modules/files/preference/manifest.json",
 		"$(MODDABLE)/examples/manifest_typings.json",
+		"$(MODDABLE)/modules/files/file/manifest.json",
 		"$(MODULES)/pins/digital/manifest.json"
 	],
 	"modules": {
 		"*": [
 			"./main",
 			"./utils",
+			"./logger",
 			"./ticker",
 			"./switch",
 			"./storage",
@@ -19,10 +21,11 @@
 	},
 	"data":{
 		"*": [
-			"./index.html",
-			"./script.mjs",
-			"./style.css",
-			"./favicon.ico"
+			"./ui/favicon.ico",
+			"./ui/index.html",
+			"./ui/script.mjs",
+			"./ui/style.css",
+			"./ui/van-1.5.3.min.mjs"
 		]
 	},
 	"preload": "http",

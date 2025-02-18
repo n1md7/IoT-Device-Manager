@@ -1,33 +1,44 @@
-const [on, off, status, time, errorText, previewTime, selectTime, minutes, seconds] = [
-  'on',
-  'off',
-  'status',
-  'time',
-  'error-text',
-  'preview-time',
-  'select-time',
-  'minutes',
-  'seconds',
+const [
+  on,
+  off,
+  status,
+  time,
+  errorText,
+  previewTime,
+  selectTime,
+  minutes,
+  seconds,
+] = [
+  "on",
+  "off",
+  "status",
+  "time",
+  "error-text",
+  "preview-time",
+  "select-time",
+  "minutes",
+  "seconds",
 ].map((id) => document.getElementById(id));
 
 let id;
 let countdown = 0;
 
-const getStatusText = (s) => (s ? 'ON' : 'OFF');
-const getFormattedTime = (value) => new Date(value * 1000).toISOString().slice(11, 19);
+const getStatusText = (s) => (s ? "ON" : "OFF");
+const getFormattedTime = (value) =>
+  new Date(value * 1000).toISOString().slice(11, 19);
 const handleError = (e) => (errorText.innerText = e.message);
 const addQueryString = (url) => {
-  if (!url.startsWith('/api/on')) return url;
+  if (!url.startsWith("/api/on")) return url;
 
   return `${url}?min=${minutes.value}&sec=${seconds.value}`;
 };
 const showSelect = () => {
-  previewTime.style.display = 'none';
-  selectTime.style.display = 'block';
+  previewTime.style.display = "none";
+  selectTime.style.display = "block";
 };
 const hideSelect = () => {
-  previewTime.style.display = 'block';
-  selectTime.style.display = 'none';
+  previewTime.style.display = "block";
+  selectTime.style.display = "none";
 };
 const startCountdown = () => {
   id = setInterval(() => {
@@ -35,8 +46,8 @@ const startCountdown = () => {
     if (countdown === 0) {
       clearInterval(id);
       status.innerText = getStatusText(false);
-      status.classList.remove('text-success');
-      time.innerText = '00:00';
+      status.classList.remove("text-success");
+      time.innerText = "00:00";
       id = null;
       showSelect();
     }
@@ -45,7 +56,7 @@ const startCountdown = () => {
 const handleClick = (e) => {
   return fetch(addQueryString(e.target.dataset.path))
     .then((res) => {
-      errorText.innerText = '';
+      errorText.innerText = "";
 
       if (res.status === 400) return res.json().then((r) => Promise.reject(r));
       if (res.ok) return res.json();
@@ -54,13 +65,13 @@ const handleClick = (e) => {
     })
     .then((timer) => {
       status.innerText = getStatusText(timer.active);
-      status.classList.remove('text-success');
-      time.innerText = '00:00';
+      status.classList.remove("text-success");
+      time.innerText = "00:00";
       hideSelect();
 
       if (id) clearInterval(id);
       if (timer.active) {
-        status.classList.add('text-success');
+        status.classList.add("text-success");
         countdown = timer.time;
         time.innerText = getFormattedTime(countdown);
         startCountdown();
@@ -71,13 +82,13 @@ const handleClick = (e) => {
     .catch(handleError);
 };
 
-fetch('/api/status')
+fetch("/api/status")
   .then((res) => (res.ok ? res.json() : Promise.reject(res.statusText)))
   .then((timer) => {
     status.innerText = getStatusText(timer.active);
     time.innerText = getFormattedTime(timer.time);
     if (timer.active) {
-      status.classList.add('text-success');
+      status.classList.add("text-success");
       countdown = timer.time;
       startCountdown();
       hideSelect();

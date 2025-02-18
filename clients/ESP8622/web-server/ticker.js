@@ -1,4 +1,5 @@
-import { clearInterval, Logger, setInterval } from './utils';
+import { clearInterval, setInterval } from "./utils";
+import { Logger, Console } from "./logger";
 
 /**
  * @typedef {function} Callback
@@ -54,7 +55,7 @@ export default class Ticker {
     this.#options = options;
     this.#isRunning = options.isRunning;
     this.#time = options.remainingTime;
-    this.#logger = new Logger('Timer: ');
+    this.#logger = new Console("Timer: ");
   }
 
   start(seconds = 15) {
@@ -82,13 +83,13 @@ export default class Ticker {
   stop() {
     if (!this.#isRunning.getValue()) return;
 
-    this.#logger.log('stopping...');
+    this.#logger.log("stopping...");
     this.#isRunning.setValue(false);
     this.#time.setValue(this.#options.startTime);
     this.#options.onStop(this.#time.getValue(), this.#logger);
 
     this.#unsubscribe();
-    this.#logger.log('stopped');
+    this.#logger.log("stopped");
   }
 
   #unsubscribe() {
