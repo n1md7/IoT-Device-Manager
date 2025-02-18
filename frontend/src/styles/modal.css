@@ -1,5 +1,5 @@
 .modal-wrapper {
-    @apply flex justify-center items-center h-screen bg-modal-bg absolute inset-0 p-8;
+    @apply flex justify-center items-center h-screen backdrop-blur-md bg-black/70 absolute inset-0 p-8;
 }
 
 .modal-container {

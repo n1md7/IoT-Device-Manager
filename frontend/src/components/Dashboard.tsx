@@ -1,3 +1,5 @@
+import EditIcon from '../icons/EditIcon.tsx';
+
 const Dashboard = () => {
   return (
     <div className="control-view-container">
@@ -25,7 +27,7 @@ const Dashboard = () => {
         </div>
         <div className="card-tool">
           <button className="control-button bg-green">Turn OFF</button>
-          <button className="edit-button"></button>
+          <button className="edit-button"><EditIcon className={"text-light-dark"} /></button>
         </div>
       </div>
       <div className="card-item">
@@ -45,7 +47,7 @@ const Dashboard = () => {
         </div>
         <div className="card-tool">
           <button className="control-button bg-orange">Turn ON</button>
-          <button className="edit-button"></button>
+          <button className="edit-button"><EditIcon className={"text-light-dark"} /></button>
         </div>
       </div>
     </div>

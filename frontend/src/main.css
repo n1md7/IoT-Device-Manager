@@ -1,12 +1,12 @@
 @import "./styles/modal.css";
 @import "./styles/page-header.css";
-@import "./styles/system-control-view.css";
+@import "./styles/dashboard.css";
 @import "./styles/welcome.css";
 
 @import "tailwindcss";
 
 @theme {
-    --color-dark: #101010;
+    --color-dark: #0a0a0a;
     --color-light-dark: #242424;
     --color-orange: #FF6600;
     --color-green: #7CEB1A;
@@ -15,6 +15,7 @@
     --color-light-gray: #e7e7e7;
     --color-modal-bg: #000000cc;
     --color-menu-bg: #000000fa;
+    --color-card-bg: #121212;
     --color-input: #151515;
     --color-data-bg: #181818;
 
@@ -76,8 +77,7 @@ button {
 }
 
 .menu-wrapper {
-    @apply flex flex-col justify-center h-screen absolute inset-0 p-8;
-    background-color: var(--color-menu-bg);
+    @apply flex flex-col justify-center bg-black/70 h-screen backdrop-blur-lg absolute inset-0 p-8;
     z-index: 100;
 
     .nav-items {

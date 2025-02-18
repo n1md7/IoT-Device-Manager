@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import AddIcon from '../icons/AddIcon.tsx';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
@@ -54,8 +55,7 @@ const AddNewComponent = ({setIsNewComponentOpen} : Props) => {
               </div>
             </div>
             <div className="flex justify-end w-1/6">
-              <div className="button-add-system">+
-              </div>
+              <div className="button-add-system"> <AddIcon className="text-light-gray" /> </div>
             </div>
           </div>
           <div className="mb-5 flex items-center">

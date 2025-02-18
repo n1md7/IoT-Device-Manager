@@ -1,4 +1,4 @@
 .page-header {
-    @apply  text-sm sm:text-2xl text-center h-full text-light-gray py-4 md:py-6;
+    @apply  text-sm sm:text-2xl text-center h-full text-light-gray py-4 md:py-6 mb-5;
     font-family: 'Michroma', sans-serif;
 }
