@@ -3,13 +3,24 @@ import PageHeader from './PageHeader.tsx';
 import Welcome from './Welcome.tsx';
 import AddNewSystem from './AddNewSystem.tsx';
 import AddNewComponent from './AddNewComponent.tsx';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 function App() {
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
   const [activeView, setActiveView] = useState<ReactElement>(<Welcome />);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isNewSystemOpen) setIsNewSystemOpen(false);
+      if (event.key === "Escape" && isNewComponentOpen) setIsNewComponentOpen(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return() => {
+      document.removeEventListener('keydown', handleKeyDown);
+    }
+  })
 
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
