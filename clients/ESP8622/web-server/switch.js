@@ -1,5 +1,6 @@
 import Digital from "pins/digital";
-import { Logger, HIGH } from "./utils";
+import { HIGH } from "./utils";
+import { Console } from "./logger";
 
 export default class Switch extends Digital {
   #onSignal = 1;
@@ -24,7 +25,7 @@ export default class Switch extends Digital {
     });
     this.#onSignal = options.signal ?? HIGH;
     this.#offSignal = this.#onSignal ^ 1;
-    this.#logger = new Logger(`${options.name || "Switch"} (${options.pin}): `);
+    this.#logger = new Console(`${options.name || "Switch"} (${options.pin})`);
     this.stop();
   }
 
