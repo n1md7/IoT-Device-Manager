@@ -2,6 +2,7 @@ import Timer from "timer";
 import { Console, FileLogger } from "./logger";
 import { Server } from "http";
 
+export const every = (value) => (current) => current % value === 0;
 export const setInterval = (callback, delay) => Timer.repeat(callback, delay);
 export const clearInterval = (timer) => Timer.clear(timer);
 export const toSeconds = (min, sec) => min * 60 + +sec;

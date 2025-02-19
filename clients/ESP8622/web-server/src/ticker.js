@@ -2,7 +2,7 @@ import { clearInterval, setInterval } from "./utils";
 import { Logger, Console } from "./logger";
 
 /**
- * @typedef {function} Callback
+ * @callback Callback
  * @param {number} timestamp
  * @param {Logger} logger
  */
@@ -13,7 +13,7 @@ import { Logger, Console } from "./logger";
  * @typedef {Object} Options
  * @property {Callback} onStart - Start callback, once on timer start
  * @property {Callback} onStop - Stop callback, once on timer stop
- * @property {Callback} onTick - Tick callback, invoking every second
+ * @property {Callback} [onTick] - Tick callback, invoking every second
  * @property {Storage} isRunning - Persistent storage whether device was running before force restart/shutdown or not
  * @property {Counter} remainingTime - Remaining timer from persistent storage
  * @property {number} startTime - Start time in seconds
@@ -55,7 +55,7 @@ export default class Ticker {
     this.#options = options;
     this.#isRunning = options.isRunning;
     this.#time = options.remainingTime;
-    this.#logger = new Console("Timer: ");
+    this.#logger = new Console("Timer");
   }
 
   start(seconds = 15) {
@@ -64,7 +64,7 @@ export default class Ticker {
     this.#time.setValue(seconds);
     this.#options.onStart(this.#time.getValue(), this.#logger);
     this.#timer = setInterval(() => {
-      this.#options.onTick(this.#time.decrement(), this.#logger);
+      this.#options?.onTick(this.#time.decrement(), this.#logger);
 
       if (this.#time.isFinished()) {
         this.stop();

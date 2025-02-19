@@ -3,6 +3,7 @@ import {
   HIGH,
   LOW,
   API,
+  every,
   toSeconds,
   apiError,
   requestHandler,
@@ -36,6 +37,7 @@ for (const item of new Iterator(config.file.root)) {
 console.log(`Device ${name} v${version} (${description}) is ready!`);
 console.log(`Disk total: ${info.total}; used: ${info.used}`);
 
+const isTenthSecond = every(10);
 const remainingTime = new Counter("time");
 const isRunning = new Storage("ticker", "isRunning", false);
 const status = new Switch({ pin: 2, signal: LOW });
@@ -45,8 +47,10 @@ const timer = new Ticker({
   remainingTime,
   isRunning,
   startTime: 1200, // 20m
-  onTick: (time, logger) => {
-    logger.log(`Time is remaining: ${time} seconds`);
+  onTick: (value, logger) => {
+    if (isTenthSecond(value)) {
+      logger.info(`Remaining time: ${value}`);
+    }
   },
   onStart: () => {
     status.start();
@@ -88,8 +92,9 @@ server.callback = requestHandler({
         );
       }
       const seconds = toSeconds(min, sec || 10);
-      if (seconds < 10)
+      if (seconds < 10) {
         return apiError(`You must set a duration of at least 10 seconds!`);
+      }
 
       timer.start(seconds);
 
