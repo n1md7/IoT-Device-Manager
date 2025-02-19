@@ -4,7 +4,7 @@ import { System } from '/src/systems/entities/system.entity';
 import { Repository } from 'typeorm';
 import { DatabaseException } from '/libs/filters';
 import { Client } from '/src/systems/enum/client.enum';
-import { ClientMqtt } from '@nestjs/microservices';
+import { ClientMqtt, MqttRecordBuilder } from '@nestjs/microservices';
 import { UpdateSystemRequest } from '/src/systems/requests/update-system.request';
 import { CreateSystemRequest } from '/src/systems/requests/create-system.request';
 
@@ -17,11 +17,25 @@ export class SystemsService implements OnModuleInit {
 
   async onModuleInit() {
     await this.mqttClient.connect();
+    await this.notifyStatus();
     await this.requestUpdates();
   }
 
   async requestUpdates() {
     return this.mqttClient.emit('home/devices/+/request-update', {});
+  }
+
+  async notifyStatus() {
+    return this.mqttClient.emit(
+      'home/managers/status',
+      new MqttRecordBuilder({
+        who: Client.SYSTEMS,
+        status: 'Connected',
+      })
+        .setQoS(1)
+        .setRetain(false)
+        .build(),
+    );
   }
 
   async create(payload: CreateSystemRequest) {

@@ -73,5 +73,7 @@ export class ReportBuilder {
     this.name = '';
     this.version = '1';
     this.value = 0;
+
+    return this;
   }
 }

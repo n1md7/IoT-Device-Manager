@@ -24,6 +24,9 @@ const params: Params = {
   type: 'SWITCH',
   version: '1',
 };
+const every = (value: number) => (current: number) => {
+  return current % value === 0;
+}
 
 while (commands.length > 0) {
   const command = commands.shift();
@@ -51,7 +54,6 @@ const counter = new Counter(15 * 60); // 15 minutes
 const publishTopic = `home/devices/${params.code}/state`;
 const onTimerSet = `home/devices/${params.code}/set`;
 const onRequestUpdate = `home/devices/${params.code}/request-update`;
-const onDeviceManagerDisconnect = 'home/device-manager/disconnected';
 
 const connection = await connectAsync(mqtt.host, {
   port: mqtt.port,
@@ -79,19 +81,22 @@ console.info(`Connected to ${mqtt.host}:${mqtt.port}`);
 
 connection.subscribe(onTimerSet, { qos: 1 });
 connection.subscribe(onRequestUpdate, { qos: 1 });
-connection.subscribe(onDeviceManagerDisconnect, { qos: 1 });
+connection.subscribe('/home/managers/+/status', { qos: 1 });
+
 
 const timerSetSchema = z.object({
   data: z.object({
     time: z.object({
       min: z.number(),
       sec: z.number(),
-    }),
+    }).optional(),
     status: z.nativeEnum(Status),
   }),
 });
 
 type TimerSetType = z.infer<typeof timerSetSchema>;
+type TimerOnType = Required<TimerSetType>
+type TimerOffType = Omit<TimerSetType, 'time'>;
 
 connection.on('message', (topic, message) => {
   try {
@@ -105,7 +110,8 @@ connection.on('message', (topic, message) => {
       case onRequestUpdate:
         publishCurrentState(timer);
         break;
-      case onDeviceManagerDisconnect:
+      case 'home/managers/SYSTEMS/status':
+      case 'home/managers/DEVICES/status':
         handleStop();
         break;
       default:
@@ -138,17 +144,23 @@ function handleStop() {
   console.info('Timer stopped');
 }
 
-function handleStart(time: TimerSetType['data']['time']) {
+function handleStart(time: TimerOnType['data']['time']) {
   console.info('Starting timer...');
-  counter.setValue(time.min * 60 + time.sec);
+  const timeInSec = time!.min * 60 + time!.sec;
+  console.info(`Time set to ${timeInSec} seconds`);
+  counter.setValue(timeInSec);
+
+  // Let's publish the state every 10 seconds only
+  const runEvery = every(10);
 
   timer.setCallback(() => {
     if (counter.isZero()) {
       return timer.stop();
     }
 
-    counter.decrement();
-    publishCurrentState(timer);
+    if(runEvery(counter.decrement())) {
+      publishCurrentState(timer);
+    }
   })
     .start({ initialRun: true });
 
@@ -157,8 +169,8 @@ function handleStart(time: TimerSetType['data']['time']) {
 
 function publishCurrentState(timer: Timer) {
   console.info('Publishing current state...');
-  report.reset();
-  const payload = report.addCode(params.code)
+  const payload = report.reset()
+    .addCode(params.code)
     .addName(params.name)
     .addType(params.type)
     .addVersion(params.version)

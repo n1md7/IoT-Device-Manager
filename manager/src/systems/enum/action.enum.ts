@@ -1,4 +1,4 @@
 export enum Action {
-  START = 'START',
-  STOP = 'STOP',
+  ON = 'ON',
+  OFF = 'OFF',
 }
