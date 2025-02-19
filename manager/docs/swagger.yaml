@@ -451,9 +451,9 @@ components:
         action:
           type: string
           enum:
-            - START
-            - STOP
-          example: START
+            - 'ON'
+            - 'OFF'
+          example: 'ON'
           description: Action to perform
         duration:
           description: Time to run the system. Only required when action is START

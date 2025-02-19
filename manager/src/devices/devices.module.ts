@@ -18,17 +18,18 @@ import { ComponentsModule } from '/src/components/components.module';
         name: Client.DEVICES,
         transport: Transport.MQTT,
         options: {
-          clientId: 'Devices-Module',
+          clientId: Client.DEVICES,
           clean: false, // We want session persistence
           will: {
-            topic: 'home/device-manager/disconnected',
-            // Payload irrelevant atm as it's not used
-            // The device will continue to work even if the manager is down
-            // Because it already has the information when to shut down
-            // And internal(device-level) timer will take care of it
-            payload: '{"data": {"cmd": "Reset", "who": "Device-Module"}}', // Not used atm, just for info
+            topic: `home/managers/${Client.DEVICES}/status`,
+            payload: JSON.stringify({
+              data: {
+                who: Client.DEVICES,
+                status: 'Disconnected',
+              },
+            }),
             qos: 1, // At least once delivery
-            retain: true, // Retain the message, to be delivered to any new subscribers (the last known state)
+            retain: false, // Don't retain the message
           },
         },
       },

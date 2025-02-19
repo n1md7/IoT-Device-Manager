@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import mqtt from 'mqtt';
 import { once } from 'events';
 import { argv, env, exit } from 'node:process';
@@ -38,7 +40,7 @@ while (commands.length > 0) {
 const publishTopic = `home/devices/${params.code}/state`;
 const subscribeTopic = `home/devices/${params.code}/set`;
 const requestUpdateTopic = `home/devices/${params.code}/request-update`;
-const deviceManagerDisconnectedTopic = 'home/device-manager/disconnected';
+const deviceManagerDisconnectedTopic = 'home/managers/+/status';
 const Status = Object.freeze({
   ON: 'ON',
   OFF: 'OFF',

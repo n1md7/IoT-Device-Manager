@@ -15,7 +15,7 @@ export class ControlSystemRequest {
 
   @ApiProperty({
     enum: Action,
-    example: Action.START,
+    example: Action.ON,
     description: 'Action to perform',
   })
   @IsEnum(Action)
@@ -29,14 +29,14 @@ export class ControlSystemRequest {
   @IsDefined()
   @ValidateNested()
   @Type(() => SystemTime)
-  @ValidateIf(({ action }) => action === Action.START)
+  @ValidateIf(({ action }) => action === Action.ON)
   duration?: SystemTime;
 
   startRequested(): this is { duration: SystemTime } {
-    return this.action === Action.START;
+    return this.action === Action.ON;
   }
 
   stopRequested() {
-    return this.action === Action.STOP;
+    return this.action === Action.OFF;
   }
 }
