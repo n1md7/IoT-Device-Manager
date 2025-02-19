@@ -1,0 +1,116 @@
+asyncapi: '2.6.0'
+info:
+  title: MQTT Device Client
+  version: '1.0.0'
+  description: MQTT client for handling device state and timer operations.
+
+servers:
+  production:
+    url: '{mqtt_host}:{mqtt_port}'
+    protocol: mqtt
+    description: MQTT Broker
+    variables:
+      mqtt_host:
+        default: 'mqtt.example.com'
+      mqtt_port:
+        default: '1883'
+
+channels:
+  home/devices/{code}/set:
+    description: Command to set timer values and status.
+    parameters:
+      code:
+        description: Unique device code
+        schema:
+          type: string
+    subscribe:
+      summary: Receive timer configuration updates
+      operationId: setTimer
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            data:
+              description:
+                This property is added by NestJS client.
+                If you are working with NestJS, you can ignore this property.
+                Otherwise, you need to specify the data property in the payload.
+              type: object
+              properties:
+                time:
+                  type: object
+                  properties:
+                    min:
+                      type: integer
+                    sec:
+                      type: integer
+                  required: [
+                    min,
+                    sec
+                  ]
+                status:
+                  type: string
+                  enum: ['ON', 'OFF']
+              required: [status]
+          additionalProperties: false
+          examples:
+            - data:
+                time:
+                  min: 30
+                  sec: 0
+                status: 'ON'
+            - data:
+                status: 'OFF'
+
+
+  home/devices/{code}/request-update:
+    description:
+      Request an update for the device's current state.
+      Device will emit periodic updates when it is active.
+      However, if the Manager needs the current state, it can request it.
+      Receiving this event means the device should publish its current state ASAP.
+    parameters:
+      code:
+        description: Unique device code
+        schema:
+          type: string
+    subscribe:
+      summary: Request the current state of the device
+      operationId: requestUpdate
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          additionalProperties: false
+
+  home/devices/{code}/state:
+    description: Device state updates.
+    parameters:
+      code:
+        description: Unique device code
+        schema:
+          type: string
+    publish:
+      summary: Publish the current device state
+      operationId: publishState
+      message:
+        contentType: text/csv
+        payload:
+          examples:
+            - 'ON,D0001,SWITCH,My Pump,1,128'
+            - 'OFF,D0001,SWITCH,My Pump,1,0'
+            - '{Status},{Code},{Type},{Name},{Version},{Value}'
+          type: string
+          description: CSV formatted device state
+
+  home/managers/+/status:
+    description: Status updates from different managers.
+    subscribe:
+      summary: Receive manager status updates
+      operationId: managerStatus
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          additionalProperties: false

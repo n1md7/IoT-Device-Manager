@@ -1,6 +1,14 @@
-import { HIGH, LOW, console, logger } from "./utils";
+import {
+  console,
+  HIGH,
+  LOW,
+  API,
+  toSeconds,
+  apiError,
+  requestHandler,
+} from "./utils";
 import { Server } from "http";
-import { System, Iterator, File } from "file";
+import { Iterator, System } from "file";
 import Switch from "./switch";
 import Ticker from "./ticker";
 import Net from "net";
@@ -23,45 +31,6 @@ for (const item of new Iterator(config.file.root)) {
 console.log(`Device ${name} v${version} (${description}) is ready!`);
 console.log(`Disk total: ${info.total}; used: ${info.used}`);
 
-const files = {
-  index: new Resource("index.html"),
-  script: new Resource("script.mjs"),
-  vanLib: new Resource("van-1.5.3.min.mjs"),
-  style: new Resource("style.css"),
-  favicon: new Resource("favicon.ico"),
-};
-
-const responses = {
-  index: {
-    headers: ["Content-type", "text/html"],
-    body: files.index,
-  },
-  script: {
-    headers: ["Content-type", "application/javascript"],
-    body: files.script,
-  },
-  vanLib: {
-    headers: ["Content-type", "application/javascript"],
-    body: files.vanLib,
-  },
-  style: {
-    headers: ["Content-type", "text/css"],
-    body: files.style,
-  },
-  favicon: {
-    headers: ["Content-type", "image/x-icon"],
-    body: files.favicon,
-  },
-  apiError: (message) => {
-    return {
-      headers: ["Content-type", "application/json"],
-      body: `{"message": "${message}"}`,
-      status: 400,
-    };
-  },
-};
-const API = "/api";
-
 const remainingTime = new Counter("time");
 const isRunning = new Storage("ticker", "isRunning", false);
 const status = new Switch({ pin: 2, signal: LOW });
@@ -83,27 +52,39 @@ const timer = new Ticker({
     relay.stop();
   },
 });
-const toSeconds = (min, sec) => min * 60 + +sec;
 
-const routes = {
-  "/": () => responses.index,
-  "/script.mjs": () => responses.script,
-  "/van-1.5.3.min.mjs": () => responses.vanLib,
-  "/style.css": () => responses.style,
-  "/favicon.ico": () => responses.favicon,
+server.callback = requestHandler({
+  "/": () => ({
+    headers: ["Content-type", "text/html"],
+    body: new Resource("index.html"),
+  }),
+  "/script.mjs": () => ({
+    headers: ["Content-type", "application/javascript"],
+    body: new Resource("script.mjs"),
+  }),
+  "/device.mjs": () => ({
+    headers: ["Content-type", "application/javascript"],
+    body: new Resource("device.mjs"),
+  }),
+  "/style.css": () => ({
+    headers: ["Content-type", "text/css"],
+    body: new Resource("style.css"),
+  }),
+  "/favicon.ico": () => ({
+    headers: ["Content-type", "image/x-icon"],
+    body: new Resource("favicon.ico"),
+  }),
   [API]: {
     "/on": (ctx) => {
       const { min = 0, sec = 0 } = ctx.params;
       if (!min || !sec) {
-        return responses.apiError(
+        return apiError(
           `Invalid query parameters. 'min' and 'sec' are required!`,
         );
       }
       const seconds = toSeconds(min, sec || 10);
       if (seconds < 10)
-        return responses.apiError(
-          `You must set a duration of at least 10 seconds!`,
-        );
+        return apiError(`You must set a duration of at least 10 seconds!`);
 
       timer.start(seconds);
 
@@ -142,36 +123,7 @@ const routes = {
       body: `Route not found: ${ctx.path}`,
     };
   },
-};
-
-server.callback = function (message, value) {
-  switch (message) {
-    case Server.status:
-      const [route, query] = value.split("?");
-      this.path = value;
-      this.query = query;
-      this.route = route;
-      if (this.query) {
-        this.params = this.query.split("&").reduce((params, param) => {
-          const [key, value] = param.split("=");
-          params[key] = value;
-          return params;
-        }, {});
-      }
-      break;
-    case Server.prepareResponse:
-      if (routes[this.route]) return routes[this.route](this);
-
-      if (this.path.startsWith(API)) {
-        const [, second] = this.path.split(API);
-        const [method] = second.split("?"); // Remove query string
-
-        if (routes[API][method]) return routes[API][method](this);
-      }
-
-      return routes["404"](this);
-  }
-};
+});
 
 console.log(`[http] server ready at ${Net.get("IP")}`);
 
