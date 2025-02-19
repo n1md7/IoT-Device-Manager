@@ -40,6 +40,5 @@ mcconfig -d -m -p esp/nodemcu \
 
 ### Screenshots
 
-![img-01.png](images/screenshot-01.png)
-![img_02.png](images/screenshot-03.png)
-![img_03.png](images/screenshot-02.png)
+![img-01.png](images/screenshot-04.png)
+![img_02.png](images/screenshot-05.png)

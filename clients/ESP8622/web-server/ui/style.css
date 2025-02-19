@@ -24,7 +24,7 @@ main {
 footer {
   font-size: 0.9rem;
   color: #2d2929;
-  padding: 1rem 0;
+  padding: 1rem;
   background: rgba(232, 226, 226, 0.05);
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
@@ -93,7 +93,7 @@ select:focus {
 
 label {
   font-weight: bold;
-  margin-right: 0.5rem;
+  margin: 0.5rem;
 }
 
 #time {

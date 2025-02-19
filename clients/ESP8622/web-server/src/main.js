@@ -21,6 +21,11 @@ const name = config["name"];
 const version = config["version"];
 const description = config["description"];
 const info = System.info();
+const cached = [
+  "Cache-Control",
+  //
+  "public, max-age=31536000",
+];
 
 for (const item of new Iterator(config.file.root)) {
   if (item.length) {
@@ -59,19 +64,19 @@ server.callback = requestHandler({
     body: new Resource("index.html"),
   }),
   "/script.mjs": () => ({
-    headers: ["Content-type", "application/javascript"],
+    headers: ["Content-type", "application/javascript", ...cached],
     body: new Resource("script.mjs"),
   }),
   "/device.mjs": () => ({
-    headers: ["Content-type", "application/javascript"],
+    headers: ["Content-type", "application/javascript", ...cached],
     body: new Resource("device.mjs"),
   }),
   "/style.css": () => ({
-    headers: ["Content-type", "text/css"],
+    headers: ["Content-type", "text/css", ...cached],
     body: new Resource("style.css"),
   }),
   "/favicon.ico": () => ({
-    headers: ["Content-type", "image/x-icon"],
+    headers: ["Content-type", "image/x-icon", ...cached],
     body: new Resource("favicon.ico"),
   }),
   [API]: {
