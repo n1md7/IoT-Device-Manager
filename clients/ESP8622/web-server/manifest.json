@@ -9,23 +9,13 @@
 	],
 	"modules": {
 		"*": [
-			"./main",
-			"./utils",
-			"./logger",
-			"./ticker",
-			"./switch",
-			"./storage",
-			"./counter",
+			"./src/*",
 			"$(MODULES)/network/http/*"
 		]
 	},
 	"data":{
 		"*": [
-			"./ui/favicon.ico",
-			"./ui/index.html",
-			"./ui/script.mjs",
-			"./ui/style.css",
-			"./ui/van-1.5.3.min.mjs"
+			"./ui/*"
 		]
 	},
 	"preload": "http",

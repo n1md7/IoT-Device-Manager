@@ -18,7 +18,7 @@ const [
   "select-time",
   "minutes",
   "seconds",
-].map((id) => document.getElementById(id));
+].map((id, a) => document.getElementById(id));
 
 let id;
 let countdown = 0;

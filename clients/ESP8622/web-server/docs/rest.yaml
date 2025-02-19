@@ -1,0 +1,209 @@
+openapi: 3.0.0
+info:
+  title: Simple Server API
+  description: API for serving static files and managing a timer.
+  version: 1.0.0
+servers:
+  - url: http://localhost
+    description: Local development server
+paths:
+  /:
+    get:
+      summary: Serve the index.html file
+      responses:
+        '200':
+          description: HTML content
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: text/html
+          content:
+            text/html:
+              schema:
+                type: string
+  /script.mjs:
+    get:
+      summary: Serve the script.mjs file
+      responses:
+        '200':
+          description: JavaScript content
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/javascript
+          content:
+            application/javascript:
+              schema:
+                type: string
+  /style.css:
+    get:
+      summary: Serve the style.css file
+      responses:
+        '200':
+          description: CSS content
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: text/css
+          content:
+            text/css:
+              schema:
+                type: string
+  /favicon.ico:
+    get:
+      summary: Serve the favicon.ico file
+      responses:
+        '200':
+          description: Icon content
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: image/x-icon
+          content:
+            image/x-icon:
+              schema:
+                type: string
+                format: binary
+  /api/on:
+    get:
+      summary: Start the timer
+      parameters:
+        - name: min
+          in: query
+          schema:
+            type: integer
+          required: true
+          description: Minutes to set the timer
+        - name: sec
+          in: query
+          schema:
+            type: integer
+          required: true
+          description: Seconds to set the timer
+      responses:
+        '200':
+          description: Timer started successfully
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                    example: true
+                  time:
+                    type: integer
+                    example: 60
+        '400':
+          description: Invalid query parameters or duration less than 10 seconds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid query parameters or duration less than 10 seconds"
+  /api/off:
+    get:
+      summary: Stop the timer
+      responses:
+        '200':
+          description: Timer stopped successfully
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                    example: false
+  /api/status:
+    get:
+      summary: Get the current status of the timer
+      responses:
+        '200':
+          description: Timer status retrieved successfully
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                    example: true
+                  time:
+                    type: integer
+                    example: 30
+  /api/info:
+    get:
+      summary: Get server information
+      responses:
+        '200':
+          description: Server information retrieved successfully
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: MyServer
+                  version:
+                    type: string
+                    example: 1.0.0
+                  description:
+                    type: string
+                    example: A simple server
+                  disk:
+                    type: object
+                    properties:
+                      used:
+                        type: integer
+                        example: 1024
+                      total:
+                        type: integer
+                        example: 2048
+                      occupied:
+                        type: string
+                        example: "50.00%"
+  /*:
+    get:
+      summary: Handle 404 errors
+      responses:
+        '404':
+          description: Route not found
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: text/plain
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Route not found: /unknown'

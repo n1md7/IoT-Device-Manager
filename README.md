@@ -50,7 +50,7 @@ Run **frontend** service
 ```
 
 #### Arduino
-Refer to the [README.md](clients/iot/SWITCH/README.md) in the `arduino-client` directory.
+Refer to the [README.md](clients/Arduino/SWITCH/README.md) in the `arduino-client` directory.
 
 #### Device manager
 Refer to the [README.md](clients/node-client/README.md) in the `node-client` directory.
