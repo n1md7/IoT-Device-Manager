@@ -1,14 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Device } from '/src/devices/entities/device.entity';
 import { Repository } from 'typeorm';
 import { DatabaseException } from '/libs/filters';
 import { DeviceRegisterMessage } from '/src/devices/messages/device-register.message';
 import { Cached } from '/libs/decorators/cache/method-cache.decorator';
+import { ClientMqtt, MqttRecordBuilder } from '@nestjs/microservices';
+import { Client } from '/src/devices/enums/client.enum';
 
 @Injectable()
-export class DevicesService {
-  constructor(@InjectRepository(Device) private readonly deviceRepository: Repository<Device>) {}
+export class DevicesService implements OnModuleInit {
+  constructor(
+    @InjectRepository(Device) private readonly deviceRepository: Repository<Device>,
+    @Inject(Client.DEVICES) private readonly mqttClient: ClientMqtt,
+  ) {}
+
+  async onModuleInit() {
+    await this.mqttClient.connect();
+    await this.notifyStatus();
+  }
+
+  async notifyStatus() {
+    return this.mqttClient.emit(
+      'home/managers/status',
+      new MqttRecordBuilder({
+        who: Client.DEVICES,
+        status: 'Connected',
+      })
+        .setQoS(1)
+        .setRetain(false)
+        .build(),
+    );
+  }
 
   @Cached('5m')
   async getDeviceByCode(code: string) {
