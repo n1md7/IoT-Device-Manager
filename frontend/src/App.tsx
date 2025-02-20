@@ -4,7 +4,6 @@ import Welcome from './components/Welcome.tsx';
 import AddNewSystem from './components/AddNewSystem.tsx';
 import AddNewComponent from './components/AddNewComponent.tsx';
 import { ReactElement, useEffect, useState } from 'react';
-import { api } from './api/api-client.tsx';
 
 function App() {
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
@@ -36,26 +35,6 @@ function App() {
   const handleMenuClick = (component: ReactElement) => {
     setActiveView(component);
   };
-
-  useEffect(() => {
-    api.devices
-      .get()
-      .then((response) => console.log(response.data.devices))
-      .catch((error) => console.error(error));
-  }, []);
-
-  useEffect(() => {
-    const { response, controller } = api.devices.getWithAbort();
-    response
-      .then((response) => {
-        console.log(response.data.devices);
-      })
-      .catch((error) => console.error(error));
-
-    return () => {
-      controller.abort('stop!');
-    };
-  }, []);
 
   return (
     <>

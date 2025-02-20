@@ -1,4 +1,6 @@
-export type DeviceType = {
+import { ComponentsDetails } from './componentTypes.ts';
+
+export type DeviceDetails = {
   code: string;
   type: string;
   name: string;
@@ -6,9 +8,10 @@ export type DeviceType = {
   version: string;
   createdAt: string;
   updatedAt: string;
+  components: ComponentsDetails[];
 };
 
-export type DeviceResponseType = {
+export type DevicesResponseData = {
   count: number;
-  devices: DeviceType[];
+  devices: DeviceDetails[];
 };

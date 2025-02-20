@@ -1,9 +1,9 @@
 import useData from './useData.ts';
-import { SystemsResponseData } from '../types/systemTypes.ts';
+import { ComponentsResponseData } from '../types/componentTypes.ts';
 
-const useSystems = () => {
-  const { data, error, loading } = useData<SystemsResponseData>('/api/v1/systems');
-  return { systemList: data, error, loading };
+const useComponent = () => {
+  const { data, error, loading } = useData<ComponentsResponseData>('/api/v1/components');
+  return { componentList: data?.components || [], error, loading };
 };
 
-export default useSystems;
+export default useComponent;
