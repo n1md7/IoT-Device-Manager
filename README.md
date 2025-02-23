@@ -55,6 +55,7 @@ Refer to the [README.md](clients/iot/SWITCH/README.md) in the `arduino-client` d
 #### Device manager
 Refer to the [README.md](clients/node-client/README.md) in the `node-client` directory.
 
+Prototype available here: [@Behance:kaeri-gg](https://www.behance.net/gallery/219918315/IoT-Home-Automation-System-UI)
 
-![image](https://github.com/n1md7/IoT-Device-Manager/assets/6734058/959ec731-b737-42c7-8736-18180dfe1587)
+![img.png](assets/img.png)
 
