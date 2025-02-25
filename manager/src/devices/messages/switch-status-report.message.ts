@@ -28,8 +28,8 @@ export class SwitchStatusReportMessage {
 
     return new SwitchStatusReportMessage({
       status: status as DeviceStatus,
-      code,
       type: type as DeviceType,
+      code,
       name,
       version,
       time: Number(time),

@@ -48,4 +48,17 @@ export class CreateDeviceRequest {
   @IsString()
   @MaxLength(2)
   version!: string;
+
+  @ApiProperty({
+    type: String,
+    example: '192.168.1.7',
+    description:
+      'The IP address of the device. ' +
+      'When it is set it will use HTTP request otherwise it fallbacks to MQTT protocol. ' +
+      'Omit this property if the device supposed to communicate over MQTT messages.',
+  })
+  @IsString()
+  @MaxLength(15)
+  @IsOptional()
+  ipAddress?: string;
 }

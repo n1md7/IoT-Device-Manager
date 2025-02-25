@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, OnModuleInit, Post, Put } from '@nestjs/common';
 import { Client } from '/src/devices/enums/client.enum';
 import { DevicesService } from '/src/devices/devices.service';
-import { ApiAcceptedResponse, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiAcceptedResponse, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { Device } from '/src/devices/entities/device.entity';
 import { ClientMqtt } from '@nestjs/microservices';
 import { CreateDeviceRequest } from '/src/devices/requests/create-device.request';
@@ -49,7 +49,7 @@ export class DevicesHttpController implements OnModuleInit {
 
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOkResponse({ status: HttpStatus.CREATED })
+  @ApiCreatedResponse({ status: HttpStatus.CREATED })
   @ApiOperation({ summary: 'Create device', description: 'Soft create a new device. If it exists, it will skip.' })
   async softCreate(@Body() body: CreateDeviceRequest) {
     await this.devicesService.softCreateDevice(body);
