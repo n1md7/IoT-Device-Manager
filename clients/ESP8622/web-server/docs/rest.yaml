@@ -6,6 +6,8 @@ info:
 servers:
   - url: http://localhost
     description: Local development server
+  - url: http://192.168.1.2
+    description: My home network
 paths:
   /:
     get:

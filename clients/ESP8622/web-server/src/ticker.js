@@ -1,5 +1,5 @@
 import { clearInterval, setInterval } from "./utils";
-import { Logger, Console } from "./logger";
+import { Logger, ConsoleLogger } from "./logger";
 
 /**
  * @callback Callback
@@ -55,7 +55,7 @@ export default class Ticker {
     this.#options = options;
     this.#isRunning = options.isRunning;
     this.#time = options.remainingTime;
-    this.#logger = new Console("Timer");
+    this.#logger = new ConsoleLogger("Timer");
   }
 
   start(seconds = 15) {

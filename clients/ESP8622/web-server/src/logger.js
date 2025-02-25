@@ -1,5 +1,5 @@
-import { File } from "file";
 import config from "mc/config";
+import { File } from "file";
 
 export const getLoggerPath = () => config.file.root + "log.txt";
 
@@ -24,24 +24,6 @@ export class Logger {
     }
 
     return `[${new Date().toISOString()}][${type}] ` + message.join(", ");
-  }
-}
-
-export class Console extends Logger {
-  log(...messages) {
-    trace(this.getFormat("LOG", messages) + "\n");
-  }
-
-  info(...messages) {
-    trace(this.getFormat("INFO", messages) + "\n");
-  }
-
-  warn(...messages) {
-    trace(this.getFormat("WARN", messages) + "\n");
-  }
-
-  error(...messages) {
-    trace(this.getFormat("ERROR", messages) + "\n");
   }
 }
 
@@ -94,5 +76,23 @@ export class FileLogger extends Logger {
 
   warn(...messages) {
     this.#write("WARN", ...messages);
+  }
+}
+
+export class ConsoleLogger extends Logger {
+  log(...messages) {
+    trace(this.getFormat("LOG", messages) + "\n");
+  }
+
+  info(...messages) {
+    trace(this.getFormat("INFO", messages) + "\n");
+  }
+
+  warn(...messages) {
+    trace(this.getFormat("WARN", messages) + "\n");
+  }
+
+  error(...messages) {
+    trace(this.getFormat("ERROR", messages) + "\n");
   }
 }

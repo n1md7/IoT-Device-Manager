@@ -19,8 +19,10 @@ import Storage from "./storage";
 import Counter from "./counter";
 
 const name = config["name"];
+const code = config["code"];
 const version = config["version"];
 const description = config["description"];
+const startTime = config["buttonClickTime"];
 const info = System.info();
 const cached = [
   "Cache-Control",
@@ -34,7 +36,7 @@ for (const item of new Iterator(config.file.root)) {
   }
 }
 
-console.log(`Device ${name} v${version} (${description}) is ready!`);
+console.log(`Device ${name}(${code}) v${version} (${description}) is ready!`);
 console.log(`Disk total: ${info.total}; used: ${info.used}`);
 
 const isTenthSecond = every(10);
@@ -44,9 +46,9 @@ const status = new Switch({ pin: 2, signal: LOW });
 const relay = new Switch({ pin: 4, signal: HIGH });
 const server = new Server({ port: 80 });
 const timer = new Ticker({
-  remainingTime,
   isRunning,
-  startTime: 1200, // 20m
+  startTime,
+  remainingTime,
   onTick: (value, logger) => {
     if (isTenthSecond(value)) {
       logger.info(`Remaining time: ${value}`);
@@ -86,9 +88,9 @@ server.callback = requestHandler({
   [API]: {
     "/on": (ctx) => {
       const { min = 0, sec = 0 } = ctx.params;
-      if (!min || !sec) {
+      if (min < 0 || sec < 0) {
         return apiError(
-          `Invalid query parameters. 'min' and 'sec' are required!`,
+          `Invalid query parameters. 'min' and 'sec' are required! And need to be positive!`,
         );
       }
       const seconds = toSeconds(min, sec || 10);

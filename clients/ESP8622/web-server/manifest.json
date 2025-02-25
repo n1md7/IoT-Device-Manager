@@ -1,27 +1,30 @@
 {
-	"include": [
-		"$(MODDABLE)/examples/manifest_base.json",
-		"$(MODDABLE)/examples/manifest_net.json",
-		"$(MODDABLE)/modules/files/preference/manifest.json",
-		"$(MODDABLE)/examples/manifest_typings.json",
-		"$(MODDABLE)/modules/files/file/manifest.json",
-		"$(MODULES)/pins/digital/manifest.json"
-	],
-	"modules": {
-		"*": [
-			"./src/*",
-			"$(MODULES)/network/http/*"
-		]
-	},
-	"data":{
-		"*": [
-			"./ui/*"
-		]
-	},
-	"preload": "http",
-	"config": {
-		"version": "1.0.0",
-		"name": "D0001",
-		"description": "Home automation"
-	}
+  "include": [
+    "$(MODDABLE)/examples/manifest_base.json",
+    "$(MODDABLE)/examples/manifest_net.json",
+    "$(MODDABLE)/modules/files/preference/manifest.json",
+    "$(MODDABLE)/modules/files/file/manifest.json",
+    "$(MODULES)/pins/digital/manifest.json"
+  ],
+  "modules": {
+    "*": [
+      "./src/*",
+      "$(MODULES)/network/http/*"
+    ]
+  },
+  "data": {
+    "*": [
+      "./ui/*"
+    ]
+  },
+  "preload": [
+    "http"
+  ],
+  "config": {
+    "buttonClickTime": 1200,
+    "version": "1.0.0",
+    "code": "D0001",
+    "name": "My Pump",
+    "description": "Home automation"
+  }
 }

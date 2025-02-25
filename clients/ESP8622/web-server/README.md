@@ -29,6 +29,7 @@ mcconfig -d -m -p esp/nodemcu \
   password="PASSWORD-HERE" \
   name="My device" \
   code="D0001" \
+  version="1" \
   description="My device description"
 ```
 

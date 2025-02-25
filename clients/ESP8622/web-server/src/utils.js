@@ -1,5 +1,5 @@
 import Timer from "timer";
-import { Console, FileLogger } from "./logger";
+import { ConsoleLogger } from "./logger";
 import { Server } from "http";
 
 export const every = (value) => (current) => current % value === 0;
@@ -7,8 +7,7 @@ export const setInterval = (callback, delay) => Timer.repeat(callback, delay);
 export const clearInterval = (timer) => Timer.clear(timer);
 export const toSeconds = (min, sec) => min * 60 + +sec;
 
-export const console = new Console();
-export const logger = new FileLogger();
+export const console = new ConsoleLogger();
 
 export const HIGH = 1;
 export const LOW = 0;
@@ -58,9 +57,7 @@ export const requestHandler = (routes = {}) => {
         this.path = value;
         this.query = query;
         this.route = route;
-        if (this.query) {
-          this.params = getQueryParams(this.query);
-        }
+        this.params = getQueryParams(this.query);
         break;
       case Server.prepareResponse:
         if (routes[this.route]) return routes[this.route](this);
