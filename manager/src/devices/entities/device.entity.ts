@@ -46,6 +46,14 @@ export class Device {
   version!: string;
 
   @ApiProperty({
+    type: String,
+    example: '192.168.1.7',
+    description: 'The IP address of the device.',
+  })
+  @Column({ type: 'varchar', length: 15, nullable: true })
+  ipAddress: string | null = null;
+
+  @ApiProperty({
     isArray: true,
     type: Component,
   })

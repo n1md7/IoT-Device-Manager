@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
-import { SystemsService } from './systems.service';
+import { SystemsService } from './services/systems.service';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -11,11 +11,10 @@ import {
 } from '@nestjs/swagger';
 import { System } from '/src/systems/entities/system.entity';
 import { ControlSystemRequest } from '/src/systems/requests/control-system.request';
-import { Action } from '/src/systems/enum/action.enum';
 import { CreateSystemRequest } from '/src/systems/requests/create-system.request';
 import { UpdateSystemRequest } from '/src/systems/requests/update-system.request';
 import { HttpErrorSchema } from '/libs/filters/http-exception/http-error.schema';
-import { ControlService } from '/src/systems/control.service';
+import { ControlService } from '/src/systems/services/control.service';
 
 @ApiTags('Systems')
 @Controller('systems')

@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Device } from '/src/devices/entities/device.entity';
 import { FeedModule } from '/src/feed/feed.module';
 import { ComponentsModule } from '/src/components/components.module';
+import { WebhookHttpController } from '/src/devices/webhook-http.controller';
 
 @Module({
   imports: [
@@ -36,7 +37,7 @@ import { ComponentsModule } from '/src/components/components.module';
     ]),
     FeedModule,
   ],
-  controllers: [DevicesHttpController, DevicesMqttController],
+  controllers: [DevicesHttpController, DevicesMqttController, WebhookHttpController],
   providers: [DevicesService],
 })
 export class DevicesModule {}

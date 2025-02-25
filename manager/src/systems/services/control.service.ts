@@ -44,7 +44,7 @@ export class ControlService {
   }
 
   /**
-   * @Description It makes sure the component is not used by other system, or it has to be shared one (like sensors)
+   * @Description It makes sure the component is not used by another system, or it has to be shared one (like sensors)
    * @throws {ConflictException} */
   assertSystemComponentsInUse(system: System) {
     for (const component of system.components) {

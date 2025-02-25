@@ -21,8 +21,73 @@ paths:
                   count:
                     type: integer
                     description: Total number of devices
-      tags:
+      tags: &ref_0
         - Devices
+  /api/v1/devices/create:
+    post:
+      operationId: DevicesHttpController_softCreate
+      summary: Create device
+      description: Soft create a new device. If it exists, it will skip.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDeviceRequest'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_0
+  /api/v1/devices/update:
+    put:
+      operationId: DevicesHttpController_updateDevice
+      summary: Update device
+      description: Update a device
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDeviceRequest'
+      responses:
+        '202':
+          description: Device updated
+      tags: *ref_0
+  /api/v1/devices/webhook/status/SWITCH:
+    put:
+      operationId: WebhookHttpController_updateSwitchDevice
+      summary: Status report for SWITCH
+      description: Provide device status update for SWITCH type
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwitchStatusRequest'
+      responses:
+        '202':
+          description: Device SWITCH status received
+      tags: &ref_1
+        - Devices
+  /api/v1/devices/webhook/status/SENSOR:
+    put:
+      operationId: WebhookHttpController_updateSensorDevice
+      summary: Status report for SENSOR
+      description: Provide device status update for SENSOR type
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorStatusRequest'
+      responses:
+        '202':
+          description: Device SENSOR reading received
+      tags: *ref_1
   /api/v1/components:
     post:
       operationId: ComponentsController_create
@@ -42,7 +107,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Component'
-      tags: &ref_0
+      tags: &ref_2
         - Components
     get:
       operationId: ComponentsController_findAll
@@ -64,7 +129,7 @@ paths:
                   count:
                     type: integer
                     description: Total number of components
-      tags: *ref_0
+      tags: *ref_2
   /api/v1/components/{id}:
     get:
       operationId: ComponentsController_findOne
@@ -85,7 +150,7 @@ paths:
                 $ref: '#/components/schemas/Component'
         '404':
           description: Component not found
-      tags: *ref_0
+      tags: *ref_2
     patch:
       operationId: ComponentsController_update
       summary: Update component
@@ -105,7 +170,7 @@ paths:
       responses:
         '204':
           description: Component updated
-      tags: *ref_0
+      tags: *ref_2
     delete:
       operationId: ComponentsController_remove
       summary: Delete component
@@ -119,7 +184,7 @@ paths:
       responses:
         '204':
           description: Component deleted
-      tags: *ref_0
+      tags: *ref_2
   /api/v1/feed/updates:
     get:
       operationId: FeedController_updates
@@ -152,13 +217,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/System'
-        '400': &ref_1
+        '400': &ref_3
           description: ''
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpErrorSchema'
-      tags: &ref_2
+      tags: &ref_4
         - Systems
   /api/v1/systems/control:
     post:
@@ -175,14 +240,14 @@ paths:
       responses:
         '200':
           description: System control
-        '400': *ref_1
+        '400': *ref_3
         '409':
           description: System start failure
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpErrorSchema'
-      tags: *ref_2
+      tags: *ref_4
   /api/v1/systems:
     get:
       operationId: SystemsController_findAll
@@ -204,8 +269,8 @@ paths:
                   count:
                     type: integer
                     description: Total number of systems
-        '400': *ref_1
-      tags: *ref_2
+        '400': *ref_3
+      tags: *ref_4
   /api/v1/systems/{id}:
     get:
       operationId: SystemsController_findById
@@ -224,8 +289,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/System'
-        '400': *ref_1
-      tags: *ref_2
+        '400': *ref_3
+      tags: *ref_4
     patch:
       operationId: SystemsController_updateById
       summary: Update system by id
@@ -245,8 +310,8 @@ paths:
       responses:
         '200':
           description: ''
-        '400': *ref_1
-      tags: *ref_2
+        '400': *ref_3
+      tags: *ref_4
     delete:
       operationId: SystemsController_removeById
       summary: Delete system by id
@@ -260,8 +325,8 @@ paths:
       responses:
         '200':
           description: ''
-        '400': *ref_1
-      tags: *ref_2
+        '400': *ref_3
+      tags: *ref_4
   /api/v1/scheduler:
     post:
       operationId: SchedulerController_create
@@ -281,9 +346,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Schedule'
-        '404': &ref_3
+        '404': &ref_5
           description: Schedule not found
-      tags: &ref_4
+      tags: &ref_6
         - Scheduler
     get:
       operationId: SchedulerController_findAll
@@ -305,8 +370,8 @@ paths:
                   count:
                     type: integer
                     description: Total number of schedules
-        '404': *ref_3
-      tags: *ref_4
+        '404': *ref_5
+      tags: *ref_6
   /api/v1/scheduler/{id}:
     get:
       operationId: SchedulerController_findById
@@ -323,8 +388,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Schedule'
-        '404': *ref_3
-      tags: *ref_4
+        '404': *ref_5
+      tags: *ref_6
     patch:
       operationId: SchedulerController_updateById
       parameters:
@@ -342,8 +407,8 @@ paths:
       responses:
         '200':
           description: ''
-        '404': *ref_3
-      tags: *ref_4
+        '404': *ref_5
+      tags: *ref_6
     delete:
       operationId: SchedulerController_removeById
       summary: Delete schedule
@@ -357,8 +422,8 @@ paths:
       responses:
         '200':
           description: ''
-        '404': *ref_3
-      tags: *ref_4
+        '404': *ref_5
+      tags: *ref_6
 info:
   title: Home Automation API
   description: Home Automation API for IoT devices
@@ -376,6 +441,147 @@ components:
       description: Enter JWT auth token
       in: header
   schemas:
+    CreateDeviceRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          example: D0001
+          description: The unique identifier of the device.
+        type:
+          type: string
+          enum: &ref_7
+            - SWITCH
+            - SENSOR
+          example: SWITCH
+          description: >-
+            The type of the device. This will be used to determine the
+            configuration of the device
+        name:
+          type: string
+          example: Timer
+          description: The name of the device.
+        description:
+          type: string
+          example: A timer device.
+          description: The description of the device.
+        version:
+          type: string
+          example: '1'
+          examples: &ref_8
+            - '1'
+            - '2'
+            - '3'
+          description: The version of the device.
+        ipAddress:
+          type: string
+          example: 192.168.1.7
+          description: >-
+            The IP address of the device. When it is set it will use HTTP
+            request otherwise it fallbacks to MQTT protocol. Omit this property
+            if the device supposed to communicate over MQTT messages.
+      required:
+        - code
+        - type
+        - name
+        - description
+        - version
+        - ipAddress
+    UpdateDeviceRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          example: D0001
+          description: The unique identifier of the device.
+        type:
+          type: string
+          enum: *ref_7
+          example: SWITCH
+          description: >-
+            The type of the device. This will be used to determine the
+            configuration of the device
+        name:
+          type: string
+          example: Timer
+          description: The name of the device.
+        description:
+          type: string
+          example: A timer device.
+          description: The description of the device.
+        version:
+          type: string
+          example: '1'
+          examples: *ref_8
+          description: The version of the device.
+        ipAddress:
+          type: string
+          example: 192.168.1.7
+          description: >-
+            The IP address of the device. When it is set it will use HTTP
+            request otherwise it fallbacks to MQTT protocol. Omit this property
+            if the device supposed to communicate over MQTT messages.
+    SwitchStatusRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          example: D0001
+          description: The unique identifier of the device.
+        name:
+          type: string
+          example: Timer
+          description: The name of the device.
+        version:
+          type: string
+          example: '1'
+          examples: &ref_9
+            - '1'
+            - '2'
+            - '3'
+          description: The version of the device.
+        status:
+          type: string
+          enum:
+            - 'ON'
+            - 'OFF'
+          example: 'ON'
+          description: The status of the device.
+        timeRemaining:
+          type: number
+          example: 60
+          description: Time remaining for the device to turn off.
+      required:
+        - code
+        - name
+        - version
+        - status
+        - timeRemaining
+    SensorStatusRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          example: D0001
+          description: The unique identifier of the device.
+        name:
+          type: string
+          example: Timer
+          description: The name of the device.
+        version:
+          type: string
+          example: '1'
+          examples: *ref_9
+          description: The version of the device.
+        reading:
+          type: number
+          description: The reading value of the sensor.
+          example: 1.234567
+      required:
+        - code
+        - name
+        - version
+        - reading
     CreateComponentRequest:
       type: object
       properties:
@@ -489,7 +695,7 @@ components:
           example: 5 * * * * *
           description: The cron expression of the schedule to START.
         duration:
-          example: &ref_5
+          example: &ref_10
             min: 10
             sec: 0
           description: Duration of the component to run.
@@ -516,7 +722,7 @@ components:
           example: 5 * * * * *
           description: The cron expression of the schedule to START.
         duration:
-          example: *ref_5
+          example: *ref_10
           description: Duration of the component to run.
           allOf:
             - $ref: '#/components/schemas/SystemTime'
@@ -659,6 +865,10 @@ components:
           type: string
           example: '1'
           description: The version of the device.
+        ipAddress:
+          type: string
+          example: 192.168.1.7
+          description: The IP address of the device.
         components:
           type: array
           items:
@@ -679,6 +889,7 @@ components:
         - name
         - description
         - version
+        - ipAddress
         - components
         - createdAt
         - updatedAt

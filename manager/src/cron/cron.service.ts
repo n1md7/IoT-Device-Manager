@@ -1,7 +1,7 @@
 import { SystemTime } from '/src/systems/requests/properties/system-time.property';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Schedule } from '/src/scheduler/entities/scheduler.entity';
-import { ControlService } from '/src/systems/control.service';
+import { ControlService } from '/src/systems/services/control.service';
 import { plainToInstance } from 'class-transformer';
 import { CronJob } from 'cron';
 import { ReportService } from '/libs/setup/report/report.service';
