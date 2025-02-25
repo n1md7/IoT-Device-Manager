@@ -1,6 +1,6 @@
 import { Controller, Inject, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ClientMqtt, Ctx, MessagePattern, MqttRecordBuilder, Payload, RpcException } from '@nestjs/microservices';
-import { StatusReportMessage, StatusReportPayload } from '/src/devices/messages/status-report.message';
+import { SwitchStatusReportMessage, StatusReportPayload } from '/src/devices/messages/switch-status-report.message';
 import { RpcExceptionFilter } from '/libs/filters';
 import { DevicesService } from '/src/devices/devices.service';
 import { MessageLoggerInterceptor } from '/libs/interceptors/message-logger/message-logger.interceptor';
@@ -34,7 +34,7 @@ export class DevicesMqttController {
   @MessagePattern('home/devices/+/state')
   async handleReport(@Payload() payload: StatusReportPayload, @Ctx() context: MqttRequest) {
     // TODO:  Save data to database for processing
-    const report = StatusReportMessage.fromPayload(payload);
+    const report = SwitchStatusReportMessage.fromCSVPayload(payload);
     const error = validateSync(report);
     if (error.length > 0) throw new RpcException(error);
 

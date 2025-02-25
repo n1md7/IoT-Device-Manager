@@ -1,0 +1,41 @@
+{
+  "devices": [
+    {
+      "code": "D0001",
+      "type": "SWITCH",
+      "name": "Feeder",
+      "description": null,
+      "version": "1",
+      "createdAt": "2025-01-23T09:53:04.000Z",
+      "updatedAt": "2025-01-23T09:53:04.000Z"
+    },
+    {
+      "code": "D0010",
+      "type": "SWITCH",
+      "name": "Autofeeder",
+      "description": null,
+      "version": "1",
+      "createdAt": "2025-02-04T19:09:16.000Z",
+      "updatedAt": "2025-02-04T19:09:16.000Z"
+    },
+    {
+      "code": "D0020",
+      "type": "SWITCH",
+      "name": "My Water Pump 2",
+      "description": null,
+      "version": "1",
+      "createdAt": "2025-02-04T19:10:39.000Z",
+      "updatedAt": "2025-02-04T19:10:39.000Z"
+    },
+    {
+      "code": "D0030",
+      "type": "SWITCH",
+      "name": "My Water Pump 3",
+      "description": null,
+      "version": "1",
+      "createdAt": "2025-02-04T19:10:45.000Z",
+      "updatedAt": "2025-02-04T19:10:45.000Z"
+    }
+  ],
+  "count": 4
+}

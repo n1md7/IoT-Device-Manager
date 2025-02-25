@@ -3,6 +3,7 @@ info:
   title: Simple Server API
   description: API for serving static files and managing a timer.
   version: 1.0.0
+<<<<<<< HEAD
 servers:
   - url: http://localhost
     description: Local development server
@@ -72,6 +73,24 @@ paths:
                 format: binary
   /api/on:
     get:
+=======
+tags:
+  - name: Power
+    description: Device power management (ON/OFF)
+  - name: Device
+    description: Device information
+servers:
+  - url: http://localhost
+    description: Local development server
+paths:
+  /api/on:
+    get:
+      tags:
+        - Power
+      description: >-
+        Starts the device timer for a specified duration.
+        After the timer expires, the device will be turned off automatically.
+>>>>>>> c4f28dd6f33548bdbffe53b13b2bed1919603385
       summary: Start the timer
       parameters:
         - name: min
@@ -117,7 +136,14 @@ paths:
                     example: "Invalid query parameters or duration less than 10 seconds"
   /api/off:
     get:
+<<<<<<< HEAD
       summary: Stop the timer
+=======
+      tags:
+        - Power
+      summary: Stop the timer
+      description: Stops the device timer and turns off the device.
+>>>>>>> c4f28dd6f33548bdbffe53b13b2bed1919603385
       responses:
         '200':
           description: Timer stopped successfully
@@ -136,7 +162,16 @@ paths:
                     example: false
   /api/status:
     get:
+<<<<<<< HEAD
       summary: Get the current status of the timer
+=======
+      tags:
+        - Device
+      summary: Get the current status of the timer
+      description: >-
+        Returns the current status of the device timer.
+        Whether the timer is active or inactive and the remaining time.
+>>>>>>> c4f28dd6f33548bdbffe53b13b2bed1919603385
       responses:
         '200':
           description: Timer status retrieved successfully
@@ -153,12 +188,29 @@ paths:
                   active:
                     type: boolean
                     example: true
+<<<<<<< HEAD
                   time:
                     type: integer
                     example: 30
   /api/info:
     get:
       summary: Get server information
+=======
+                    description: Whether the device is running or not
+                  time:
+                    type: integer
+                    example: 30
+                    description: Remaining time in seconds
+  /api/info:
+    get:
+      tags:
+        - Device
+      summary: Get server information
+      description: >-
+        Returns information about the server and disk usage.
+        Disk usage is calculated as a percentage of used space to total space.
+        File logs are stored on the device, and disk usage is important.
+>>>>>>> c4f28dd6f33548bdbffe53b13b2bed1919603385
       responses:
         '200':
           description: Server information retrieved successfully
@@ -193,6 +245,7 @@ paths:
                       occupied:
                         type: string
                         example: "50.00%"
+<<<<<<< HEAD
   /*:
     get:
       summary: Handle 404 errors
@@ -209,3 +262,5 @@ paths:
               schema:
                 type: string
                 example: 'Route not found: /unknown'
+=======
+>>>>>>> c4f28dd6f33548bdbffe53b13b2bed1919603385

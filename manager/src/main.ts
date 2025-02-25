@@ -29,6 +29,7 @@ import { HttpExceptionFilter } from '/libs/filters/http-exception/http-exception
     configureFilters(app);
 
     configureApi(app);
+    configureOrigin(app);
 
     configureSwagger(app);
     disableXPoweredByHeader(app);
@@ -55,6 +56,25 @@ import { HttpExceptionFilter } from '/libs/filters/http-exception/http-exception
 
 function configureInterceptors(app: NestExpressApplication) {
   app.useGlobalInterceptors(new RequestIdInterceptor(), new RequestLoggerInterceptor());
+}
+
+function configureOrigin(app: NestExpressApplication) {
+  app.enableCors({
+    origin: (requestOrigin, callback) => {
+      const corsWhitelist = process.env.ORIGIN.split(',');
+      const originNotDefined = !requestOrigin;
+      const isWhitelisted = corsWhitelist.indexOf(requestOrigin) !== -1;
+      const isLocalhost = new RegExp(/^https?:\/\/(localhost|127.0.0.1)/).test(requestOrigin);
+      const corsAllowed = originNotDefined || isLocalhost || isWhitelisted;
+
+      if (corsAllowed) return callback(null, true);
+      callback(new Error(`Origin [${requestOrigin}] Not allowed by CORS`));
+    },
+    methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    allowedHeaders: 'Authorization, Content-Type, Accept',
+    exposedHeaders: 'Authorization, Content-Type',
+    credentials: true,
+  });
 }
 
 function configureFilters(app: NestExpressApplication) {

@@ -1,0 +1,46 @@
+{
+  "systems": [
+    {
+      "id": 1,
+      "name": "Watering System",
+      "description": "A watering system. It waters plants.",
+      "createdAt": "2025-02-04T19:14:26.000Z",
+      "updatedAt": "2025-02-04T19:14:26.000Z",
+      "components": [
+        {
+          "id": 1,
+          "inUse": true,
+          "shared": false,
+          "createdAt": "2025-02-04T19:15:21.000Z",
+          "updatedAt": "2025-02-19T19:42:19.000Z",
+          "device": {
+            "code": "D0001",
+            "type": "SWITCH",
+            "name": "Feeder",
+            "description": null,
+            "version": "1",
+            "createdAt": "2025-01-23T09:53:04.000Z",
+            "updatedAt": "2025-01-23T09:53:04.000Z"
+          }
+        },
+        {
+          "id": 2,
+          "inUse": false,
+          "shared": false,
+          "createdAt": "2025-02-04T19:16:30.000Z",
+          "updatedAt": "2025-02-19T19:42:30.000Z",
+          "device": {
+            "code": "D0010",
+            "type": "SWITCH",
+            "name": "My Water Pump 1",
+            "description": null,
+            "version": "1",
+            "createdAt": "2025-02-04T19:09:16.000Z",
+            "updatedAt": "2025-02-04T19:09:16.000Z"
+          }
+        }
+      ]
+    }
+  ],
+  "count": 1
+}
