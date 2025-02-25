@@ -11,7 +11,7 @@ type Time = number;
 
 export type StatusReportPayload = `${Status},${Code},${Type},${Name},${Version},${Time}`;
 
-export class StatusReportMessage {
+export class SwitchStatusReportMessage {
   @IsEnum(DeviceStatus) status!: DeviceStatus;
   @IsString() @Length(5) code!: string;
   @IsEnum(DeviceType) type!: DeviceType;
@@ -19,14 +19,14 @@ export class StatusReportMessage {
   @IsString() @MaxLength(2) version!: string;
   @IsNumber() time!: number;
 
-  private constructor(payload: Partial<StatusReportMessage>) {
+  constructor(payload: Partial<SwitchStatusReportMessage>) {
     Object.assign(this, payload);
   }
 
-  static fromPayload(payload: StatusReportPayload): StatusReportMessage {
+  static fromCSVPayload(payload: StatusReportPayload): SwitchStatusReportMessage {
     const [status, code, type, name, version, time] = payload.split(',');
 
-    return new StatusReportMessage({
+    return new SwitchStatusReportMessage({
       status: status as DeviceStatus,
       code,
       type: type as DeviceType,
