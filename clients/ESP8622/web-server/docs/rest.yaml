@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: Simple Server API
+  description: API for serving static files and managing a timer.
+  version: 1.0.0
+tags:
+  - name: Power
+    description: Device power management (ON/OFF)
+  - name: Device
+    description: Device information
+servers:
+  - url: http://localhost
+    description: Local development server
+  - url: http://192.168.1.2
+    description: My home network
+paths:
+  /api/on:
+    get:
+      tags:
+        - Power
+      description: >-
+        Starts the device timer for a specified duration.
+        After the timer expires, the device will be turned off automatically.
+      summary: Start the timer
+      parameters:
+        - name: min
+          in: query
+          schema:
+            type: integer
+          required: true
+          description: Minutes to set the timer
+        - name: sec
+          in: query
+          schema:
+            type: integer
+          required: true
+          description: Seconds to set the timer
+      responses:
+        '200':
+          description: Timer started successfully
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                    example: true
+                  time:
+                    type: integer
+                    example: 60
+        '400':
+          description: Invalid query parameters or duration less than 10 seconds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid query parameters or duration less than 10 seconds"
+  /api/off:
+    get:
+      tags:
+        - Power
+      summary: Stop the timer
+      description: Stops the device timer and turns off the device.
+      responses:
+        '200':
+          description: Timer stopped successfully
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                    example: false
+  /api/status:
+    get:
+      tags:
+        - Device
+      summary: Get the current status of the timer
+      description: >-
+        Returns the current status of the device timer.
+        Whether the timer is active or inactive and the remaining time.
+      responses:
+        '200':
+          description: Timer status retrieved successfully
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                    example: true
+                  time:
+                    type: integer
+                    example: 30
+  /api/info:
+    get:
+      tags:
+        - Device
+      summary: Get server information
+      description: >-
+        Returns information about the server and disk usage.
+        Disk usage is calculated as a percentage of used space to total space.
+        File logs are stored on the device, and disk usage is important.
+      responses:
+        '200':
+          description: Server information retrieved successfully
+          headers:
+            Content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: MyServer
+                  version:
+                    type: string
+                    example: 1.0.0
+                  description:
+                    type: string
+                    example: A simple server
+                  disk:
+                    type: object
+                    properties:
+                      used:
+                        type: integer
+                        example: 1024
+                      total:
+                        type: integer
+                        example: 2048
+                      occupied:
+                        type: string
+                        example: "50.00%"
+

@@ -71,4 +71,8 @@ export class DevicesService implements OnModuleInit {
       return await this.createDevice(device);
     }
   }
+
+  async updateDevice(device: Partial<Device>) {
+    return await this.deviceRepository.update({ code: device.code }, device);
+  }
 }

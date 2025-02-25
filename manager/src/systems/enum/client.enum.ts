@@ -1,3 +1,4 @@
 export enum Client {
-  SYSTEMS = 'SYSTEMS',
+  SYSTEMS = 'SYSTEMS-MQTT',
+  DEVICES = 'DEVICES-HTTP',
 }

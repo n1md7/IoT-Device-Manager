@@ -4,7 +4,7 @@ import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, A
 import { UpdateScheduleRequest } from '/src/scheduler/requests/update-schedule.request';
 import { Schedule } from '/src/scheduler/entities/scheduler.entity';
 import { CreateScheduleRequest } from '/src/scheduler/requests/create-schedule.request';
-import { SystemsService } from '/src/systems/systems.service';
+import { SystemsService } from '/src/systems/services/systems.service';
 import { CronService } from '/src/cron/cron.service';
 
 @ApiTags('Scheduler')

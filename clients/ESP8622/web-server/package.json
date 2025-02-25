@@ -1,0 +1,19 @@
+{
+  "name": "web-server",
+  "version": "1.0.0",
+  "description": "This is a basic code for `esp/nodemcu` (`ESP8622`).",
+  "main": "src/main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "3.5.1",
+    "@moddable/typings": "^5.4.1"
+  }
+}

@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home Automation</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Skranji&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
@@ -15,7 +18,7 @@
   <p>Status: <span id="status">OFF</span></p>
   <p id="preview-time">Auto-shutdown in: <span id="time">00:00</span></p>
   <div id="select-time" style="display: none">
-    <label for="minutes">Minutes:</label>
+    <label for="minutes">Minutes</label>
     <select id="minutes">
       <option selected value="0">0</option>
       <option value="1">1</option>
@@ -29,7 +32,6 @@
       <option value="30">30</option>
       <option value="45">45</option>
     </select>
-    <label for="seconds">Seconds:</label>
     <select id="seconds">
       <option value="0">00</option>
       <option selected value="10">10</option>
@@ -37,6 +39,7 @@
       <option value="30">30</option>
       <option value="45">45</option>
     </select>
+    <label for="seconds">Seconds</label>
   </div>
   <div class="button-container">
     <button id="on" data-path="/api/on">Turn ON</button>
@@ -44,7 +47,20 @@
   </div>
   <div id="error-text"></div>
 </main>
-<footer>Smart Automation | Powered by GG-Software</footer>
-<script src="script.mjs" type="module"></script>
+<footer>
+  <p>Powered by <b>GG-Software</b></p>
+  <p class="version">
+    <span><b id="name">D0000</b></span>
+    <span><b id="desc">My Device</b></span>
+    <span>v<b id="version">1</b></span>
+  </p>
+  <p class="disk">
+    <span>Total: <b id="total">0.00</b> B</span>
+    <span>Used: <b id="used">0.00</b> B</span>
+    <span><b id="occupied">0.00</b></span>
+  </p>
+</footer>
+<script src="script.mjs?v=2" type="module"></script>
+<script src="device.mjs?v=2" type="module"></script>
 </body>
 </html>
