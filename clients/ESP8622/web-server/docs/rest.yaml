@@ -3,73 +3,22 @@ info:
   title: Simple Server API
   description: API for serving static files and managing a timer.
   version: 1.0.0
+tags:
+  - name: Power
+    description: Device power management (ON/OFF)
+  - name: Device
+    description: Device information
 servers:
   - url: http://localhost
     description: Local development server
 paths:
-  /:
-    get:
-      summary: Serve the index.html file
-      responses:
-        '200':
-          description: HTML content
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: text/html
-          content:
-            text/html:
-              schema:
-                type: string
-  /script.mjs:
-    get:
-      summary: Serve the script.mjs file
-      responses:
-        '200':
-          description: JavaScript content
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: application/javascript
-          content:
-            application/javascript:
-              schema:
-                type: string
-  /style.css:
-    get:
-      summary: Serve the style.css file
-      responses:
-        '200':
-          description: CSS content
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: text/css
-          content:
-            text/css:
-              schema:
-                type: string
-  /favicon.ico:
-    get:
-      summary: Serve the favicon.ico file
-      responses:
-        '200':
-          description: Icon content
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: image/x-icon
-          content:
-            image/x-icon:
-              schema:
-                type: string
-                format: binary
   /api/on:
     get:
+      tags:
+        - Power
+      description: >-
+        Starts the device timer for a specified duration.
+        After the timer expires, the device will be turned off automatically.
       summary: Start the timer
       parameters:
         - name: min
@@ -115,7 +64,10 @@ paths:
                     example: "Invalid query parameters or duration less than 10 seconds"
   /api/off:
     get:
+      tags:
+        - Power
       summary: Stop the timer
+      description: Stops the device timer and turns off the device.
       responses:
         '200':
           description: Timer stopped successfully
@@ -134,7 +86,12 @@ paths:
                     example: false
   /api/status:
     get:
+      tags:
+        - Device
       summary: Get the current status of the timer
+      description: >-
+        Returns the current status of the device timer.
+        Whether the timer is active or inactive and the remaining time.
       responses:
         '200':
           description: Timer status retrieved successfully
@@ -151,12 +108,20 @@ paths:
                   active:
                     type: boolean
                     example: true
+                    description: Whether the device is running or not
                   time:
                     type: integer
                     example: 30
+                    description: Remaining time in seconds
   /api/info:
     get:
+      tags:
+        - Device
       summary: Get server information
+      description: >-
+        Returns information about the server and disk usage.
+        Disk usage is calculated as a percentage of used space to total space.
+        File logs are stored on the device, and disk usage is important.
       responses:
         '200':
           description: Server information retrieved successfully
@@ -191,19 +156,3 @@ paths:
                       occupied:
                         type: string
                         example: "50.00%"
-  /*:
-    get:
-      summary: Handle 404 errors
-      responses:
-        '404':
-          description: Route not found
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: text/plain
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: 'Route not found: /unknown'
