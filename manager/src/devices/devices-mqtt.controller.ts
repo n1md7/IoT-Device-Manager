@@ -1,6 +1,6 @@
 import { Controller, Inject, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ClientMqtt, Ctx, MessagePattern, MqttRecordBuilder, Payload, RpcException } from '@nestjs/microservices';
-import { SwitchStatusReportMessage, StatusReportPayload } from '/src/devices/messages/switch-status-report.message';
+import { ClientMqtt, Ctx, MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import { StatusReportPayload, SwitchStatusReportMessage } from '/src/devices/messages/switch-status-report.message';
 import { RpcExceptionFilter } from '/libs/filters';
 import { DevicesService } from '/src/devices/devices.service';
 import { MessageLoggerInterceptor } from '/libs/interceptors/message-logger/message-logger.interceptor';
@@ -12,7 +12,6 @@ import { ComponentsService } from '/src/components/components.service';
 import { DeviceStatus } from '/src/devices/enums/status.enum';
 import { validateSync } from 'class-validator';
 import { Client } from '/src/devices/enums/client.enum';
-import { DeviceOffMessage } from '/src/devices/types/device-control-message.type';
 
 @UseFilters(RpcExceptionFilter)
 @UseInterceptors(MessageIdInterceptor, MessageLoggerInterceptor, TimeoutInterceptor)

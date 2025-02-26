@@ -27,21 +27,25 @@ type InfoResponse = {
 
 @Injectable()
 export class DeviceClientService {
+  private readonly protocol = 'http';
+
   constructor(private readonly http: HttpClientService) {}
 
   async fetchDeviceInfo(ipAddress: string) {
-    return await this.http.get<InfoResponse>(`${ipAddress}/api/info`);
+    return await this.http.get<InfoResponse>(`${this.protocol}://${ipAddress}/api/info`);
   }
 
   async fetchDeviceStatus(ipAddress: string) {
-    return await this.http.get<StatusResponse>(`${ipAddress}/api/status`);
+    return await this.http.get<StatusResponse>(`${this.protocol}://${ipAddress}/api/status`);
   }
 
   async startSwitch(ipAddress: string, min: number, sec: number) {
-    return await this.http.get<OnResponse>(`${ipAddress}/api/on?min=${min}&sec=${sec}`);
+    return await this.http.get<OnResponse>(`${this.protocol}://${ipAddress}/api/on`, {
+      params: { min, sec },
+    });
   }
 
   async stopSwitch(ipAddress: string) {
-    return await this.http.get<OffResponse>(`${ipAddress}/api/off`);
+    return await this.http.get<OffResponse>(`${this.protocol}://${ipAddress}/api/off`);
   }
 }

@@ -5,6 +5,7 @@ import { AbstractControl } from '/src/systems/controls/abstract/control.abstract
 import { SystemTime } from '/src/systems/requests/properties/system-time.property';
 import { DeviceOffMessage, DeviceOnMessage } from '/src/devices/types/device-control-message.type';
 import { MqttRecordBuilder } from '@nestjs/microservices';
+import { isAxiosError } from 'axios';
 
 @Injectable()
 export class SwitchService extends AbstractControl {
@@ -38,7 +39,9 @@ export class SwitchService extends AbstractControl {
   }
 
   private async stopOverHttp(component: Component) {
-    await this.httpClient.stopSwitch(component.device.ipAddress!);
+    await this.httpClient.stopSwitch(component.device.ipAddress!).catch((error) => {
+      console.error(error);
+    });
   }
 
   private stopOverMqtt(component: Component) {
