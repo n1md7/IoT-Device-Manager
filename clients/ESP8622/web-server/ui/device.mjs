@@ -22,8 +22,8 @@ u("wait...");
 fetch("/api/info")
   .then((res) => res.json())
   .then((info) => {
-    desc.innerText = info.description || "N/A";
-    name.innerText = info.name || "N/A";
+    name.innerText = info.code || "N/A";
+    desc.innerText = info.current?.name || "N/A";
     version.innerText = info.version || "N/A";
     used.innerText = f(info.disk?.used || "N/A");
     total.innerText = f(info.disk?.total || "N/A");

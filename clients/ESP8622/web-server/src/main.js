@@ -17,14 +17,15 @@ import Resource from "Resource";
 import config from "mc/config";
 import Storage from "./storage";
 import Counter from "./counter";
+import { Manager } from "./manager";
 
-const code = config["device"]["code"];
-const version = config["device"]["version"];
+const code = config["code"];
+const version = config["version"];
 
-const defaultName = config["default"]["name"];
-const defaultDescription = config["default"]["description"];
-const defaultStartTime = config["default"]["startTime"];
-const defaultManagerAddress = config["default"]["managerUrl"];
+const defaultName = config["defaultName"];
+const defaultDescription = config["defaultDescription"];
+const defaultStartTime = +config["defaultStartTime"];
+const defaultManagerUrl = config["defaultManagerUrl"];
 
 const info = System.info();
 const cached = [
@@ -39,7 +40,7 @@ for (const item of new Iterator(config.file.root)) {
   }
 }
 
-const isTenthSecond = every(10);
+const isEveryMinute = every(60);
 
 const remainingTime = new Counter("time");
 
@@ -47,27 +48,40 @@ const name = new Storage("device", "name", defaultName);
 const description = new Storage("device", "description", defaultDescription);
 const isRunning = new Storage("ticker", "isRunning", false);
 const startTime = new Storage("ticker", "startTime", defaultStartTime);
-const managerUrl = new Storage("manager", "address", defaultManagerAddress);
+const managerUrl = new Storage("manager", "address", defaultManagerUrl);
 
 const status = new Switch({ pin: 2, signal: LOW });
 const relay = new Switch({ pin: 4, signal: HIGH });
 const server = new Server({ port: 80 });
+const manager = new Manager(managerUrl, name, code, version);
 const timer = new Ticker({
   isRunning,
   remainingTime,
   startTime: startTime.getValue(),
   onTick: (value, logger) => {
-    if (isTenthSecond(value)) {
+    if (isEveryMinute(value)) {
       logger.info(`Remaining time: ${value}`);
+      manager.report({
+        status: timer.getStatusEnum(),
+        timeRemaining: value,
+      });
     }
   },
   onStart: () => {
     status.start();
     relay.start();
+    manager.report({
+      status: timer.getStatusEnum(),
+      timeRemaining: startTime.getValue(),
+    });
   },
   onStop: () => {
     status.stop();
     relay.stop();
+    manager.report({
+      status: timer.getStatusEnum(),
+      timeRemaining: startTime.getValue(),
+    });
   },
 });
 
@@ -92,7 +106,7 @@ server.callback = requestHandler({
     headers: ["Content-type", "image/x-icon", ...cached],
     body: new Resource("favicon.ico"),
   }),
-  "config.html": () => ({
+  "/config.html": () => ({
     headers: ["Content-type", "text/html"],
     body: new Resource("config.html"),
   }),
@@ -140,14 +154,37 @@ server.callback = requestHandler({
     },
     "/info": () => {
       const occupiedInPercent = (info.used / info.total) * 100;
-      const disk = `{"used": ${info.used}, "total": ${info.total}, "occupied": "${occupiedInPercent.toFixed(2)}%"}`;
-      const defaults = `{"startTime": "${defaultStartTime}", "managerUrl": "${defaultManagerAddress}"}`;
-      const current = `{"startTime": ${startTime.getValue()}, "managerUrl": "${managerUrl.getValue()}"}`;
 
       return {
         headers: ["Content-type", "application/json"],
-        body: `{"name": "${name}", "version": "${version}", "description": "${description}", "disk": ${disk}, "defaults": ${defaults}, "current": ${current}}`,
+        body: JSON.stringify({
+          code,
+          version,
+          current: {
+            name: name.getValue(),
+            description: description.getValue(),
+            startTime: startTime.getValue(),
+            managerUrl: managerUrl.getValue(),
+          },
+          defaults: {
+            name: defaultName,
+            description: defaultDescription,
+            startTime: defaultStartTime,
+            managerUrl: defaultManagerUrl,
+          },
+          disk: {
+            used: info.used,
+            total: info.total,
+            occupied: `${occupiedInPercent.toFixed(2)}%`,
+          },
+        }),
       };
+    },
+    "/config-reset": () => {
+      description.setValue(defaultDescription);
+      name.setValue(defaultName);
+      startTime.setValue(defaultStartTime);
+      managerUrl.setValue(defaultManagerUrl);
     },
     "/config-update": (ctx) => {
       if (ctx.params.managerUrl) {
@@ -159,10 +196,10 @@ server.callback = requestHandler({
         managerUrl.setValue(ctx.params.managerUrl);
       }
       if (ctx.params.startTime) {
-        if (ctx.params.startTime < 10) {
+        if (+ctx.params.startTime < 10) {
           return apiError(`Invalid startTime. It must be at least 10 seconds`);
         }
-        startTime.setValue(ctx.params.startTime);
+        startTime.setValue(+ctx.params.startTime);
       }
       if (ctx.params.name) name.setValue(ctx.params.name.substring(0, 32));
       if (ctx.params.description) {
@@ -183,7 +220,9 @@ server.callback = requestHandler({
   },
 });
 
-console.log(`Device ${name}(${code}) v${version} (${description}) is ready!`);
+console.log(
+  `Device ${name.getValue()}(${code}) v${version} (${description.getValue()}) is ready!`,
+);
 console.log(`Disk total: ${info.total}; used: ${info.used}`);
 console.log(`[http] server ready at ${Net.get("IP")}`);
 

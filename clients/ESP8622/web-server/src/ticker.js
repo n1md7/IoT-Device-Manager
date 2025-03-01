@@ -80,6 +80,10 @@ export default class Ticker {
     return this.#isRunning.getValue(false);
   }
 
+  getStatusEnum() {
+    return this.#isRunning.getValue(false) ? "ON" : "OFF";
+  }
+
   stop() {
     if (!this.#isRunning.getValue()) return;
 

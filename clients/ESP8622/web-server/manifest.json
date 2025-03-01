@@ -21,15 +21,11 @@
     "http"
   ],
   "config": {
-    "device": {
-      "code": "D0001",
-      "version": "1.0.0"
-    },
-    "default": {
-      "name": "My Pump",
-      "startTime": 1200,
-      "description": "Home automation",
-      "managerUrl": "http://192.168.1.246"
-    }
+    "code": "D0001",
+    "version": "1.0.0",
+    "defaultName": "My Pump",
+    "defaultStartTime": 1200,
+    "defaultDescription": "Home automation",
+    "defaultManagerUrl": "http://192.168.1.246"
   }
 }

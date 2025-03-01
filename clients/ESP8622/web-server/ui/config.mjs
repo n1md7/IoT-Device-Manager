@@ -3,23 +3,41 @@ document.addEventListener("DOMContentLoaded", async () => {
   const statusDiv = document.getElementById("status");
   const resetButton = document.getElementById("reset-button");
 
-  const fetchInfo = async () => {
-    const response = await fetch("/api/info");
-    if (response.ok) {
-      return response.json();
-    }
-    throw new Error("Failed to fetch info");
+  const inputs = {
+    name: document.getElementById("name"),
+    description: document.getElementById("description"),
+    startTime: document.getElementById("startTime"),
+    managerUrl: document.getElementById("managerUrl"),
   };
 
-  const populateForm = (info) => {
-    document.getElementById("name").value =
-      info.current.name || info.defaults.name;
-    document.getElementById("description").value =
-      info.current.description || info.defaults.description;
-    document.getElementById("startTime").value =
-      info.current.startTime || info.defaults.startTime;
-    document.getElementById("managerUrl").value =
-      info.current.managerUrl || info.defaults.managerUrl;
+  const fetchInfo = async () => {
+    try {
+      const response = await fetch("/api/info");
+      if (!response.ok)
+        throw new Error("Failed to fetch info: " + response.statusText);
+      return await response.json();
+    } catch (error) {
+      updateStatus(error.message, false);
+    }
+  };
+
+  const resetConfig = async () => {
+    try {
+      const response = await fetch("/api/config-reset");
+      if (!response.ok)
+        throw new Error(
+          "Failed to reset configuration: " + response.statusText,
+        );
+    } catch (error) {
+      updateStatus(error.message, false);
+    }
+  };
+
+  const populateForm = (info, by = "current") => {
+    if (!info) return;
+    Object.keys(inputs).forEach((key) => {
+      inputs[key].value = info[by][key] || info.defaults[key] || "";
+    });
   };
 
   const updateStatus = (message, isSuccess = true) => {
@@ -28,29 +46,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     statusDiv.classList.remove("hidden");
   };
 
+  const info = fetchInfo();
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const formData = new FormData(form);
-    const params = new URLSearchParams(formData).toString();
 
-    const response = await fetch(`/api/config-update?${params}`);
-    if (response.status === 204) {
-      updateStatus("Configuration updated successfully!");
-    } else {
+    const params = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(inputs).map(([key, input]) => [key, input.value]),
+      ),
+    );
+
+    try {
+      const response = await fetch(`/api/config-update?${params.toString()}`);
+      updateStatus(
+        response.ok
+          ? "Configuration updated successfully!"
+          : "Failed to update configuration.",
+        response.ok,
+      );
+    } catch {
       updateStatus("Failed to update configuration.", false);
     }
   });
 
   resetButton.addEventListener("click", async () => {
-    const info = await fetchInfo();
-    populateForm(info.defaults);
+    await resetConfig();
+    populateForm(await info, "defaults");
     updateStatus("Configuration reset to default values.");
   });
 
-  try {
-    const info = await fetchInfo();
-    populateForm(info);
-  } catch (error) {
-    updateStatus("Failed to load configuration.", false);
-  }
+  populateForm(await info);
 });

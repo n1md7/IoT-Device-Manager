@@ -189,16 +189,52 @@ paths:
               schema:
                 type: object
                 properties:
-                  name:
+                  code:
                     type: string
-                    example: MyServer
+                    example: "D0001"
+                    description: Device unique identifier
                   version:
                     type: string
-                    example: 1.0.0
-                  description:
-                    type: string
-                    example: A simple server
+                    example: "1"
+                    description: Device version
+                  current:
+                    description: Active configuration of the device
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: "MyServer"
+                      description:
+                        type: string
+                        example: "A simple server"
+                      startTime:
+                        type: number
+                        example: 10
+                        description: Current start time for the physical button
+                      managerUrl:
+                        type: string
+                        example: "http://192.168.1.2"
+                        description: Current manager URL
+                  defaults:
+                    description: Default configuration of the device
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: "DefaultServer"
+                      description:
+                        type: string
+                        example: "Default server description"
+                      startTime:
+                        type: number
+                        example: 10
+                        description: Default start time for the physical button
+                      managerUrl:
+                        type: string
+                        example: "http://192.168.1.3"
+                        description: Default manager URL
                   disk:
+                    description: Disk usage of the device
                     type: object
                     properties:
                       used:
@@ -210,25 +246,4 @@ paths:
                       occupied:
                         type: string
                         example: "50.00%"
-                  defaults:
-                    type: object
-                    properties:
-                      startTime:
-                        type: number
-                        example: 10
-                        description: Default start time for the physical button
-                      managerUrl:
-                        type: string
-                        example: "http://192.168.1.2"
-                        description: Default manager URL
-                  current:
-                    type: object
-                    properties:
-                      startTime:
-                        type: number
-                        example: 10
-                        description: Current start time for the physical button
-                      managerUrl:
-                        type: string
-                        example: "http://192.168.1.2"
-                        description: Current manager URL
+
