@@ -7,9 +7,11 @@ import {
   LOW,
   requestHandler,
   toSeconds,
+  setSystemTimeFromNetwork,
+  logDiskInformation,
 } from "./utils";
-import { Request, Server } from "http";
-import { Iterator, System } from "file";
+import { Server } from "http";
+import { System } from "file";
 import Switch from "./switch";
 import Ticker from "./ticker";
 import Net from "net";
@@ -34,11 +36,8 @@ const cached = [
   "public, max-age=31536000",
 ];
 
-for (const item of new Iterator(config.file.root)) {
-  if (item.length) {
-    console.log(`Existing file on disk: ${item.name}, ${item.length} bytes`);
-  }
-}
+logDiskInformation(config.file.root);
+setSystemTimeFromNetwork();
 
 const isEveryMinute = every(60);
 
@@ -61,10 +60,10 @@ const timer = new Ticker({
   onTick: (value, logger) => {
     if (isEveryMinute(value)) {
       logger.info(`Remaining time: ${value}`);
-      manager.report({
-        status: timer.getStatusEnum(),
-        timeRemaining: value,
-      });
+      // manager.report({
+      //   status: timer.getStatusEnum(),
+      //   timeRemaining: value,
+      // });
     }
   },
   onStart: (timestamp, logger) => {
@@ -126,6 +125,8 @@ server.callback = requestHandler({
   }),
   [API]: {
     "/on": (ctx) => {
+      if (!ctx.is.post) return apiError("Only POST is allowed");
+
       const { min = 0, sec = 0 } = ctx.params;
       if (min < 0 || sec < 0) {
         return apiError(
@@ -144,7 +145,9 @@ server.callback = requestHandler({
         body: `{"active": true, "time": ${seconds}}`,
       };
     },
-    "/off": () => {
+    "/off": (ctx) => {
+      if (!ctx.is.post) return apiError("Only POST is allowed");
+
       timer.stop();
 
       return {
@@ -158,8 +161,9 @@ server.callback = requestHandler({
         body: `{"active": ${timer.getStatus()}, "time": ${timer.getCurrentTime()}}`,
       };
     },
-    "/info": () => {
+    "/info": (ctx) => {
       const occupiedInPercent = (info.used / info.total) * 100;
+      const time = new Date();
 
       return {
         headers: ["Content-type", "application/json"],
@@ -182,6 +186,11 @@ server.callback = requestHandler({
             used: info.used,
             total: info.total,
             occupied: `${occupiedInPercent.toFixed(2)}%`,
+          },
+          time: {
+            now: time * 1,
+            str: time.toString(),
+            iso: time.toISOString(),
           },
         }),
       };

@@ -1,5 +1,4 @@
 import { Request } from "http";
-import { console } from "./utils";
 
 /**
  * @typedef {Object} ReqParams
@@ -10,7 +9,8 @@ import { console } from "./utils";
 
 /**
  * @callback OnError
- * @param {string} error
+ * @param {number} code
+ * @param {string} message
  */
 
 /**
@@ -77,7 +77,7 @@ export class Manager {
       }
 
       if (message === Request.error) {
-        if (callbacks.onError) callbacks.onError(value);
+        if (callbacks.onError) callbacks.onError(message, value);
       }
     };
   }

@@ -54,7 +54,7 @@ const startCountdown = () => {
   }, 1000);
 };
 const handleClick = (e) => {
-  return fetch(addQueryString(e.target.dataset.path))
+  return fetch(addQueryString(e.target.dataset.path), { method: "POST" })
     .then((res) => {
       errorText.innerText = "";
 

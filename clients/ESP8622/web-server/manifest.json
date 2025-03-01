@@ -9,7 +9,8 @@
   "modules": {
     "*": [
       "./src/*",
-      "$(MODULES)/network/http/*"
+      "$(MODULES)/network/http/*",
+      "$(MODULES)/network/sntp/*"
     ]
   },
   "data": {
@@ -18,7 +19,8 @@
     ]
   },
   "preload": [
-    "http"
+    "http",
+    "sntp"
   ],
   "config": {
     "code": "D0001",

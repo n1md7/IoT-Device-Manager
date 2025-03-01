@@ -15,7 +15,7 @@ servers:
     description: My home network
 paths:
   /api/on:
-    get:
+    post:
       tags:
         - Power
       description: >-
@@ -65,7 +65,7 @@ paths:
                     type: string
                     example: "Invalid query parameters or duration less than 10 seconds"
   /api/off:
-    get:
+    post:
       tags:
         - Power
       summary: Stop the timer
@@ -246,4 +246,16 @@ paths:
                       occupied:
                         type: string
                         example: "50.00%"
-
+                  time:
+                    description: System time
+                    type: object
+                    properties:
+                      now:
+                        type: integer
+                        example: 1740858186087
+                      str:
+                        type: string
+                        example: "Sat Mar 01 2025 23:43:06 GMT+0400"
+                      iso:
+                        type: string
+                        example: "2025-03-01T19:43:06.087Z"

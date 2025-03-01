@@ -1,6 +1,9 @@
 import Timer from "timer";
+import SNTP from "sntp";
+import Time from "time";
 import { ConsoleLogger } from "./logger";
 import { Server } from "http";
+import { Iterator } from "file";
 
 export const every = (value) => (current) => current % value === 0;
 export const setInterval = (callback, delay) => Timer.repeat(callback, delay);
@@ -63,6 +66,9 @@ const methodType = (method = "") => ({
  */
 export const requestHandler = (routes = {}) => {
   return function (message, value, etc) {
+    this.headers ||= {};
+    this.body ||= {};
+
     switch (message) {
       case Server.status:
         const [route, query] = value.split("?");
@@ -72,6 +78,16 @@ export const requestHandler = (routes = {}) => {
         this.method = etc;
         this.is = methodType(etc);
         this.params = getQueryParams(this.query);
+        break;
+      case Server.header:
+        this.headers[value] = etc;
+        if (value === "x-body-json") {
+          try {
+            this.body = JSON.parse(etc);
+          } catch (error) {
+            return apiError(`Unable to parse JSON body: "etc"`, 400);
+          }
+        }
         break;
       case Server.prepareResponse:
         if (routes[this.route]) return routes[this.route](this);
@@ -87,3 +103,37 @@ export const requestHandler = (routes = {}) => {
     }
   };
 };
+
+export const logDiskInformation = (path) => {
+  for (const item of new Iterator(path)) {
+    if (item.length) {
+      console.log(`Existing file on disk: ${item.name}, ${item.length} bytes`);
+    }
+  }
+};
+
+const hosts = [
+  "3.pool.ntp.org",
+  "2.pool.ntp.org",
+  "1.pool.ntp.org",
+  "0.pool.ntp.org",
+];
+
+export const setSystemTimeFromNetwork = () =>
+  new SNTP({ host: hosts.pop() }, (message, value) => {
+    switch (message) {
+      case SNTP.time:
+        console.log("[SNTP] Received time from net", value);
+        Time.set(value);
+        break;
+
+      case SNTP.retry:
+        console.log("[SNTP] Retrying...");
+        break;
+
+      case SNTP.error:
+        console.log("[SNTP] Failed: ", value);
+        if (hosts.length) setSystemTime();
+        break;
+    }
+  });

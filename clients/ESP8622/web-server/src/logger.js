@@ -19,7 +19,7 @@ export class Logger {
     if (this.#label) {
       return (
         `[${new Date().toISOString()}][${type}][${this.#label}] ` +
-        message.join(", ")
+        message.join(" ")
       );
     }
 
