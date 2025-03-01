@@ -9,9 +9,19 @@ import { console } from "./utils";
  */
 
 /**
+ * @callback OnError
+ * @param {string} error
+ */
+
+/**
+ * @callback OnSuccess
+ * @param {string} response
+ */
+
+/**
  * @typedef {Object} ReqFns
- * @property {Callback} [onSuccess]
- * @property {Callback} [onError]
+ * @property {OnSuccess} [onSuccess]
+ * @property {OnError} [onError]
  */
 
 /**
@@ -63,12 +73,11 @@ export class Manager {
 
     request.callback = function (message, value) {
       if (message === Request.responseComplete) {
-        if (callbacks.onSuccess) callbacks.onSuccess(message);
+        if (callbacks.onSuccess) callbacks.onSuccess(value);
       }
 
       if (message === Request.error) {
-        console.log(`Report error: ${message}`);
-        if (callbacks.onError) callbacks.onError(message);
+        if (callbacks.onError) callbacks.onError(value);
       }
     };
   }

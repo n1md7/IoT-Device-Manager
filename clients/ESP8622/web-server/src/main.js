@@ -8,7 +8,7 @@ import {
   requestHandler,
   toSeconds,
 } from "./utils";
-import { Server } from "http";
+import { Request, Server } from "http";
 import { Iterator, System } from "file";
 import Switch from "./switch";
 import Ticker from "./ticker";
@@ -67,13 +67,19 @@ const timer = new Ticker({
       });
     }
   },
-  onStart: () => {
+  onStart: (timestamp, logger) => {
     status.start();
     relay.start();
-    manager.report({
-      status: timer.getStatusEnum(),
-      timeRemaining: startTime.getValue(),
-    });
+    manager.report(
+      {
+        status: timer.getStatusEnum(),
+        timeRemaining: startTime.getValue(),
+      },
+      {
+        onSuccess: (response) => logger.info(`Status reported OK: ${response}`),
+        onError: (error) => logger.error(`Status report ERROR: ${error}`),
+      },
+    );
   },
   onStop: () => {
     status.stop();

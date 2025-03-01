@@ -26,6 +26,6 @@
     "defaultName": "My Pump",
     "defaultStartTime": 1200,
     "defaultDescription": "Home automation",
-    "defaultManagerUrl": "http://192.168.1.246"
+    "defaultManagerUrl": "http://192.168.1.14:3002"
   }
 }

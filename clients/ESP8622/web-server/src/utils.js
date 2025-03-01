@@ -20,7 +20,8 @@ export const apiError = (message, status = 400) => ({
 });
 
 export const getQueryParams = (query = "") => {
-  return decodeURIComponent(query).replaceAll('+', ' ')
+  return decodeURIComponent(query)
+    .replaceAll("+", " ")
     .split("&")
     .reduce((params, param) => {
       const [key, value] = param.split("=");
@@ -28,6 +29,15 @@ export const getQueryParams = (query = "") => {
       return params;
     }, {});
 };
+
+const methodType = (method = "") => ({
+  get: method === "GET",
+  post: method === "POST",
+  put: method === "PUT",
+  delete: method === "DELETE",
+  patch: method === "PATCH",
+  options: method === "OPTIONS",
+});
 
 /**
  * @typedef {Object} Context - Client request context
@@ -52,13 +62,15 @@ export const getQueryParams = (query = "") => {
  * @returns {(function(*, *): (*))|*}
  */
 export const requestHandler = (routes = {}) => {
-  return function (message, value) {
+  return function (message, value, etc) {
     switch (message) {
       case Server.status:
         const [route, query] = value.split("?");
         this.path = value;
         this.query = query;
         this.route = route;
+        this.method = etc;
+        this.is = methodType(etc);
         this.params = getQueryParams(this.query);
         break;
       case Server.prepareResponse:
