@@ -210,4 +210,25 @@ paths:
                       occupied:
                         type: string
                         example: "50.00%"
-
+                  defaults:
+                    type: object
+                    properties:
+                      startTime:
+                        type: number
+                        example: 10
+                        description: Default start time for the physical button
+                      managerUrl:
+                        type: string
+                        example: "http://192.168.1.2"
+                        description: Default manager URL
+                  current:
+                    type: object
+                    properties:
+                      startTime:
+                        type: number
+                        example: 10
+                        description: Current start time for the physical button
+                      managerUrl:
+                        type: string
+                        example: "http://192.168.1.2"
+                        description: Current manager URL
