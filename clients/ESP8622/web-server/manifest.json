@@ -21,10 +21,15 @@
     "http"
   ],
   "config": {
-    "buttonClickTime": 1200,
-    "version": "1.0.0",
-    "code": "D0001",
-    "name": "My Pump",
-    "description": "Home automation"
+    "device": {
+      "code": "D0001",
+      "version": "1.0.0"
+    },
+    "default": {
+      "name": "My Pump",
+      "startTime": 1200,
+      "description": "Home automation",
+      "managerUrl": "http://192.168.1.246"
+    }
   }
 }

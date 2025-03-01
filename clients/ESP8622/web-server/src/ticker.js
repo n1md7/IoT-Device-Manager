@@ -14,7 +14,7 @@ import { Logger, ConsoleLogger } from "./logger";
  * @property {Callback} onStart - Start callback, once on timer start
  * @property {Callback} onStop - Stop callback, once on timer stop
  * @property {Callback} [onTick] - Tick callback, invoking every second
- * @property {Storage} isRunning - Persistent storage whether device was running before force restart/shutdown or not
+ * @property {Storage} isRunning - Persistent storage whether a device was running before force restart/shutdown or not
  * @property {Counter} remainingTime - Remaining timer from persistent storage
  * @property {number} startTime - Start time in seconds
  * @property {number} [interval = 1000] - Tick interval in milliseconds

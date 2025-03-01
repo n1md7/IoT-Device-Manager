@@ -113,6 +113,60 @@ paths:
                   time:
                     type: integer
                     example: 30
+  /api/config-update:
+    get:
+      tags:
+        - Device
+      summary: Update device configuration
+      description: >-
+        Updates the device configuration with new settings.
+        The configuration includes the device name, version, and description.
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+          required: false
+          description: New device name
+        - name: description
+          in: query
+          schema:
+            type: string
+          required: false
+          description: >-
+            New device description, it has to be short.
+            max 64 characters.
+        - name: startTime
+          in: query
+          schema:
+            type: number
+          required: false
+          description: >-
+            New device start time.
+            It is important for the physical button.
+            On the button click how long it has to start.
+        - name: managerUrl
+          in: query
+          schema:
+            type: string
+          required: false
+          description: >-
+            New device manager URL.
+            It is important for the device to communicate with the manager.
+            It will work without it however for full potential it needs to be set properly.
+      responses:
+        '204':
+          description: Configuration updated successfully
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid query parameters"
   /api/info:
     get:
       tags:

@@ -1,12 +1,12 @@
 import {
+  API,
+  apiError,
   console,
+  every,
   HIGH,
   LOW,
-  API,
-  every,
-  toSeconds,
-  apiError,
   requestHandler,
+  toSeconds,
 } from "./utils";
 import { Server } from "http";
 import { Iterator, System } from "file";
@@ -18,11 +18,14 @@ import config from "mc/config";
 import Storage from "./storage";
 import Counter from "./counter";
 
-const name = config["name"];
-const code = config["code"];
-const version = config["version"];
-const description = config["description"];
-const startTime = config["buttonClickTime"];
+const code = config["device"]["code"];
+const version = config["device"]["version"];
+
+const defaultName = config["default"]["name"];
+const defaultDescription = config["default"]["description"];
+const defaultStartTime = config["default"]["startTime"];
+const defaultManagerAddress = config["default"]["managerUrl"];
+
 const info = System.info();
 const cached = [
   "Cache-Control",
@@ -36,19 +39,23 @@ for (const item of new Iterator(config.file.root)) {
   }
 }
 
-console.log(`Device ${name}(${code}) v${version} (${description}) is ready!`);
-console.log(`Disk total: ${info.total}; used: ${info.used}`);
-
 const isTenthSecond = every(10);
+
 const remainingTime = new Counter("time");
+
+const name = new Storage("device", "name", defaultName);
+const description = new Storage("device", "description", defaultDescription);
 const isRunning = new Storage("ticker", "isRunning", false);
+const startTime = new Storage("ticker", "startTime", defaultStartTime);
+const managerUrl = new Storage("manager", "address", defaultManagerAddress);
+
 const status = new Switch({ pin: 2, signal: LOW });
 const relay = new Switch({ pin: 4, signal: HIGH });
 const server = new Server({ port: 80 });
 const timer = new Ticker({
   isRunning,
-  startTime,
   remainingTime,
+  startTime: startTime.getValue(),
   onTick: (value, logger) => {
     if (isTenthSecond(value)) {
       logger.info(`Remaining time: ${value}`);
@@ -84,6 +91,18 @@ server.callback = requestHandler({
   "/favicon.ico": () => ({
     headers: ["Content-type", "image/x-icon", ...cached],
     body: new Resource("favicon.ico"),
+  }),
+  "config.html": () => ({
+    headers: ["Content-type", "text/html"],
+    body: new Resource("config.html"),
+  }),
+  "/config.mjs": () => ({
+    headers: ["Content-type", "application/javascript", ...cached],
+    body: new Resource("config.mjs"),
+  }),
+  "/config.css": () => ({
+    headers: ["Content-type", "text/css", ...cached],
+    body: new Resource("config.css"),
   }),
   [API]: {
     "/on": (ctx) => {
@@ -122,10 +141,37 @@ server.callback = requestHandler({
     "/info": () => {
       const occupiedInPercent = (info.used / info.total) * 100;
       const disk = `{"used": ${info.used}, "total": ${info.total}, "occupied": "${occupiedInPercent.toFixed(2)}%"}`;
+      const defaults = `{"startTime": "${defaultStartTime}", "managerUrl": "${defaultManagerAddress}"}`;
+      const current = `{"startTime": ${startTime.getValue()}, "managerUrl": "${managerUrl.getValue()}"}`;
 
       return {
         headers: ["Content-type", "application/json"],
-        body: `{"name": "${name}", "version": "${version}", "description": "${description}", "disk": ${disk}}`,
+        body: `{"name": "${name}", "version": "${version}", "description": "${description}", "disk": ${disk}, "defaults": ${defaults}, "current": ${current}}`,
+      };
+    },
+    "/config-update": (ctx) => {
+      if (ctx.params.managerUrl) {
+        if (!ctx.params.managerUrl.startsWith("http")) {
+          return apiError(
+            `Invalid managerUrl. It must start with 'http://' or 'https://'`,
+          );
+        }
+        managerUrl.setValue(ctx.params.managerUrl);
+      }
+      if (ctx.params.startTime) {
+        if (ctx.params.startTime < 10) {
+          return apiError(`Invalid startTime. It must be at least 10 seconds`);
+        }
+        startTime.setValue(ctx.params.startTime);
+      }
+      if (ctx.params.name) name.setValue(ctx.params.name.substring(0, 32));
+      if (ctx.params.description) {
+        description.setValue(ctx.params.description.substring(0, 64));
+      }
+
+      return {
+        body: "",
+        status: 204,
       };
     },
   },
@@ -137,6 +183,8 @@ server.callback = requestHandler({
   },
 });
 
+console.log(`Device ${name}(${code}) v${version} (${description}) is ready!`);
+console.log(`Disk total: ${info.total}; used: ${info.used}`);
 console.log(`[http] server ready at ${Net.get("IP")}`);
 
 const wasRunning = isRunning.getValue();
