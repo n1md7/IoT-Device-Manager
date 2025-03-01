@@ -58,10 +58,10 @@ export default class Ticker {
     this.#logger = new ConsoleLogger("Timer");
   }
 
-  start(seconds = 15) {
+  start(startSeconds = 15, tickMs = 1000) {
     this.#unsubscribe();
     this.#isRunning.setValue(true);
-    this.#time.setValue(seconds);
+    this.#time.setValue(startSeconds);
     this.#options.onStart(this.#time.getValue(), this.#logger);
     this.#timer = setInterval(() => {
       this.#options?.onTick(this.#time.decrement(), this.#logger);
@@ -69,7 +69,7 @@ export default class Ticker {
       if (this.#time.isFinished()) {
         this.stop();
       }
-    }, 1000);
+    }, tickMs);
   }
 
   getCurrentTime() {
