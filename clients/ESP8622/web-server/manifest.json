@@ -8,14 +8,7 @@
   ],
   "modules": {
     "*": [
-      "./src/main",
-      "./src/counter",
-      "./src/logger",
-      "./src/storage",
-      "./src/switch",
-      "./src/ticker",
-      "./src/utils",
-      "./src/schedule",
+      "./src/*",
       "$(MODULES)/network/http/*",
       "$(MODULES)/network/sntp/*"
     ]

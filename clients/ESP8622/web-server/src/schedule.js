@@ -164,12 +164,7 @@ export default class ScheduleManager {
   #timer;
   #logger = new ConsoleLogger("ScheduleManager");
 
-  #schedules = [
-    new Scheduler("schedule1"),
-    new Scheduler("schedule2"),
-    new Scheduler("schedule3"),
-    new Scheduler("schedule4"),
-  ];
+  #schedules = [new Scheduler("schedule1"), new Scheduler("schedule2")];
 
   /**
    * @type {Storage}
