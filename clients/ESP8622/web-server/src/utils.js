@@ -4,6 +4,7 @@ import Time from "time";
 import { ConsoleLogger } from "./logger";
 import { Server } from "http";
 import { Iterator } from "file";
+import Resource from "Resource";
 
 export const every = (value) => (current) => current % value === 0;
 export const setInterval = (callback, delay) => Timer.repeat(callback, delay);
@@ -15,6 +16,84 @@ export const console = new ConsoleLogger();
 export const HIGH = 1;
 export const LOW = 0;
 export const API = "/api";
+
+/**
+ * @typedef {'json' | 'html' | 'text' | 'css' | 'js' | 'ico' | 'png' | 'jpg'} ContentType
+ */
+
+/**
+ * @type {Object.<ContentType, string>}
+ */
+const contentType = {
+  json: "application/json",
+  html: "text/html",
+  text: "text/plain",
+  css: "text/css",
+  js: "application/javascript",
+  ico: "image/x-icon",
+  png: "image/png",
+  jpg: "image/jpeg",
+};
+
+/**
+ * @typedef {Object} ResourceOptions
+ * @property {string} path - Path to the resource file
+ * @property {boolean} [cached] - Resource cache control
+ * @property {ContentType} [type] - Resource content type
+ * @property {[string, string][]} [headers] - Additional headers
+ */
+
+/**
+ * @param {ResourceOptions} options
+ * @returns {function(): {headers, body: module:Resource.Resource}}
+ */
+export const staticResource = (options) => () => {
+  options.headers ||= [];
+  options.cached ??= true;
+
+  if (options.type) {
+    options.headers.push(
+      "Content-type",
+      contentType[options.type] || "text/plain",
+    );
+  }
+
+  if (options.cached === true) {
+    options.headers.push("Cache-Control", "public, max-age=31536000");
+  }
+
+  return {
+    headers: options.headers,
+    body: new Resource(options.path),
+  };
+};
+
+export const htmlResource = (path) =>
+  staticResource({ path, type: "html", cached: false });
+export const cssResource = (path) => staticResource({ path, type: "css" });
+export const jsResource = (path) => staticResource({ path, type: "js" });
+export const icoResource = (path) => staticResource({ path, type: "ico" });
+export const pngResource = (path) => staticResource({ path, type: "png" });
+export const jpgResource = (path) => staticResource({ path, type: "jpg" });
+export const textResource = (path) => staticResource({ path, type: "text" });
+export const jsonResource = (path) => staticResource({ path, type: "json" });
+
+/**
+ * @param {Object} data
+ * @param {number} [status]
+ * @returns {{headers: string[], body: string}}
+ */
+export const jsonResponse = (data, status = 200) => ({
+  headers: ["Content-type", "application/json"],
+  body: JSON.stringify(data),
+  status,
+});
+
+export const plainResponse = (data, status = 200) => ({
+  headers: ["Content-type", "text/plain"],
+  body: data,
+  status,
+});
 
 export const apiError = (message, status = 400) => ({
   headers: ["Content-type", "application/json"],
@@ -133,7 +212,7 @@ export const setSystemTimeFromNetwork = () =>
 
       case SNTP.error:
         console.log("[SNTP] Failed: ", value);
-        if (hosts.length) setSystemTime();
+        if (hosts.length) setSystemTimeFromNetwork();
         break;
     }
   });

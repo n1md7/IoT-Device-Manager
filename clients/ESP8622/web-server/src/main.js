@@ -9,6 +9,13 @@ import {
   toSeconds,
   setSystemTimeFromNetwork,
   logDiskInformation,
+  staticResource,
+  jsonResponse,
+  plainResponse,
+  htmlResource,
+  jsResource,
+  cssResource,
+  icoResource,
 } from "./utils";
 import { Server } from "http";
 import { System } from "file";
@@ -30,11 +37,6 @@ const defaultStartTime = +config["defaultStartTime"];
 const defaultManagerUrl = config["defaultManagerUrl"];
 
 const info = System.info();
-const cached = [
-  "Cache-Control",
-  //
-  "public, max-age=31536000",
-];
 
 logDiskInformation(config.file.root);
 setSystemTimeFromNetwork();
@@ -91,38 +93,15 @@ const timer = new Ticker({
 });
 
 server.callback = requestHandler({
-  "/": () => ({
-    headers: ["Content-type", "text/html"],
-    body: new Resource("index.html"),
-  }),
-  "/script.mjs": () => ({
-    headers: ["Content-type", "application/javascript", ...cached],
-    body: new Resource("script.mjs"),
-  }),
-  "/device.mjs": () => ({
-    headers: ["Content-type", "application/javascript", ...cached],
-    body: new Resource("device.mjs"),
-  }),
-  "/style.css": () => ({
-    headers: ["Content-type", "text/css", ...cached],
-    body: new Resource("style.css"),
-  }),
-  "/favicon.ico": () => ({
-    headers: ["Content-type", "image/x-icon", ...cached],
-    body: new Resource("favicon.ico"),
-  }),
-  "/config.html": () => ({
-    headers: ["Content-type", "text/html"],
-    body: new Resource("config.html"),
-  }),
-  "/config.mjs": () => ({
-    headers: ["Content-type", "application/javascript", ...cached],
-    body: new Resource("config.mjs"),
-  }),
-  "/config.css": () => ({
-    headers: ["Content-type", "text/css", ...cached],
-    body: new Resource("config.css"),
-  }),
+  "/": htmlResource("index.html"), // Alias for index.html
+  "/index.html": htmlResource("index.html"),
+  "/config.html": htmlResource("config.html"),
+  "/script.mjs": jsResource("script.mjs"),
+  "/device.mjs": jsResource("device.mjs"),
+  "/config.mjs": jsResource("config.mjs"),
+  "/style.css": cssResource("style.css"),
+  "/config.css": cssResource("config.css"),
+  "/favicon.ico": icoResource("favicon.ico"),
   [API]: {
     "/on": (ctx) => {
       if (!ctx.is.post) return apiError("Only POST is allowed");
@@ -133,67 +112,58 @@ server.callback = requestHandler({
           `Invalid query parameters. 'min' and 'sec' are required! And need to be positive!`,
         );
       }
-      const seconds = toSeconds(min, sec || 10);
-      if (seconds < 10) {
+      const time = toSeconds(min, sec || 10);
+      if (time < 10) {
         return apiError(`You must set a duration of at least 10 seconds!`);
       }
 
-      timer.start(seconds);
+      timer.start(time);
 
-      return {
-        headers: ["Content-type", "application/json"],
-        body: `{"active": true, "time": ${seconds}}`,
-      };
+      return jsonResponse({ active: true, time });
     },
     "/off": (ctx) => {
       if (!ctx.is.post) return apiError("Only POST is allowed");
 
       timer.stop();
 
-      return {
-        headers: ["Content-type", "application/json"],
-        body: `{"active": false}`,
-      };
+      return jsonResponse({ active: false });
     },
     "/status": () => {
-      return {
-        headers: ["Content-type", "application/json"],
-        body: `{"active": ${timer.getStatus()}, "time": ${timer.getCurrentTime()}}`,
-      };
+      return jsonResponse({
+        active: timer.getStatus(),
+        time: timer.getCurrentTime(),
+      });
     },
     "/info": (ctx) => {
       const occupiedInPercent = (info.used / info.total) * 100;
       const time = new Date();
 
-      return {
-        headers: ["Content-type", "application/json"],
-        body: JSON.stringify({
-          code,
-          version,
-          current: {
-            name: name.getValue(),
-            description: description.getValue(),
-            startTime: startTime.getValue(),
-            managerUrl: managerUrl.getValue(),
-          },
-          defaults: {
-            name: defaultName,
-            description: defaultDescription,
-            startTime: defaultStartTime,
-            managerUrl: defaultManagerUrl,
-          },
-          disk: {
-            used: info.used,
-            total: info.total,
-            occupied: `${occupiedInPercent.toFixed(2)}%`,
-          },
-          time: {
-            now: time * 1,
-            str: time.toString(),
-            iso: time.toISOString(),
-          },
-        }),
-      };
+      return jsonResponse({
+        code,
+        version,
+        current: {
+          name: name.getValue(),
+          description: description.getValue(),
+          startTime: startTime.getValue(),
+          managerUrl: managerUrl.getValue(),
+        },
+        defaults: {
+          name: defaultName,
+          description: defaultDescription,
+          startTime: defaultStartTime,
+          managerUrl: defaultManagerUrl,
+        },
+        disk: {
+          used: info.used,
+          total: info.total,
+          occupied: `${occupiedInPercent.toFixed(2)}%`,
+        },
+        time: {
+          now: time * 1,
+          str: time.toString(),
+          iso: time.toISOString(),
+        },
+      });
     },
     "/config-reset": () => {
       description.setValue(defaultDescription);
@@ -221,17 +191,11 @@ server.callback = requestHandler({
         description.setValue(ctx.params.description.substring(0, 64));
       }
 
-      return {
-        body: "",
-        status: 204,
-      };
+      return { status: 204 };
     },
   },
   404: (ctx) => {
-    return {
-      headers: ["Content-type", "text/plain"],
-      body: `Route not found: ${ctx.path}`,
-    };
+    return plainResponse(`Route not found: ${ctx.path}`);
   },
 });
 
