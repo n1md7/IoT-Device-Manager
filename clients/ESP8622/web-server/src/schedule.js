@@ -49,31 +49,31 @@ class Scheduler {
 
   /**
    * @param {number} value
-   * @returns {number}
+   * @returns {Error|undefined}
    */
   setHour(value) {
     if (value < 0 || value > 23) {
-      throw new Error("Invalid hour. Must be between 0 and 23");
+      return new Error("Invalid hour. Must be between 0 and 23");
     }
 
-    return this.#hour.setValue(+value);
+    this.#hour.setValue(+value);
   }
 
   /**
    * @param {number} value
-   * @returns {number}
+   * @returns {Error|undefined}
    */
   setMinute(value) {
     if (value < 0 || value > 59) {
-      throw new Error("Invalid minute. Must be between 0 and 59");
+      return new Error("Invalid minute. Must be between 0 and 59");
     }
 
-    return this.#minute.setValue(value);
+    this.#minute.setValue(value);
   }
 
   /**
    * @param {string} value
-   * @returns {string}
+   * @returns {Error|undefined}
    */
   setWeekday(value) {
     if (
@@ -82,35 +82,39 @@ class Scheduler {
         .map(Number)
         .every((a) => a >= 0 && a <= 6)
     ) {
-      throw new Error(
+      return new Error(
         "Invalid weekdays. Must be CSV values between 0 and 6, where 0 is Sunday",
       );
     }
 
-    return this.#weekdays.setValue(value);
+    this.#weekdays.setValue(value);
   }
 
   /**
    * @param {number} value
-   * @returns {number}
+   * @returns {Error|undefined}
    */
   setActivateForSeconds(value) {
     if (value < 60 || value > 60 * 60) {
       // Min 60 seconds, Max 1 hour
-      throw new Error(
+      return new Error(
         "Invalid activateForSeconds. Must be between 60 and 3600",
       );
     }
 
-    return this.#activateForSeconds.setValue(value);
+    this.#activateForSeconds.setValue(value);
   }
 
   /**
    * @param {boolean} value
-   * @returns {boolean}
+   * @returns {Error|undefined}
    */
   setActive(value) {
-    return this.#active.setValue(value);
+    if (typeof value !== "boolean") {
+      return new Error(`Invalid active value. Must be boolean`);
+    }
+
+    this.#active.setValue(value);
   }
 
   getActivateForSeconds() {
@@ -164,7 +168,11 @@ export default class ScheduleManager {
   #timer;
   #logger = new ConsoleLogger("ScheduleManager");
 
-  #schedules = [new Scheduler("schedule1"), new Scheduler("schedule2")];
+  #schedules = [
+    new Scheduler("schedule1"),
+    new Scheduler("schedule2"),
+    new Scheduler("schedule3"),
+  ];
 
   /**
    * @type {Storage}
@@ -187,18 +195,23 @@ export default class ScheduleManager {
    * @param {number} minute - Schedule minute value
    * @param {boolean} active - Schedule activation
    * @param {number} runForSeconds - Schedule run for seconds
+   * @returns {Error|undefined}
    */
   updateScheduleByIndex(index, week, hour, minute, active, runForSeconds) {
     const schedule = this.#schedules[index];
     if (!schedule) {
-      throw new Error(`Invalid schedule index: ${index}`);
+      return new Error(`Invalid schedule index: ${index}`);
     }
 
-    schedule.setHour(hour);
-    schedule.setMinute(minute);
-    schedule.setWeekday(week);
-    schedule.setActive(active);
-    schedule.setActivateForSeconds(runForSeconds);
+    for (const error of [
+      schedule.setHour(hour),
+      schedule.setMinute(minute),
+      schedule.setWeekday(week),
+      schedule.setActive(active),
+      schedule.setActivateForSeconds(runForSeconds),
+    ]) {
+      if (error) return error;
+    }
 
     this.#logger.info(`Updated schedule: ${schedule.getName()}`);
   }

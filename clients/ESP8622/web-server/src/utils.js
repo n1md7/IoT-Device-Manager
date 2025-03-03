@@ -98,7 +98,7 @@ export const plainResponse = (data, status = 200) => ({
 
 export const apiError = (message, status = 400) => ({
   headers: ["Content-type", "application/json"],
-  body: `{"message": "${message}"}`,
+  body: JSON.stringify({ message }),
   status,
 });
 

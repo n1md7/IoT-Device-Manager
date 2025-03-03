@@ -206,17 +206,17 @@ server.callback = requestHandler({
           const { id, weekdays, hour, minute } = ctx.params;
           const { active, activateForSeconds } = ctx.params;
 
-          try {
-            scheduler.updateScheduleByIndex(
-              parseInt(id),
-              String(weekdays),
-              parseInt(hour),
-              parseInt(minute),
-              Boolean(active),
-              parseInt(activateForSeconds),
-            );
-          } catch (e) {
-            return apiError(e.message);
+          const error = scheduler.updateScheduleByIndex(
+            parseInt(id),
+            String(weekdays),
+            parseInt(hour),
+            parseInt(minute),
+            Boolean(active),
+            parseInt(activateForSeconds),
+          );
+
+          if (error) {
+            return apiError(error.message);
           }
 
           return { status: 204 };
