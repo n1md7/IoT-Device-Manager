@@ -203,17 +203,17 @@ server.callback = requestHandler({
               return apiError(`Invalid action: ${ctx.params.action}`);
           }
         case "PUT":
-          const { index, week, hour, minute, active, runForSeconds } =
-            ctx.params;
+          const { id, weekdays, hour, minute } = ctx.params;
+          const { active, activateForSeconds } = ctx.params;
 
           try {
             scheduler.updateScheduleByIndex(
-              parseInt(index),
-              String(week),
+              parseInt(id),
+              String(weekdays),
               parseInt(hour),
               parseInt(minute),
               Boolean(active),
-              parseInt(runForSeconds),
+              parseInt(activateForSeconds),
             );
           } catch (e) {
             return apiError(e.message);
