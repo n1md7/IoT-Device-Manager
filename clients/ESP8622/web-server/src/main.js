@@ -24,7 +24,7 @@ import Net from "net";
 import config from "mc/config";
 import Storage from "./storage";
 import Counter from "./counter";
-import Scheduler from "./schedule.manager";
+import Scheduler from "./schedule";
 
 const code = config["code"];
 const version = config["version"];
