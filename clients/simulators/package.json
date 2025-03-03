@@ -15,6 +15,7 @@
   "scripts": {
     "pump01": "bun ./devices/SWITCH.ts --code D0010 --name \"My Water Pump 1\"",
     "pump02": "bun ./devices/SWITCH.ts --code D0020 --name \"My Water Pump 2\"",
-    "pump03": "bun ./devices/SWITCH.ts --code D0030 --name \"My Water Pump 3\""
+    "pump03": "bun ./devices/SWITCH.ts --code D0030 --name \"My Water Pump 3\"",
+    "manager": "bun ./devices/manager.ts"
   }
 }
