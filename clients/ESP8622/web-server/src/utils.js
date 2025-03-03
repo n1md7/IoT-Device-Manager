@@ -5,6 +5,7 @@ import { ConsoleLogger } from "./logger";
 import { Server } from "http";
 import { Iterator } from "file";
 import Resource from "Resource";
+import config from "mc/config";
 
 export const every = (value) => (current) => current % value === 0;
 export const setInterval = (callback, delay) => Timer.repeat(callback, delay);
@@ -183,36 +184,43 @@ export const requestHandler = (routes = {}) => {
   };
 };
 
-export const logDiskInformation = (path) => {
-  for (const item of new Iterator(path)) {
-    if (item.length) {
-      console.log(`Existing file on disk: ${item.name}, ${item.length} bytes`);
+export class DiskInformation {
+  static output(path = config.file.root) {
+    for (const item of new Iterator(path)) {
+      if (item.length) {
+        console.log(
+          `Existing file on disk: ${item.name}, ${item.length} bytes`,
+        );
+      }
     }
   }
-};
+}
 
-const hosts = [
-  "3.pool.ntp.org",
-  "2.pool.ntp.org",
-  "1.pool.ntp.org",
-  "0.pool.ntp.org",
-];
+export class SystemTime {
+  static #hosts = [
+    "3.pool.ntp.org",
+    "2.pool.ntp.org",
+    "1.pool.ntp.org",
+    "0.pool.ntp.org",
+  ];
 
-export const setSystemTimeFromNetwork = () =>
-  new SNTP({ host: hosts.pop() }, (message, value) => {
-    switch (message) {
-      case SNTP.time:
-        console.log("[SNTP] Received time from net", value);
-        Time.set(value);
-        break;
+  static adjust() {
+    new SNTP({ host: this.#hosts.pop() }, (message, value) => {
+      switch (message) {
+        case SNTP.time:
+          console.log("[SNTP] Received time from net", value);
+          Time.set(value);
+          break;
 
-      case SNTP.retry:
-        console.log("[SNTP] Retrying...");
-        break;
+        case SNTP.retry:
+          console.log("[SNTP] Retrying...");
+          break;
 
-      case SNTP.error:
-        console.log("[SNTP] Failed: ", value);
-        if (hosts.length) setSystemTimeFromNetwork();
-        break;
-    }
-  });
+        case SNTP.error:
+          console.log("[SNTP] Failed: ", value);
+          if (this.#hosts.length) SystemTime.adjust();
+          break;
+      }
+    });
+  }
+}

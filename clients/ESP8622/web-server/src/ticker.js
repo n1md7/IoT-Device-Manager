@@ -76,7 +76,7 @@ export default class Ticker {
     return this.#time.getValue();
   }
 
-  getStatus() {
+  isActive() {
     return this.#isRunning.getValue(false);
   }
 

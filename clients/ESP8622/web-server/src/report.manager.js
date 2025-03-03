@@ -33,7 +33,7 @@ import { Request } from "http";
  * @property {String} [version]
  */
 
-export class Manager {
+export class ReportManager {
   /**
    * @type {Storage}
    */

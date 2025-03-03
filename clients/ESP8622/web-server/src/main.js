@@ -7,9 +7,8 @@ import {
   LOW,
   requestHandler,
   toSeconds,
-  setSystemTimeFromNetwork,
-  logDiskInformation,
-  staticResource,
+  DiskInformation,
+  SystemTime,
   jsonResponse,
   plainResponse,
   htmlResource,
@@ -22,11 +21,10 @@ import { System } from "file";
 import Switch from "./switch";
 import Ticker from "./ticker";
 import Net from "net";
-import Resource from "Resource";
 import config from "mc/config";
 import Storage from "./storage";
 import Counter from "./counter";
-import { Manager } from "./manager";
+import Scheduler from "./schedule.manager";
 
 const code = config["code"];
 const version = config["version"];
@@ -38,8 +36,8 @@ const defaultManagerUrl = config["defaultManagerUrl"];
 
 const info = System.info();
 
-logDiskInformation(config.file.root);
-setSystemTimeFromNetwork();
+DiskInformation.output();
+SystemTime.adjust();
 
 const isEveryMinute = every(60);
 
@@ -54,7 +52,7 @@ const managerUrl = new Storage("manager", "address", defaultManagerUrl);
 const status = new Switch({ pin: 2, signal: LOW });
 const relay = new Switch({ pin: 4, signal: HIGH });
 const server = new Server({ port: 80 });
-const manager = new Manager(managerUrl, name, code, version);
+
 const timer = new Ticker({
   isRunning,
   remainingTime,
@@ -62,35 +60,31 @@ const timer = new Ticker({
   onTick: (value, logger) => {
     if (isEveryMinute(value)) {
       logger.info(`Remaining time: ${value}`);
-      // manager.report({
-      //   status: timer.getStatusEnum(),
-      //   timeRemaining: value,
-      // });
     }
   },
   onStart: (timestamp, logger) => {
     status.start();
     relay.start();
-    manager.report(
-      {
-        status: timer.getStatusEnum(),
-        timeRemaining: startTime.getValue(),
-      },
-      {
-        onSuccess: (response) => logger.info(`Status reported OK: ${response}`),
-        onError: (error) => logger.error(`Status report ERROR: ${error}`),
-      },
-    );
   },
   onStop: () => {
     status.stop();
     relay.stop();
-    manager.report({
-      status: timer.getStatusEnum(),
-      timeRemaining: startTime.getValue(),
-    });
   },
 });
+
+const scheduler = new Scheduler();
+
+scheduler
+  .setOnExecute((timeInSeconds, logger) => {
+    logger.info(`Scheduler execution requested for ${timeInSeconds} seconds`);
+
+    // When the timer is already running, we don't need to start it again
+    if (!timer.isActive()) {
+      timer.start(timeInSeconds);
+      logger.info(`Timer started for ${timeInSeconds} seconds`);
+    }
+  })
+  .initialize();
 
 server.callback = requestHandler({
   "/": htmlResource("index.html"), // Alias for index.html
@@ -130,7 +124,7 @@ server.callback = requestHandler({
     },
     "/status": () => {
       return jsonResponse({
-        active: timer.getStatus(),
+        active: timer.isActive(),
         time: timer.getCurrentTime(),
       });
     },
@@ -192,6 +186,44 @@ server.callback = requestHandler({
       }
 
       return { status: 204 };
+    },
+    "/scheduler": (ctx) => {
+      switch (ctx.method) {
+        case "GET":
+          return jsonResponse(scheduler.toJson());
+        case "POST":
+          switch (ctx.params.action) {
+            case "ON":
+              scheduler.turnOn();
+              return { status: 200 };
+            case "OFF":
+              scheduler.turnOff();
+              return { status: 200 };
+            default:
+              return apiError(`Invalid action: ${ctx.params.action}`);
+          }
+        case "PUT":
+          const { index, week, hour, minute, active, runForSeconds } =
+            ctx.params;
+
+          try {
+            scheduler.updateScheduleByIndex(
+              parseInt(index),
+              String(week),
+              parseInt(hour),
+              parseInt(minute),
+              Boolean(active),
+              parseInt(runForSeconds),
+            );
+          } catch (e) {
+            return apiError(e.message);
+          }
+
+          return { status: 204 };
+
+        default:
+          return apiError(`Method not allowed: ${ctx.method}`);
+      }
     },
   },
   404: (ctx) => {
