@@ -8,6 +8,8 @@ tags:
     description: Device power management (ON/OFF)
   - name: Device
     description: Device information
+  - name: Scheduler
+    description: Device scheduler
 servers:
   - url: http://localhost
     description: Local development server
@@ -259,3 +261,103 @@ paths:
                       iso:
                         type: string
                         example: "2025-03-01T19:43:06.087Z"
+  /api/schedules:
+    get:
+      summary: Get list of schedules
+      tags:
+        - Scheduler
+      responses:
+        '200':
+          description: List of schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                      description: Unique identifier of the schedule. Array index.
+                    name:
+                      type: string
+                      example: "Schedule 1"
+                    active:
+                      type: boolean
+                      example: true
+                      description: Whether the schedule is active or not
+                    hour:
+                      type: integer
+                      example: 13
+                      description: Hour value of the schedule. 24-hour format. 0-23.
+                    minute:
+                      type: integer
+                      example: 30
+                      description: Minute value of the schedule. 0-59.
+                    weekdays:
+                      type: string
+                      example: "1,2,3,4,5"
+                      description: Comma-separated list of weekdays. 0-6. 1 is Monday.
+                    activateForSeconds:
+                      type: integer
+                      example: 360
+                      description: Duration in seconds for how long it should be active. Min 60 seconds, max 3600 seconds.
+    post:
+      tags:
+        - Scheduler
+      summary: Scheduler action
+      parameters:
+        - name: action
+          in: query
+          schema:
+            enum: [ 'ON', 'OFF' ]
+          required: true
+          description: Action to perform
+      responses:
+        '200':
+          description: Schedule updated successfully
+    put:
+      tags:
+        - Scheduler
+      summary: Update scheduler parameters
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+          required: true
+          description: Schedule ID to update
+        - name: hour
+          in: query
+          schema:
+            type: integer
+          required: true
+          description: Hour value of the schedule. 24-hour format. 0-23.
+        - name: minute
+          in: query
+          schema:
+            type: integer
+          required: true
+          description: Minute value of the schedule. 0-59.
+        - name: weekdays
+          in: query
+          schema:
+            type: string
+          required: true
+          description: Comma-separated list of weekdays. 0-6. 1 is Monday and 0 is Sunday.
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          required: true
+          description: Whether the schedule is active or not
+        - name: activateForSeconds
+          in: query
+          schema:
+            type: integer
+          required: true
+          description: Duration in seconds for how long it should be active. Min 60 seconds, max 3600 seconds.
+      responses:
+        '204':
+          description: Schedule updated successfully

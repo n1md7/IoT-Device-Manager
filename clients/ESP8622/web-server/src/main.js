@@ -187,7 +187,7 @@ server.callback = requestHandler({
 
       return { status: 204 };
     },
-    "/scheduler": (ctx) => {
+    "/schedules": (ctx) => {
       switch (ctx.method) {
         case "GET":
           return jsonResponse(scheduler.toJson());

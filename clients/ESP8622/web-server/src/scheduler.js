@@ -130,8 +130,9 @@ export class Scheduler {
     return hour === currentHour && minute === currentMinute;
   }
 
-  toJson() {
+  toJson(id = 0) {
     return {
+      id,
       name: this.#name,
       active: this.#active.getValue(),
       hour: this.#hour.getValue(),

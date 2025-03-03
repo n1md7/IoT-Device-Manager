@@ -108,6 +108,6 @@ export default class ScheduleManager {
   }
 
   toJson() {
-    return this.#schedules.map((schedule) => schedule.toJson());
+    return this.#schedules.map((schedule, id) => schedule.toJson(id));
   }
 }
