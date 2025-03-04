@@ -13,8 +13,5 @@
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vite-plugin-html": "^3.2.2"
-  },
-  "dependencies": {
-    "html-minifier-terser": "^7.2.0"
   }
 }

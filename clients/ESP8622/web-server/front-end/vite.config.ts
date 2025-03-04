@@ -21,7 +21,6 @@ export default defineConfig((env) => {
     build: {
       cssMinify: true,
       cssCodeSplit: true,
-      minify: "terser",
       chunkSizeWarningLimit: 2.7,
       sourcemap: false,
       emptyOutDir: true,
