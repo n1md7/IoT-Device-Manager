@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&family=Skranji:wght@400&display=swap');
+
+body {
+  font-family: 'Poppins', serif;
+}
+
+header {
+  font-family: 'Skranji', serif;
+}
+
+.hidden {
+  display: none;
+}
+
+.secondary-button {
+  background: #ccc;
+  color: #333;
+}
+
+.secondary-button:hover {
+  background: #bbb;
+}
+
+.error-text {
+  color: red;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="url"] {
+  padding: 0.5rem;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="url"]:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  outline: none;
+}

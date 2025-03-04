@@ -35,11 +35,11 @@ const contentType = {
   png: "image/png",
   jpg: "image/jpeg",
 };
+const extensions = Object.keys(contentType);
 
 /**
  * @typedef {Object} ResourceOptions
  * @property {string} path - Path to the resource file
- * @property {boolean} [cached] - Resource cache control
  * @property {ContentType} [type] - Resource content type
  * @property {[string, string][]} [headers] - Additional headers
  */
@@ -50,7 +50,6 @@ const contentType = {
  */
 export const staticResource = (options) => () => {
   options.headers ||= [];
-  options.cached ??= true;
 
   if (options.type) {
     options.headers.push(
@@ -59,25 +58,15 @@ export const staticResource = (options) => () => {
     );
   }
 
-  if (options.cached === true) {
-    options.headers.push("Cache-Control", "public, max-age=31536000");
-  }
+  // Cache every static resource for a year
+  // Vite will take care of versioning
+  options.headers.push("Cache-Control", "public, max-age=31536000");
 
   return {
     headers: options.headers,
     body: new Resource(options.path),
   };
 };
-
-export const htmlResource = (path) =>
-  staticResource({ path, type: "html", cached: false });
-export const cssResource = (path) => staticResource({ path, type: "css" });
-export const jsResource = (path) => staticResource({ path, type: "js" });
-export const icoResource = (path) => staticResource({ path, type: "ico" });
-export const pngResource = (path) => staticResource({ path, type: "png" });
-export const jpgResource = (path) => staticResource({ path, type: "jpg" });
-export const textResource = (path) => staticResource({ path, type: "text" });
-export const jsonResource = (path) => staticResource({ path, type: "json" });
 
 /**
  * @param {Object} data
@@ -177,6 +166,12 @@ export const requestHandler = (routes = {}) => {
           const [method] = second.split("?"); // Remove query string
 
           if (routes[API][method]) return routes[API][method](this);
+        }
+
+        const [path] = this.path.split("?"); // Remove query string
+        const type = path.split(".").pop();
+        if (extensions.includes(type)) {
+          return staticResource({ path, type })();
         }
 
         return routes["404"](this);

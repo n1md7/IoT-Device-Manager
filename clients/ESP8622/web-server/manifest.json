@@ -15,7 +15,7 @@
   },
   "data": {
     "*": [
-      "./ui/*"
+      "./front-end/dist/*"
     ]
   },
   "preload": [

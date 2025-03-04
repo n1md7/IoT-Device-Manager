@@ -11,10 +11,7 @@ import {
   SystemTime,
   jsonResponse,
   plainResponse,
-  htmlResource,
-  jsResource,
-  cssResource,
-  icoResource,
+  staticResource,
 } from "./utils";
 import { Server } from "http";
 import { System } from "file";
@@ -87,15 +84,7 @@ scheduler
   .initialize();
 
 server.callback = requestHandler({
-  "/": htmlResource("index.html"), // Alias for index.html
-  "/index.html": htmlResource("index.html"),
-  "/config.html": htmlResource("config.html"),
-  "/script.mjs": jsResource("script.mjs"),
-  "/device.mjs": jsResource("device.mjs"),
-  "/config.mjs": jsResource("config.mjs"),
-  "/style.css": cssResource("style.css"),
-  "/config.css": cssResource("config.css"),
-  "/favicon.ico": icoResource("favicon.ico"),
+  "/": staticResource({ path: "index.html", type: "html" }), // Alias for index.html
   [API]: {
     "/on": (ctx) => {
       if (!ctx.is.post) return apiError("Only POST is allowed");
