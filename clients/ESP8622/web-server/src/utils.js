@@ -58,9 +58,9 @@ export const staticResource = (options) => () => {
     );
   }
 
-  // Cache every static resource for a year
-  // Vite will take care of versioning
-  options.headers.push("Cache-Control", "public, max-age=31536000");
+  if (options.type !== "html") {
+    options.headers.push("Cache-Control", "public, max-age=31536000");
+  }
 
   return {
     headers: options.headers,
@@ -171,7 +171,9 @@ export const requestHandler = (routes = {}) => {
         const [path] = this.path.split("?"); // Remove query string
         const type = path.split(".").pop();
         if (extensions.includes(type)) {
-          return staticResource({ path, type })();
+          // Remove leading slash
+          const name = path.substring(1, path.length);
+          return staticResource({ path: name, type })();
         }
 
         return routes["404"](this);
