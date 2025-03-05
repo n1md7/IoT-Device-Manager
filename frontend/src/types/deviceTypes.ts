@@ -1,6 +1,7 @@
 import { ComponentsDetails } from './componentTypes.ts';
 
 export type DeviceDetails = {
+  ipAddress: string | null;
   code: string;
   type: string;
   name: string;

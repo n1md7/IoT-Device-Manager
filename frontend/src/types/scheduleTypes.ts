@@ -5,12 +5,17 @@ export type ScheduleDetails = {
   sec: number;
 };
 
-export type Schedule = {
+export type ScheduleData = {
   id: number;
   name: string;
   startExpression: string;
-  duration: ScheduleDetails[];
-  systems: SystemsDetails[];
+  duration: ScheduleDetails;
+  system: SystemsDetails;
   createdAt: string;
   updatedAt: string;
+};
+
+export type ScheduleResponseData = {
+  count: number;
+  schedules: ScheduleData[];
 };

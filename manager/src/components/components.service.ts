@@ -38,7 +38,7 @@ export class ComponentsService {
 
   async findAll() {
     return await this.componentRepository.findAndCount({
-      relations: ['device'],
+      relations: ['device', 'system'],
     });
   }
 

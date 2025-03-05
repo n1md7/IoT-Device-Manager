@@ -1,4 +1,5 @@
 import { DeviceDetails } from './deviceTypes.ts';
+import { SystemsDetails } from './systemTypes.ts';
 
 export type ComponentsDetails = {
   id: number;
@@ -7,6 +8,7 @@ export type ComponentsDetails = {
   createdAt: string;
   updatedAt: string;
   device: DeviceDetails;
+  system: SystemsDetails;
 };
 
 export type ComponentsResponseData = {

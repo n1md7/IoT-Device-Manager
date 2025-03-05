@@ -33,7 +33,7 @@ const ManageComponent = () => {
               </div>
               <div className="item-data">
                 <div className="">System:</div>
-                <div className="text-light-gray">Water System</div>
+                <div className="text-light-gray">{component.system.name}</div>
               </div>
               <div className="item-data">
                 <div className="">Shareable:</div>

@@ -10,12 +10,12 @@ export default defineConfig({
     port: 4096,
     strictPort: true,
     open: false,
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://127.0.0.1:3001',
-    //     changeOrigin: true,
-    //     secure: false
-    //   }
-    // }
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:3001',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

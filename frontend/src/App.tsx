@@ -1,14 +1,14 @@
 import NavBar from './components/NavBar.tsx';
 import PageHeader from './components/PageHeader.tsx';
-import Welcome from './components/Welcome.tsx';
 import AddNewSystem from './components/AddNewSystem.tsx';
 import AddNewComponent from './components/AddNewComponent.tsx';
+import Dashboard from './components/Dashboard.tsx';
 import { ReactElement, useEffect, useState } from 'react';
 
 function App() {
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
-  const [activeView, setActiveView] = useState<ReactElement>(<Welcome />);
+  const [activeView, setActiveView] = useState<ReactElement>(<Dashboard />);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
   useEffect(() => {

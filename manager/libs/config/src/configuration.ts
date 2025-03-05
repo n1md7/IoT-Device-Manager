@@ -2,18 +2,17 @@ import { MqttOptions, Transport } from '@nestjs/microservices';
 import { env, cwd } from 'node:process';
 import { join } from 'node:path';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Env } from '/libs/env';
 
 export const Configuration = () => ({
   http: {
     origin: env.ORIGIN,
-    port: parseInt(env.PORT!, 10),
+    port: parseInt(env.PORT, 10),
   },
   mqtt: {
     transport: Transport.MQTT,
     options: {
       host: env.MQTT_HOST,
-      port: parseInt(env.MQTT_PORT!, 10),
+      port: parseInt(env.MQTT_PORT, 10),
       username: env.MQTT_USER,
       password: env.MQTT_PASS,
       clientId: 'IoT-Manager',
