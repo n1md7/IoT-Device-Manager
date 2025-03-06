@@ -3,7 +3,7 @@
     overflow: auto;
 
     .card-item {
-        @apply flex flex-col h-auto w-full text-white rounded-lg p-5 sm:w-1/2 md:w-1/3 lg:w-1/4;
+        @apply flex flex-col h-auto w-full text-white rounded-lg p-5 sm:w-1/2 md:w-1/2 lg:w-1/3;
         border: 1px solid #242424;
         box-shadow: 0 3px 3px 3px rgba(0, 0, 0, 0.3);
         background: var(--color-card-bg);
@@ -18,9 +18,10 @@
 
             .item-data {
                 @apply flex flex-row justify-between bg-data-bg m-2 px-3 py-2;
-                border-radius: 10px;
+                border-radius: 5px;
                 background-color: var(--color-data-bg);
                 box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.3);
+                color: var(--color-card-label);
 
                 &.item-system-data {
                     @apply flex flex-col;
@@ -37,6 +38,16 @@
             }
             .edit-button {
                 @apply rounded-md cursor-pointer bg-light-gray h-12 w-12 flex items-center justify-center;
+            }
+        }
+
+        .new-schedule {
+            @apply text-light-dark flex flex-col justify-center items-center;
+            .button-add-schedule > svg{
+                @apply block w-full h-56;
+            }
+            .text {
+                @apply text-xl;
             }
         }
     }

@@ -11,7 +11,7 @@
         font-family: 'Michroma', sans-serif;
     }
     .input-group {
-        @apply flex w-full items-center rounded-lg bg-input outline-gray-300 focus-within:outline-2 focus-within:outline-purple;
+        @apply flex w-full items-center rounded-md bg-input outline-gray-300 focus-within:outline-2 focus-within:outline-purple;
         box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
         border: 1px solid #242424;
 
@@ -19,7 +19,7 @@
             @apply bg-input rounded-lg block min-w-0 grow py-1.5 pr-3 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none;
         }
         .select-field {
-            @apply col-start-1 row-start-1 w-full min-w-full cursor-pointer rounded-lg bg-input py-1.5 pr-8 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none sm:text-sm/6;
+            @apply col-start-1 row-start-1 w-full min-w-full cursor-pointer rounded-lg bg-input py-1.5 pr-8 pl-3 text-base text-light-gray placeholder:text-gray-600 focus:outline-none;
         }
         select:invalid {
             @apply placeholder:text-gray-600 text-gray-600;

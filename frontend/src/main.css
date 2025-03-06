@@ -18,7 +18,7 @@
     --color-card-bg: #121212;
     --color-input: #151515;
     --color-data-bg: #181818;
-
+    --color-card-label: #898989;
 }
 
 @font-face {
@@ -111,7 +111,7 @@ button {
 }
 
 .page-bottom {
-    @apply flex flex-row h-full justify-between text-center pt-4 sm:w-90 sm:m-auto;
+    @apply flex flex-row h-full justify-between text-center pt-4 sm:w-lg sm:m-auto;
     .button {
         @apply w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2;
         font-family: 'Akatab-Bold', sans-serif;
