@@ -18,10 +18,17 @@ export default defineConfig((env) => {
       },
     },
     base: "./",
+    esbuild: {
+      supported: {
+        "top-level-await": true,
+      },
+    },
     build: {
+      reportCompressedSize: true,
+      modulePreload: false,
       cssMinify: true,
       cssCodeSplit: true,
-      chunkSizeWarningLimit: 2.7,
+      chunkSizeWarningLimit: 2.75,
       sourcemap: false,
       emptyOutDir: true,
       assetsDir: ".",

@@ -1,19 +1,15 @@
+import { find } from "@src/dom.utils";
+
 document.addEventListener("DOMContentLoaded", async () => {
-  const form = document.getElementById("config-form") as HTMLFormElement | null;
-  const statusDiv = document.getElementById("status") as HTMLDivElement | null;
-  const resetButton = document.getElementById(
-    "reset-button",
-  ) as HTMLButtonElement | null;
+  const form = find("#config-form") as HTMLFormElement | null;
+  const statusDiv = find("#status") as HTMLDivElement | null;
+  const resetButton = find("#reset-button") as HTMLButtonElement | null;
 
   const inputs: { [key: string]: HTMLInputElement | null } = {
-    name: document.getElementById("name") as HTMLInputElement | null,
-    description: document.getElementById(
-      "description",
-    ) as HTMLInputElement | null,
-    startTime: document.getElementById("startTime") as HTMLInputElement | null,
-    managerUrl: document.getElementById(
-      "managerUrl",
-    ) as HTMLInputElement | null,
+    name: find("#name") as HTMLInputElement | null,
+    description: find("#description") as HTMLInputElement | null,
+    startTime: find("#startTime") as HTMLInputElement | null,
+    managerUrl: find("#managerUrl") as HTMLInputElement | null,
   };
 
   const fetchInfo = async (): Promise<any> => {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home Automation</title>
-  <link rel="stylesheet" href="./src/styles/style.css">
+  <link rel="stylesheet" href="src/styles/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
 <main>
   <div class="main-container">
     <h2>Smart things</h2>
-    <div class="item-data" >Status: <span id="status">OFF</span></div>
+    <div class="item-data" >Status: <span id="t-status">OFF</span></div>
     <div class="item-data" id="preview-time">Auto-shutdown in: <span id="time">00:00</span></div>
     <div class="item-data" id="select-time" style="display: none">
       <label for="minutes">Minutes</label>
@@ -62,7 +62,7 @@
     <span><b id="occupied">0.00</b></span>
   </p>
 </footer>
-<script type="module" src="./src/index.ts"></script>
-<script type="module" src="./src/devices.ts"></script>
+<script type="module" src="src/index/index.ts"></script>
+<script type="module" src="src/devices.ts"></script>
 </body>
 </html>
