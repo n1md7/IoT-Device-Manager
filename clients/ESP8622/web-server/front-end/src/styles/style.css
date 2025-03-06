@@ -52,6 +52,7 @@ font-size: 18px;
 
 #status {
   font-weight: bold;
+  margin: 1.5rem 0;
 }
 
 button {
@@ -75,8 +76,8 @@ button:hover {
 
 .error-text {
   color: #ff0000;
-  margin: 1.5rem 0;
   font-weight: bold;
+  margin: 1.5rem 0;
 }
 
 select {
@@ -91,7 +92,7 @@ select {
 }
 
 select:focus {
-  border-color: #4CAF50;
+  border-color: #13bf1a;
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
   outline: none;
 }
@@ -134,36 +135,30 @@ label {
 
 .disk span:after {
   content: ", ";
-}
+ }
 
 @media (prefers-color-scheme: light) {
 :root {
     color: #213547;
     background-color: #f9f9f9;
-}
+ }
 
 a:hover {
     color: #c90400;
-}
+ }
 
 button {
     background-color: #c90400;
-}
+ }
 }
 
 /* Tablet styles (768px and up) */
 @media screen and (min-width: 768px) {
-  main {
-      padding: 2.5rem;
-  }
   header {
       padding: 1.25rem;
   }
   h1 {
       font-size: 1.8rem;
-  }
-  button {
-      padding: 0.85rem 1.75rem;
   }
   .main-container {
     display: flex;
@@ -179,25 +174,8 @@ main {
     padding: 3rem;
     max-width: 1200px;
     margin: 0 auto;
-}
-
-header {
-    padding: 1.5rem;
-}
-
+  }
 h1 {
     font-size: 2rem;
-}
-
-.button-container {
-    gap: 2rem;
-}
-
-button {
-    padding: 0.9rem 2rem;
-}
-
-footer {
-    padding: 1.25rem;
-}
+  }
 }
