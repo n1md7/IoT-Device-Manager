@@ -25,7 +25,7 @@ const ManageComponent = () => {
             <div className="card-body">
               <div className="item-data">
                 <div className="">Device code:</div>
-                <div className="text-purple font-bold">{component.device.code}</div>
+                <div className="text-light-gray font-bold">{component.device.code}</div>
               </div>
               <div className="item-data">
                 <div className="">Device type:</div>

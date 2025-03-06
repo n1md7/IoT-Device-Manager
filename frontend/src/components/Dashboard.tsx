@@ -2,13 +2,23 @@ import EditIcon from '../icons/EditIcon.tsx';
 import useSchedule from '../hooks/useSchedule.ts';
 import Welcome from './Welcome.tsx';
 import useSystems from '../hooks/useSystem.ts';
+import AddIcon from '../icons/AddIcon.tsx';
+import AddNewSchedule from './AddNewSchedule.tsx';
+import { ReactElement, useState } from 'react';
 
 const Dashboard = () => {
   const { scheduleList, error, loading } = useSchedule();
   const { systemList } = useSystems();
+  const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
+  const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
   if (loading) return <p>Loading schedule...</p>;
   if (error) return <p>Error: {error}</p>;
+
+  const handleNewScheduleView = () => {
+    setIsNewScheduleOpen(true);
+    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
+  };
 
   return (
     <>
@@ -27,12 +37,25 @@ const Dashboard = () => {
                 <div className="card-body">
                   <div className="item-data">
                     <div className="">Schedule name:</div>
-                    <div className="text-purple font-bold">{schedule.name}</div>
+                    <div className="text-light-gray font-bold">{schedule.name}</div>
                   </div>
                   <div className="item-data">
                     <div className="">Duration:</div>
-                    <div className="text-light-gray">
+                    <div className="text-light-gray font-bold">
                       {schedule.duration.min}:{schedule.duration.sec}
+                    </div>
+                  </div>
+                  <div className="item-data">
+                    <div className="">Component:</div>
+                    <div className="text-light-gray font-bold text-right">
+                      {scheduleList?.schedules.map((schedule) => (
+                        <span key={schedule.id}>
+                          {schedule.system?.components
+                            .filter((component) => component.inUse)
+                            .map((component) => component.device.name)
+                            .join(', ')}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -66,6 +89,15 @@ const Dashboard = () => {
           ) : (
             <p> {error}</p>
           )}
+          <button className="card-item cursor-pointer" onClick={handleNewScheduleView}>
+            <div className="card-body new-schedule">
+              <div className="icon button-add-schedule">
+                {' '}
+                <AddIcon className="text-light-dark" />{' '}
+              </div>
+              <div className="text">Add New Schedule</div>
+            </div>
+          </button>
           {/*<div className="card-item">*/}
           {/*  <div className="card-header">*/}
           {/*    <div className="system-details">*/}
@@ -94,6 +126,7 @@ const Dashboard = () => {
       ) : (
         <Welcome />
       )}
+      {isNewScheduleOpen && <div className="block">{showModal}</div>}
     </>
   );
 };

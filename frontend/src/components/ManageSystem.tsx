@@ -24,11 +24,13 @@ const ManageSystem = () => {
             </div>
             <div className="card-body">
               <div className="">
-                <div className="font-bold">System Description:</div>
+                <div className="text-card-label">System Description:</div>
                 <div className="my-1">{system.description}</div>
               </div>
               <div className="mt-3">
-                <div className="">System ID: {system.id}</div>
+                <div className="text-card-label">
+                  System ID: <span className="text-white">{system.id}</span>
+                </div>
               </div>
               <div className="flex mt-7">
                 <div className="text-green font-bold">Components:</div>
