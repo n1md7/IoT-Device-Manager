@@ -33,5 +33,5 @@ fetch("/api/info")
   .catch((e) => {
     console.error(e);
 
-    u(`<span style="color: red">ERR</span>`);
+    u(`<span style="color: #c90400">ERR</span>`);
   });

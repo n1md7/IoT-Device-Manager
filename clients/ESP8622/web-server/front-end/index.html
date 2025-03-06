@@ -7,45 +7,47 @@
   <link rel="stylesheet" href="./src/styles/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Skranji&display=swap" rel="stylesheet">
-</head>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+ </head>
 <body>
 <header>
   <h1>Home Automation</h1>
 </header>
 <main>
-  <h2>Smart things</h2>
-  <p>Status: <span id="status">OFF</span></p>
-  <p id="preview-time">Auto-shutdown in: <span id="time">00:00</span></p>
-  <div id="select-time" style="display: none">
-    <label for="minutes">Minutes</label>
-    <select id="minutes">
-      <option selected value="0">0</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="10">10</option>
-      <option value="15">15</option>
-      <option value="20">20</option>
-      <option value="30">30</option>
-      <option value="45">45</option>
-    </select>
-    <select id="seconds">
-      <option value="0">00</option>
-      <option selected value="10">10</option>
-      <option value="20">20</option>
-      <option value="30">30</option>
-      <option value="45">45</option>
-    </select>
-    <label for="seconds">Seconds</label>
+  <div class="main-container">
+    <h2>Smart things</h2>
+    <div class="item-data" >Status: <span id="status">OFF</span></div>
+    <div class="item-data" id="preview-time">Auto-shutdown in: <span id="time">00:00</span></div>
+    <div class="item-data" id="select-time" style="display: none">
+      <label for="minutes">Minutes</label>
+      <select id="minutes">
+        <option selected value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="45">45</option>
+      </select>
+      <select id="seconds">
+        <option value="0">00</option>
+        <option selected value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="45">45</option>
+      </select>
+      <label for="seconds">Seconds</label>
+    </div>
+    <div class="button-container">
+      <button id="on" data-path="/api/on">Turn ON</button>
+      <button id="off" data-path="/api/off">Turn OFF</button>
+    </div>
+    <div id="error-text" class="error-text"></div>
   </div>
-  <div class="button-container">
-    <button id="on" data-path="/api/on">Turn ON</button>
-    <button id="off" data-path="/api/off">Turn OFF</button>
-  </div>
-  <div id="error-text"></div>
 </main>
 <footer>
   <p>Powered by <b>GG-Software</b></p>

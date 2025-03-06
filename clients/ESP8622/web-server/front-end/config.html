@@ -8,37 +8,38 @@
   <link rel="stylesheet" href="./src/styles/config.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Skranji&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
   <h1>Device Configuration</h1>
 </header>
 <main>
-  <form id="config-form">
-    <div>
-      <label for="name">Device Name:</label><br>
-      <input type="text" id="name" name="name" placeholder="My Pump">
-    </div>
-    <div>
-      <label for="description">Description:</label><br>
-      <input type="text" id="description" name="description" placeholder="My badass device">
-    </div>
-    <div>
-      <label for="startTime">Start Time (seconds):</label><br>
-      <input type="number" id="startTime" name="startTime" placeholder="1200">
-    </div>
-    <div>
-      <label for="managerUrl">Manager URL:</label><br>
-      <input type="url" id="managerUrl" name="managerUrl" placeholder="http://192.168.1.2">
-    </div>
-    <div class="button-container">
-      <button type="submit">Update</button>
-      <button type="button" id="reset-button" class="secondary-button">Reset to Default</button>
-    </div>
-    <div id="status" class="hidden"></div>
-  </form>
+  <div class="main-container">
+    <form id="config-form">
+      <div class="form-group">
+        <label for="name">Device Name:</label><br>
+        <input type="text" id="name" name="name" placeholder="My Pump">
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label><br>
+        <input type="text" id="description" name="description" placeholder="My badass device">
+      </div>
+      <div class="form-group">
+        <label for="startTime">Start Time (seconds):</label><br>
+        <input type="number" id="startTime" name="startTime" placeholder="1200">
+      </div>
+      <div class="form-group">
+        <label for="managerUrl">Manager URL:</label><br>
+        <input type="url" id="managerUrl" name="managerUrl" placeholder="http://192.168.1.2">
+      </div>
+      <div class="button-container">
+        <button type="submit">Update</button>
+        <button type="button" id="reset-button" class="secondary-button">Reset to Default</button>
+      </div>
+      <div id="status" class="error-text hidden"></div>
+    </form>
+  </div>
 </main>
 <footer>
   <p>Powered by <b>GG-Software</b></p>
