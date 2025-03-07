@@ -7,13 +7,16 @@
     "doc": "docs"
   },
   "scripts": {
+    "mock-api": "node ./mock-api/index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "prettier": "3.5.1",
-    "@moddable/typings": "^5.4.1"
+    "@moddable/typings": "^5.5.0",
+    "@types/express": "^5.0.0",
+    "express": "^4.21.2",
+    "prettier": "3.5.1"
   }
 }

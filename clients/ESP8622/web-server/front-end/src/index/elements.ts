@@ -13,7 +13,7 @@ export const [
 ] = [
   "#on",
   "#off",
-  "#status",
+  "#t-status",
   "#time",
   "#error-text",
   "#preview-time",

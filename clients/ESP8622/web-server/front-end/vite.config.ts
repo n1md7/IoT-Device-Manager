@@ -11,6 +11,9 @@ export default defineConfig((env) => {
       port: 4096,
       host: "0.0.0.0",
       open: "/index.html",
+      proxy: {
+        "/api": "http://localhost:1234",
+      },
     },
     resolve: {
       alias: {
