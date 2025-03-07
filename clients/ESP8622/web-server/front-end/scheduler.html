@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Manager</title>
+  <link rel="stylesheet" href="src/styles/style.css">
+</head>
+<body>
+<header>
+  <h1>Schedule Manager</h1>
+</header>
+<main>
+  <div class="main-container">
+    <label for="start-time">Allow access during</label>
+    <div class="time-container">
+      <input type="time" id="start-time" value="19:00">
+      <span>~</span>
+      <input type="time" id="end-time" value="21:00">
+    </div>
+    <label>Repeat</label>
+    <div class="weekdays">
+      <input type="checkbox" id="mon"><label for="mon">Mon</label>
+      <input type="checkbox" id="tue"><label for="tue">Tue</label>
+      <input type="checkbox" id="wed"><label for="wed">Wed</label>
+      <input type="checkbox" id="thu"><label for="thu">Thu</label>
+      <input type="checkbox" id="fri" checked><label for="fri">Fri</label>
+      <input type="checkbox" id="sat" checked><label for="sat">Sat</label>
+      <input type="checkbox" id="sun"><label for="sun">Sun</label>
+    </div>
+    <label for="website-restrictions">Website Restrictions</label>
+    <select id="website-restrictions">
+      <option value="disable">Disable</option>
+      <option value="enable">Enable</option>
+    </select>
+    <button id="save-schedule">Save</button>
+  </div>
+</main>
+<script type="module" src="src/schedules/script.ts"></script>
+</body>
+</html>

@@ -40,6 +40,7 @@ export default defineConfig((env) => {
         input: {
           index: "index.html",
           config: "config.html",
+          scheduler: "scheduler.html",
         },
       },
     },
