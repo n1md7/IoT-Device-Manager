@@ -19,27 +19,21 @@
     <div class="item-data" >Status: <span id="t-status">OFF</span></div>
     <div class="item-data" id="preview-time">Auto-shutdown in: <span id="time">00:00</span></div>
     <div class="item-data" id="select-time" style="display: none">
-      <label for="minutes">Minutes</label>
-      <select id="minutes">
-        <option selected value="0">0</option>
+      <datalist id="list">
+        <option value="0">0</option>
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
-        <option value="4">4</option>
         <option value="5">5</option>
         <option value="10">10</option>
-        <option value="15">15</option>
         <option value="20">20</option>
         <option value="30">30</option>
-        <option value="45">45</option>
-      </select>
-      <select id="seconds">
-        <option value="0">00</option>
-        <option selected value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="45">45</option>
-      </select>
+        <option value="40">40</option>
+        <option value="50">50</option>
+      </datalist>
+      <label for="minutes">Minutes</label>
+      <input list="list" type="number" id="minutes" name="minutes" min="0" max="59" value="10">
+      <input list="list" type="number" id="seconds" name="minutes" min="0" max="59" value="0">
       <label for="seconds">Seconds</label>
     </div>
     <div class="button-container">
