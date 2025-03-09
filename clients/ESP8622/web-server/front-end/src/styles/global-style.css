@@ -28,14 +28,13 @@ h1, h2 {
 }
 
 label, #status, #t-status, #time {
-    font-weight: bold;
+    font-weight: 500;
 }
 
 #t-status {
     margin: 0 !important;
 }
 
-/* === Header & Navigation === */
 header {
     background: #032e3b;
     color: #fff;
@@ -59,8 +58,11 @@ nav a:hover {
     color: #e7eff1;
 }
 
-#menu-toggle, .nav-icon {
+#menu-toggle {
     display: none;
+}
+
+.nav-icon {
     cursor: pointer;
 }
 
@@ -86,7 +88,6 @@ nav a:hover {
     width: 100%;
 }
 
-/* === Main Content & Footer === */
 main {
     flex: 1;
     padding: 2rem;
@@ -102,7 +103,6 @@ footer {
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
-/* === Miscellaneous === */
 .version, .disk {
     font-size: 0.8rem;
     color: #666;
@@ -154,7 +154,6 @@ button:hover {
     background: #bbb;
 }
 
-/* === Forms & Inputs === */
 select, input[type=number], input, input[type="url"] {
     padding: 0.5rem;
     border: 2px solid #ccc;
@@ -174,7 +173,6 @@ select:focus, input:focus, input[type="number"]:focus, input[type="url"]:focus {
     outline: none;
 }
 
-/* === Responsive Design === */
 @media screen and (min-width: 768px) {
     header {
         padding: 1.25rem;

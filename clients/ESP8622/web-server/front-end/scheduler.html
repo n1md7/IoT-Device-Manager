@@ -31,31 +31,14 @@
   <div class="schedule-container">
     <form id="scheduleForm" class="schedule-wrapper">
       <div class="schedule-form">
+        <div class="schedule-name">Water Pump Afternoon Sched</div>
         <div class="form-group">
           <label for="start-time">Start Time: </label>
-          <input type="time" id="start-time" value="19:00" class="start-time">
+          <input type="time" id="start-time" value="19:00" class="timepicker">
         </div>
-        <div class="form-group duration">
-          <datalist id="list">
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="50">50</option>
-          </datalist>
-          <div class="column">
-            <label for="minutes">Minutes: </label>
-            <input list="list" type="number" id="minutes" name="minutes" min="0" max="59" value="10">
-          </div>
-          <div class="column">
-            <label for="seconds">Seconds: </label>
-            <input list="list" type="number" id="seconds" name="seconds" min="0" max="59" value="0">
-          </div>
+        <div class="form-group">
+          <label for="start-time">End Time: </label>
+          <input type="time" id="end-time" value="20:00" class="timepicker">
         </div>
         <div class="form-group">
           <label for="weekdays">Repeat:</label>

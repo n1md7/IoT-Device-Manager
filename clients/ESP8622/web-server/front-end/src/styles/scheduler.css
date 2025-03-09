@@ -33,8 +33,16 @@
     margin: 1.5rem 0 1rem;
 }
 
-.schedule-form .form-group .start-time {
-    width: 280px;
+.schedule-form .timepicker {
+    width: 95%;
+}
+
+.schedule-name {
+    border-bottom: 1px solid #d5d5d5;
+    padding: 0 0 10px;
+    margin: 20px 0;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .form-group .weekdays {
@@ -59,10 +67,4 @@
 .form-group .weekdays .column .weekday > label {
     width: 100px;
     margin: 2px 0;
-}
-
-.form-group.duration {
-    display: flex;
-    gap: 3rem;
-    justify-content: center;
 }
