@@ -1,3 +1,4 @@
+/* === Global Styles === */
 html, body {
     margin: 0;
     padding: 0;
@@ -5,72 +6,15 @@ html, body {
     display: flex;
     flex-direction: column;
     font-family: "Noto Sans", sans-serif;
-}
-
-body {
     background: #f7f6f6;
     color: #032e3b;
     text-align: center;
     font-weight: 400;
 }
 
-main {
-    flex: 1;
-    padding: 2rem;
-    display: flex;
-    justify-content: center;
-}
-
-footer {
-    font-size: 0.9rem;
-    color: #2d2929;
-    padding: 1rem;
-    background: rgba(232, 226, 226, 0.05);
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
-}
-
-header {
-    background: #032e3b;
-    color: #fff;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
+/* === Typography === */
 h1, h2 {
     font-size: 18px;
-}
-
-.main-container {
-    min-width: 300px;
-}
-
-.button-container {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-}
-
-#status, #t-status {
-    font-weight: bold;
-}
-
-#t-status {
-    margin: 0 !important;
-}
-
-button {
-    background: #c90400;
-    color: #f7f6f6;
-    border: none;
-    border-radius: 5px;
-    padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    transition: 0.3s;
-    font-family: "Noto Sans", sans-serif;
-}
-
-button:hover {
-    background: #e52725;
 }
 
 .text-success {
@@ -84,29 +28,101 @@ button:hover {
     margin: 1.5rem 0;
 }
 
-select, input[type=number] {
-    padding: 0.5rem;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    background-color: #f7f6f6;
-    color: #333;
-    cursor: pointer;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-select:focus {
-    border-color: #13bf1a;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-    outline: none;
-}
-
 label {
     font-weight: 500;
 }
 
-#time {
+#status, #t-status, #time {
     font-weight: bold;
+}
+
+#t-status {
+    margin: 0 !important;
+}
+
+/* === Layout Elements === */
+header {
+    background: #032e3b;
+    color: #fff;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #ccdae7;
+}
+
+nav a:hover {
+    color: #e7eff1;
+}
+
+#menu-toggle {
+    display: none;
+}
+
+.nav-icon {
+    cursor: pointer;
+}
+
+.nav-items {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 80px;
+    right: 0;
+    background: rgba(20, 20, 20, 0.9);
+    width: 250px;
+    padding: 1rem 0;
+    box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.3);
+    text-align: right;
+    height: 50%;
+}
+
+#menu-toggle:checked + .nav-icon + .nav-items {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+main {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+footer {
+    font-size: 0.9rem;
+    color: #2d2929;
+    padding: 1rem;
+    background: rgb(241 241 241);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+/* === Components & Utility Classes === */
+.main-container {
+    min-width: 300px;
+}
+
+.button-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.schedule-form .button-container {
+    margin: 1.5rem 0 1rem;
 }
 
 .item-data {
@@ -123,24 +139,145 @@ label {
     color: #666;
     font-weight: 600;
     font-style: normal;
+}
 
-    & span:after {
-        content: " | ";
-    }
+.version span:after, .disk span:after {
+    content: " | ";
+}
 
-    & span:last-child:after {
-        content: "";
-    }
+.version span:last-child:after {
+    content: "";
+}
 
-    b {
-        color: #c90400;
-    }
+.version b {
+    color: #c90400;
 }
 
 .disk span:after {
     content: ", ";
 }
 
+.hidden {
+    display: none;
+}
+
+/* === Buttons === */
+button {
+    background: #c90400;
+    color: #f7f6f6;
+    border: none;
+    border-radius: 5px;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: "Noto Sans", sans-serif;
+}
+
+button:hover {
+    background: #e52725;
+}
+
+.secondary-button {
+    background: #ccc;
+    color: #333;
+}
+
+.secondary-button:hover {
+    background: #bbb;
+}
+
+/* === Forms === */
+.form-group {
+    margin: 1.5rem 0;
+    text-align: left;
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form-group .weekdays {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    border: 1px solid #d5d5d5;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.form-group .weekdays .column {
+    display: flex;
+    flex-direction: column;
+    width: 100px;
+}
+
+.form-group .weekdays .column .weekday {
+    display: flex;
+    flex-direction: row;
+}
+
+.form-group .weekdays .column .weekday > label {
+    width: 100px;
+    margin: 2px 0;
+}
+
+.form-group.duration {
+    display: flex;
+    gap: 3rem;
+}
+
+.schedule-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.schedule-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.schedule-form {
+    padding: 1.5rem;
+    border: 1px solid #e1e1e1;
+    min-width: 300px;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #fdfdfd;
+    height: fit-content;
+}
+
+.schedule-form .form-group {
+    margin: 10px 0;
+}
+
+.schedule-form .form-group .start-time {
+    width: 280px;
+}
+
+select, input[type=number], input, input[type="url"] {
+    padding: 0.5rem;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #f7f6f6;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    width: 100%;
+    font-family: "Noto Sans", sans-serif;
+}
+
+select:focus, input:focus, input[type="number"]:focus, input[type="url"]:focus {
+    border-color: #a9a9a9;
+    box-shadow: 0 0 5px rgb(173 173 173 / 50%);
+    outline: none;
+}
+
+/* === Light Mode (Prefers Color Scheme) === */
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
@@ -156,7 +293,7 @@ label {
     }
 }
 
-/* Tablet styles (768px and up) */
+/* === Tablet Styles (768px and up) === */
 @media screen and (min-width: 768px) {
     header {
         padding: 1.25rem;
@@ -172,9 +309,12 @@ label {
         width: 400px;
         max-width: 100%;
     }
+    .nav-items {
+        top: 117px;
+    }
 }
 
-/* Desktop styles (1024px and up) */
+/* === Desktop Styles (1024px and up) === */
 @media screen and (min-width: 1024px) {
     main {
         padding: 3rem;
@@ -184,5 +324,23 @@ label {
 
     h1 {
         font-size: 2rem;
+    }
+    .nav-items {
+        display: flex !important;
+        position: static;
+        flex-direction: row;
+        background: transparent;
+        width: auto;
+        padding: 0;
+        box-shadow: none;
+        gap: 2rem;
+    }
+
+    .nav-icon {
+        display: none;
+    }
+
+    #menu-toggle {
+        display: none;
     }
 }

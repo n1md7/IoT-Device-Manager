@@ -5,32 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Configuration Update</title>
   <link rel="stylesheet" href="./src/styles/style.css">
-  <link rel="stylesheet" href="./src/styles/config.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
-  <h1>Device Configuration</h1>
+  <div class="navbar">
+    <h1>Home Automation</h1>
+    <input type="checkbox" id="menu-toggle">
+    <label for="menu-toggle" class="nav-icon">
+      <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </label>
+    <nav class="nav-items">
+      <a href="index.html">Index</a>
+      <a href="config.html">Configuration</a>
+      <a href="scheduler.html">Scheduler</a>
+    </nav>
+  </div>
 </header>
 <main>
   <div class="main-container">
     <form id="config-form">
       <div class="form-group">
-        <label for="name">Device Name:</label><br>
-        <input type="text" id="name" name="name" placeholder="My Pump">
+        <label for="deviceName">Device Name:</label>
+        <input type="text" id="deviceName" name="name" placeholder="My Pump">
       </div>
       <div class="form-group">
-        <label for="description">Description:</label><br>
+        <label for="description">Description:</label>
         <input type="text" id="description" name="description" placeholder="My badass device">
       </div>
       <div class="form-group">
-        <label for="startTime">Start Time (seconds):</label><br>
+        <label for="startTime">Start Time (seconds):</label>
         <input type="number" id="startTime" name="startTime" placeholder="1200">
       </div>
       <div class="form-group">
-        <label for="managerUrl">Manager URL:</label><br>
+        <label for="managerUrl">Manager URL:</label>
         <input type="url" id="managerUrl" name="managerUrl" placeholder="http://192.168.1.2">
       </div>
       <div class="button-container">
@@ -43,6 +55,16 @@
 </main>
 <footer>
   <p>Powered by <b>GG-Software</b></p>
+  <p class="version">
+    <span><b id="name">D0000</b></span>
+    <span><b id="desc">My Device</b></span>
+    <span>v<b id="version">1</b></span>
+  </p>
+  <p class="disk">
+    <span>Total: <b id="total">0.00</b> B</span>
+    <span>Used: <b id="used">0.00</b> B</span>
+    <span><b id="occupied">0.00</b></span>
+  </p>
 </footer>
 <script type="module" src="src/config/config.ts"></script>
 </body>
