@@ -1,7 +1,9 @@
-const PageHeader = () => {
-  return (
-    <h1 className='page-header'>Manage your home</h1>
-  )
-}
+type Props = {
+  pageTitle: string;
+};
+
+const PageHeader = ({ pageTitle }: Props) => {
+  return <h1 className="page-header">Manage your {pageTitle}</h1>;
+};
 
 export default PageHeader;

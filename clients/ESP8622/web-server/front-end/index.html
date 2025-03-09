@@ -11,7 +11,20 @@
  </head>
 <body>
 <header>
-  <h1>Home Automation</h1>
+  <div class="navbar">
+    <h1>Home Automation</h1>
+    <input type="checkbox" id="menu-toggle">
+    <label for="menu-toggle" class="nav-icon">
+      <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </label>
+    <nav class="nav-items">
+      <a href="index.html">Index</a>
+      <a href="config.html">Configuration</a>
+      <a href="scheduler.html">Scheduler</a>
+    </nav>
+  </div>
 </header>
 <main>
   <div class="main-container">
@@ -55,11 +68,7 @@
     <span>Used: <b id="used">0.00</b> B</span>
     <span><b id="occupied">0.00</b></span>
   </p>
-  <nav>
-    <a href="index.html">Index</a>
-    <a href="config.html">Configuration</a>
-    <a href="scheduler.html">Scheduler</a>
-  </nav>
+
 </footer>
 <script type="module" src="src/index/index.ts"></script>
 <script type="module" src="src/devices.ts"></script>

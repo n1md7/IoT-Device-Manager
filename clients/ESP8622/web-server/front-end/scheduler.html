@@ -4,38 +4,122 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Schedule Manager</title>
-  <link rel="stylesheet" href="src/styles/style.css">
+  <link rel="stylesheet" href="./src/styles/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
-  <h1>Schedule Manager</h1>
+  <div class="navbar">
+    <h1>Home Automation</h1>
+    <input type="checkbox" id="menu-toggle">
+    <label for="menu-toggle" class="nav-icon">
+      <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </label>
+    <nav class="nav-items">
+      <a href="index.html">Index</a>
+      <a href="config.html">Configuration</a>
+      <a href="scheduler.html">Scheduler</a>
+    </nav>
+  </div>
 </header>
 <main>
-  <div class="main-container">
-    <label for="start-time">Allow access during</label>
-    <div class="time-container">
-      <input type="time" id="start-time" value="19:00">
-      <span>~</span>
-      <input type="time" id="end-time" value="21:00">
-    </div>
-    <label>Repeat</label>
-    <div class="weekdays">
-      <input type="checkbox" id="mon"><label for="mon">Mon</label>
-      <input type="checkbox" id="tue"><label for="tue">Tue</label>
-      <input type="checkbox" id="wed"><label for="wed">Wed</label>
-      <input type="checkbox" id="thu"><label for="thu">Thu</label>
-      <input type="checkbox" id="fri" checked><label for="fri">Fri</label>
-      <input type="checkbox" id="sat" checked><label for="sat">Sat</label>
-      <input type="checkbox" id="sun"><label for="sun">Sun</label>
-    </div>
-    <label for="website-restrictions">Website Restrictions</label>
-    <select id="website-restrictions">
-      <option value="disable">Disable</option>
-      <option value="enable">Enable</option>
-    </select>
-    <button id="save-schedule">Save</button>
+  <div class="schedule-container">
+    <form id="scheduleForm" class="schedule-wrapper">
+      <div class="schedule-form">
+        <div class="form-group">
+          <label for="start-time">Start Time: </label>
+          <input type="time" id="start-time" value="19:00" class="start-time">
+        </div>
+        <div class="form-group duration">
+          <datalist id="list">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+          </datalist>
+          <div class="column">
+            <label for="minutes">Minutes: </label>
+            <input list="list" type="number" id="minutes" name="minutes" min="0" max="59" value="10">
+          </div>
+          <div class="column">
+            <label for="seconds">Seconds: </label>
+            <input list="list" type="number" id="seconds" name="seconds" min="0" max="59" value="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="weekdays">Repeat:</label>
+          <div class="weekdays" id="weekdays">
+            <div class="column">
+              <div class="weekday">
+                <label for="mon">Mon</label>
+                <input type="checkbox" id="mon">
+              </div>
+              <div class="weekday">
+                <label for="tue">Tue</label>
+                <input type="checkbox" id="tue">
+              </div>
+              <div class="weekday">
+                <label for="wed">Wed</label>
+                <input type="checkbox" id="wed">
+              </div>
+              <div class="weekday">
+                <label for="thu">Thu</label>
+                <input type="checkbox" id="thu">
+              </div>
+            </div>
+            <div class="column">
+              <div class="weekday">
+                <label for="fri">Fri</label>
+                <input type="checkbox" id="fri" checked>
+              </div>
+              <div class="weekday">
+                <label for="sat">Sat</label>
+                <input type="checkbox" id="sat" checked>
+              </div>
+              <div class="weekday">
+                <label for="sun">Sun</label>
+                <input type="checkbox" id="sun">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="website-restrictions">Status: </label>
+          <select id="website-restrictions">
+            <option value="disable">Disable</option>
+            <option value="enable">Enable</option>
+          </select>
+        </div>
+        <div class="button-container">
+          <button id="save-schedule">Save</button>
+        </div>
+      </div>
+    </form>
   </div>
 </main>
+<footer>
+  <p>Powered by <b>GG-Software</b></p>
+  <p class="version">
+    <span><b id="name">D0000</b></span>
+    <span><b id="desc">My Device</b></span>
+    <span>v<b id="version">1</b></span>
+  </p>
+  <p class="disk">
+    <span>Total: <b id="total">0.00</b> B</span>
+    <span>Used: <b id="used">0.00</b> B</span>
+    <span><b id="occupied">0.00</b></span>
+  </p>
+</footer>
 <script type="module" src="src/schedules/script.ts"></script>
 </body>
 </html>
