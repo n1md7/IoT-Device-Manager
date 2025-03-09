@@ -1,0 +1,33 @@
+.main-container {
+    min-width: 300px;
+}
+.button-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+.item-data {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
+}
+.form-group {
+    width: 100%;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+}
+@media screen and (min-width: 768px) {
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        width: 400px;
+        max-width: 100%;
+    }
+}
