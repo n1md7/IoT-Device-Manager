@@ -28,19 +28,17 @@ type InfoResponse = {
 const footer = document.createElement("footer");
 
 footer.innerHTML = `
-  <footer>
-    <p>Powered by <b>GG-Software</b></p>
-    <p class="version">
-      <span><b id="name">...</b></span>
-      <span><b id="desc">...</b></span>
-      <span>v<b id="version">...</b></span>
-    </p>
-    <p class="disk">
-      <span>Total: <b id="total">...</b> B</span>
-      <span>Used: <b id="used">...</b> B</span>
-      <span><b id="occupied">...</b></span>
-    </p>
-  </footer>
+  <p>Powered by <b>GG-Software</b></p>
+  <p class="version">
+    <span><b id="name">...</b></span>
+    <span><b id="desc">...</b></span>
+    <span>v<b id="version">...</b></span>
+  </p>
+  <p class="disk">
+    <span>Total: <b id="total">...</b> B</span>
+    <span>Used: <b id="used">...</b> B</span>
+    <span><b id="occupied">...</b></span>
+  </p>
 `;
 
 document.body.appendChild(footer);
