@@ -1,0 +1,68 @@
+.schedule-container {
+    display: flex;
+}
+
+.schedule-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.schedule-form {
+    padding: 1.5rem;
+    border: 1px solid #e1e1e1;
+    min-width: 300px;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #fdfdfd;
+    height: fit-content;
+}
+
+.schedule-form .form-group {
+    margin: 10px 0;
+    text-align: left;
+}
+
+.schedule-form .form-group label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.schedule-form .button-container {
+    margin: 1.5rem 0 1rem;
+}
+
+.schedule-form .form-group .start-time {
+    width: 280px;
+}
+
+.form-group .weekdays {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    border: 1px solid #d5d5d5;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.form-group .weekdays .column {
+    display: flex;
+    flex-direction: column;
+    width: 100px;
+}
+
+.form-group .weekdays .column .weekday {
+    display: flex;
+}
+
+.form-group .weekdays .column .weekday > label {
+    width: 100px;
+    margin: 2px 0;
+}
+
+.form-group.duration {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+}
