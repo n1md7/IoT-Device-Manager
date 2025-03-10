@@ -166,3 +166,13 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]::-moz-range-progress {
     background: var(--color-purple);
 }
+
+.error-msg {
+    color: var(--color-purple);
+    text-align: center;
+}
+
+.loading-msg {
+    color: var(--color-light-purple);
+    text-align: center;
+}

@@ -12,8 +12,8 @@ const Dashboard = () => {
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
-  if (loading) return <p>Loading schedule...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="loading-msg">Loading schedule...</p>;
+  if (error) return <p className="error-msg">Error: {error}</p>;
 
   const handleNewScheduleView = () => {
     setIsNewScheduleOpen(true);
@@ -24,8 +24,8 @@ const Dashboard = () => {
     <>
       {systemList?.systems?.length ? (
         <div className="control-view-container">
-          {scheduleList?.schedules?.length ? (
-            scheduleList.schedules.map((schedule) => (
+          {scheduleList?.length ? (
+            scheduleList.map((schedule) => (
               <div key={schedule.id} className="card-item">
                 <div className="card-header">
                   <div className="system-details">
@@ -48,7 +48,7 @@ const Dashboard = () => {
                   <div className="item-data">
                     <div className="">Component:</div>
                     <div className="text-light-gray font-bold text-right">
-                      {scheduleList?.schedules.map((schedule) => (
+                      {scheduleList.map((schedule) => (
                         <span key={schedule.id}>
                           {schedule.system?.components
                             .filter((component) => component.inUse)
@@ -87,7 +87,7 @@ const Dashboard = () => {
               </div>
             ))
           ) : (
-            <p> {error}</p>
+            <p className="error-msg"> {error}</p>
           )}
           <button className="card-item cursor-pointer" onClick={handleNewScheduleView}>
             <div className="card-body new-schedule">

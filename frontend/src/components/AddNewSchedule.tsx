@@ -1,62 +1,129 @@
+import * as React from 'react';
+import { useState } from 'react';
+import useSchedule from '../hooks/useSchedule.ts';
+
 interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
+  const { systemList, addSchedule, isSubmitting } = useSchedule();
+  const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    startExpression: '',
+    min: '',
+    sec: '',
+  });
+
+  const handleSystemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSystem(Number(e.target.value));
+  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const selectedSystemObject = systemList?.systems?.find((system) => system.id === selectedSystem);
+    if (!selectedSystemObject) {
+      console.error('Selected system not found!');
+      return;
+    }
+    await addSchedule({
+      name: formData.name,
+      startExpression: formData.startExpression,
+      duration: {
+        min: Number(formData.min),
+        sec: Number(formData.sec),
+      },
+      system: Array.isArray(selectedSystemObject) ? selectedSystemObject : [selectedSystemObject],
+    });
+
+    setIsNewScheduleOpen(false);
+  };
+
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
         <h2>Create Schedule</h2>
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-5">
-            <label htmlFor="scheduleName" className="block">
+            <label htmlFor="name" className="block">
               Schedule name:
             </label>
             <div className="mt-2">
               <div className="input-group">
                 <input
                   type="text"
-                  name="scheduleName"
+                  name="name"
                   id="scheduleName"
+                  value={formData.name}
+                  onChange={handleChange}
                   className="input-field"
                   placeholder="e.g. water pump afternoon sched"
+                  required
                 />
               </div>
             </div>
           </div>
           <div className="mb-5">
-            <label htmlFor="scheduleExpression" className="block">
+            <label htmlFor="startExpression" className="block">
               Cron Expression:
             </label>
             <div className="mt-2">
               <div className="input-group">
                 <input
                   type="text"
-                  name="scheduleExpression"
+                  name="startExpression"
                   id="scheduleExpression"
+                  value={formData.startExpression}
+                  onChange={handleChange}
                   className="input-field"
                   placeholder="e.g. 5 * * * * *"
+                  required
                 />
               </div>
             </div>
           </div>
           <div className="flex flex-row justify-between">
             <div className="mb-5 w-1/3">
-              <label htmlFor="scheduleMin" className="block">
+              <label htmlFor="min" className="block">
                 Minutes:
               </label>
               <div className="mt-2">
                 <div className="input-group">
-                  <input type="text" name="scheduleMin" id="scheduleMin" className="input-field" placeholder="e.g. 30" />
+                  <input
+                    type="text"
+                    name="min"
+                    id="scheduleMin"
+                    value={formData.min}
+                    onChange={handleChange}
+                    className="input-field"
+                    placeholder="e.g. 30"
+                    required
+                  />
                 </div>
               </div>
             </div>
             <div className="mb-5 w-1/3">
-              <label htmlFor="scheduleSec" className="block">
+              <label htmlFor="sec" className="block">
                 Seconds:
               </label>
               <div className="mt-2">
                 <div className="input-group">
-                  <input type="text" name="scheduleSec" id="scheduleSec" className="input-field" placeholder="e.g. 15" />
+                  <input
+                    type="text"
+                    name="sec"
+                    id="scheduleSec"
+                    value={formData.sec}
+                    onChange={handleChange}
+                    className="input-field"
+                    placeholder="e.g. 15"
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -68,11 +135,27 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
               </label>
               <div className="mt-2">
                 <div className="input-group">
-                  <select id="selectedSystem" name="selectedSystem" autoComplete="" className="select-field" required>
-                    <option value="" disabled selected>
+                  <select
+                    id="selectedSystem"
+                    name="selectedSystem"
+                    value={selectedSystem ?? ''}
+                    onChange={handleSystemChange}
+                    autoComplete=""
+                    className="select-field"
+                    required
+                  >
+                    <option value="" disabled>
                       please select...
                     </option>
-                    <option value="">Water system</option>
+                    {systemList?.systems?.length ? (
+                      systemList.systems.map((system) => (
+                        <option key={system.id} value={system.id}>
+                          {system.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>No systems found</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -81,7 +164,9 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
 
           <div></div>
           <div className="button-container">
-            <button className="button bg-purple text-white">Save</button>
+            <button className="button bg-purple text-white" disabled={isSubmitting}>
+              Save
+            </button>
             <button className="button bg-light-gray text-purple" onClick={() => setIsNewScheduleOpen(false)}>
               Cancel
             </button>
