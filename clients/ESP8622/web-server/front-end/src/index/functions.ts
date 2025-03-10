@@ -9,10 +9,10 @@ export const addQueryString = (url: string) => {
   return `${url}?min=${(minutes as HTMLInputElement).value}&sec=${(seconds as HTMLInputElement).value}`;
 };
 export const showSelect = () => {
-  previewTime.style.display = "none";
-  selectTime.style.display = "block";
+  previewTime.classList.add("hidden");
+  selectTime.classList.remove("hidden");
 };
 export const hideSelect = () => {
-  previewTime.style.display = "block";
-  selectTime.style.display = "none";
+  previewTime.classList.remove("hidden");
+  selectTime.classList.add("hidden");
 };
