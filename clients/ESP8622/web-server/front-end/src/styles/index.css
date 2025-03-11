@@ -1,0 +1,11 @@
+#select-time {
+    gap: 1.0rem;
+    display: flex;
+    padding: 10px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}

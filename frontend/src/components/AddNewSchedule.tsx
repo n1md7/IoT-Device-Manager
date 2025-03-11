@@ -39,7 +39,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
         min: Number(formData.min),
         sec: Number(formData.sec),
       },
-      system: Array.isArray(selectedSystemObject) ? selectedSystemObject : [selectedSystemObject],
+      systemId: selectedSystemObject.id,
     });
 
     setIsNewScheduleOpen(false);

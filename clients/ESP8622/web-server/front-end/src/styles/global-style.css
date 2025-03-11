@@ -11,6 +11,7 @@ html, body {
     text-align: center;
     font-weight: 400;
     font-size: 14px;
+    transition: all 300ms ease;
 }
 
 h1, h2 {
@@ -174,13 +175,24 @@ select:focus, input:focus, input[type="number"]:focus, input[type="url"]:focus {
     outline: none;
 }
 
+.hidden {
+    visibility: hidden;
+    height: 0 !important;
+    overflow: hidden;
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
 @media screen and (min-width: 768px) {
     header {
         padding: 1.25rem;
     }
+
     h1 {
         font-size: 1.8rem;
     }
+
     .nav-items {
         top: 102px;
     }
@@ -192,9 +204,11 @@ select:focus, input:focus, input[type="number"]:focus, input[type="url"]:focus {
         max-width: 1200px;
         margin: 0 auto;
     }
+
     h1 {
         font-size: 2rem;
     }
+
     .nav-items {
         display: flex !important;
         position: static;
@@ -205,9 +219,11 @@ select:focus, input:focus, input[type="number"]:focus, input[type="url"]:focus {
         box-shadow: none;
         gap: 2rem;
     }
+
     .nav-icon {
         display: none;
     }
+
     #menu-toggle {
         display: none;
     }

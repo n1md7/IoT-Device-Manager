@@ -10,7 +10,7 @@ export type ScheduleData = {
   name: string;
   startExpression: string;
   duration: ScheduleDetails;
-  system: SystemsDetails[];
+  system: SystemsDetails;
   createdAt: string;
   updatedAt: string;
 };
@@ -18,4 +18,11 @@ export type ScheduleData = {
 export type ScheduleResponseData = {
   count: number;
   schedules: ScheduleData[];
+};
+
+export type SchedulePayload = {
+  name: string;
+  startExpression: string;
+  duration: ScheduleDetails;
+  systemId: number;
 };

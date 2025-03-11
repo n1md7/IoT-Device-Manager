@@ -48,14 +48,7 @@ const Dashboard = () => {
                   <div className="item-data">
                     <div className="">Component:</div>
                     <div className="text-light-gray font-bold text-right">
-                      {scheduleList.map((schedule) => (
-                        <span key={schedule.id}>
-                          {schedule.system?.components
-                            .filter((component) => component.inUse)
-                            .map((component) => component.device.name)
-                            .join(', ')}
-                        </span>
-                      ))}
+                      {schedule.system?.components.map((component) => component.device.name).join(', ')}
                     </div>
                   </div>
                 </div>
