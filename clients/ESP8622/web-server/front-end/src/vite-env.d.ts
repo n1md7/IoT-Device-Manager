@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-type CardOptions = {
+type ScheduleType = {
   id: number;
   name: string;
   hour: number;
@@ -13,8 +13,8 @@ type CardOptions = {
 type Deserialized = {
   id: number;
   name: string;
-  startTime: string;
-  endTime: string;
+  startTime: Date;
+  endTime: Date;
   weekdays: number[];
   enabled: boolean;
 };
@@ -22,18 +22,21 @@ type Deserialized = {
 declare global {
   interface Window {
     scheduler: {
-      createCard(options: CardOptions): {
+      formatNumber: (n: number) => string;
+      formatTime: (n: Date) => string;
+      createCard(options: ScheduleType): {
         container: HTMLElement;
         weekdays: NodeListOf<HTMLElement>;
-        startTime: Type;
-        endTime: HTMLInputElement;
+        startTime: HTMLTimeElement;
+        endTime: HTMLTimeElement;
         enabled: HTMLSelectElement;
       };
-      deserialize(card: CardOptions): Deserialized;
-      serialize(card: Deserialized): CardOptions;
-      fetchSchedules(): Promise<CardOptions[]>;
+      deserialize(card: ScheduleType): Deserialized;
+      serialize(card: Deserialized): ScheduleType;
+      fetchSchedules(): Promise<ScheduleType[]>;
+      updateSchedule(payload: ScheduleType): Promise<void>;
     };
   }
 }
 
-export { CardOptions };
+export { ScheduleType };

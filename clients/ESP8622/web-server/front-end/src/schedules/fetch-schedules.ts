@@ -1,5 +1,4 @@
-// @ts-ignore
-window.scheduler ||= {};
+window.scheduler ||= {} as any;
 window.scheduler.fetchSchedules = async () => {
   const response = await fetch("/api/schedules");
 

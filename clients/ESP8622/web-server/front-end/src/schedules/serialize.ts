@@ -1,13 +1,13 @@
-// @ts-ignore
-window.scheduler ||= {};
+window.scheduler ||= {} as any;
+window.scheduler.formatNumber = (v: number) => String(v).padStart(2, "0");
+window.scheduler.formatTime = (t: Date) =>
+  `${window.scheduler.formatNumber(t.getHours())}:${window.scheduler.formatNumber(t.getMinutes())}`;
 window.scheduler.serialize = (options) => {
-  // @ts-ignore
-  const startTime = options.startTime.valueAsDate;
+  const startTime = options.startTime;
   const hour = startTime.getHours();
   const minute = startTime.getMinutes();
-  // @ts-ignore
-  const endTime = options.endTime.valueAsNumber;
-  const deltaMs = endTime - startTime.getTime();
+  const endTime = options.endTime;
+  const deltaMs = endTime.getTime() - startTime.getTime();
   const activateForSeconds = Math.floor(deltaMs / 1000);
   const weekdays = options.weekdays.join(",");
 

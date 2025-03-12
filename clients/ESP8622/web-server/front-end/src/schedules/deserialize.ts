@@ -1,6 +1,4 @@
-// @ts-ignore
-window.scheduler ||= {};
-const f = (v: number) => String(v).padStart(2, "0");
+window.scheduler ||= {} as any;
 window.scheduler.deserialize = (options) => {
   const startTime = new Date();
   startTime.setHours(options.hour);
@@ -19,8 +17,8 @@ window.scheduler.deserialize = (options) => {
   return {
     id: options.id,
     name: options.name,
-    startTime: `${f(startTime.getHours())}:${f(startTime.getMinutes())}`,
-    endTime: `${f(endTime.getHours())}:${f(endTime.getMinutes())}`,
+    startTime,
+    endTime,
     weekdays,
     enabled: options.active,
   };

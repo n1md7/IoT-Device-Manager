@@ -1,7 +1,6 @@
-const checked = (v: boolean) => (v ? `checked=""` : "");
-const selected = (s: boolean) => (s ? `selected=""` : "");
-// @ts-ignore
-window.scheduler ||= {};
+const checked = (v: boolean) => (v ? `checked` : "");
+const selected = (s: boolean) => (s ? `selected` : "");
+window.scheduler ||= {} as any;
 window.scheduler.createCard = (options) => {
   const deserialized = window.scheduler.deserialize(options);
   const container = document.createElement("div");
@@ -15,16 +14,16 @@ window.scheduler.createCard = (options) => {
   const fri = deserialized.weekdays.includes(5);
   const sat = deserialized.weekdays.includes(6);
 
-  container.innerHTML = `<div class="schedule-wrapper">
+  container.innerHTML = `<div class="schedule-wrapper" data-id="${deserialized.id}">
 <div class="schedule-form">
 <div class="schedule-name">${deserialized.name}</div>
 <div class="form-group">
 <label for="id${deserialized.id}-start-time">Start Time: </label>
-<input type="time" id="id${deserialized.id}-start-time" value="${deserialized.startTime}" class="timepicker">
+<input class="start-time" type="time" id="id${deserialized.id}-start-time" value="${window.scheduler.formatTime(deserialized.startTime)}" class="timepicker">
 </div>
 <div class="form-group">
 <label for="id${deserialized.id}-end-time">End Time: </label>
-<input type="time" id="id${deserialized.id}-end-time" value="${deserialized.endTime}" class="timepicker">
+<input class="end-time" type="time" id="id${deserialized.id}-end-time" value="${window.scheduler.formatTime(deserialized.endTime)}" class="timepicker">
 </div>
 <div class="form-group">
 <label for="id${deserialized.id}-weekdays">Repeat:</label>
@@ -32,46 +31,46 @@ window.scheduler.createCard = (options) => {
 <div class="column">
 <div class="weekday">
 <label for="id${deserialized.id}-mon">Mon</label>
-<input type="checkbox" id="id${deserialized.id}-mon" ${checked(mon)}>
+<input type="checkbox" id="id${deserialized.id}-mon" class="mon" ${checked(mon)}>
 </div>
 <div class="weekday">
 <label for="id${deserialized.id}-tue">Tue</label>
-<input type="checkbox" id="id${deserialized.id}-tue" ${checked(tue)}>
+<input type="checkbox" id="id${deserialized.id}-tue" class="tue" ${checked(tue)}>
 </div>
 <div class="weekday">
 <label for="id${deserialized.id}-wed">Wed</label>
-<input type="checkbox" id="id${deserialized.id}-wed" ${checked(wed)}>
+<input type="checkbox" id="id${deserialized.id}-wed" class="wed" ${checked(wed)}>
 </div>
 <div class="weekday">
 <label for="id${deserialized.id}-thu">Thu</label>
-<input type="checkbox" id="id${deserialized.id}-thu" ${checked(thu)}>
+<input type="checkbox" id="id${deserialized.id}-thu" class="thu" ${checked(thu)}>
 </div>
 </div>
 <div class="column">
 <div class="weekday">
 <label for="id${deserialized.id}-fri">Fri</label>
-<input type="checkbox" id="id${deserialized.id}-fri" ${checked(fri)}>
+<input type="checkbox" id="id${deserialized.id}-fri" class="fri" ${checked(fri)}>
 </div>
 <div class="weekday">
 <label for="id${deserialized.id}-sat">Sat</label>
-<input type="checkbox" id="id${deserialized.id}-sat" ${checked(sat)}>
+<input type="checkbox" id="id${deserialized.id}-sat" class="sat" ${checked(sat)}>
 </div>
 <div class="weekday">
 <label for="id${deserialized.id}-sun">Sun</label>
-<input type="checkbox" id="id${deserialized.id}-sun" ${checked(sun)}>
+<input type="checkbox" id="id${deserialized.id}-sun" class="sun" ${checked(sun)}>
 </div>
 </div>
 </div>
 </div>
 <div class="form-group">
 <label for="id${deserialized.id}-enabled">Status: </label>
-<select id="id${deserialized.id}-enabled">
+<select id="id${deserialized.id}-enabled" class="status">
 <option value="disable" ${selected(!deserialized.enabled)}>Disable</option>
 <option value="enable"${selected(deserialized.enabled)}>Enable</option>
 </select>
 </div>
 <div class="button-container">
-<button id="id${deserialized.id}-save-schedule">Save</button>
+<button class="update-btn" id="id${deserialized.id}-save-schedule">Save</button>
 </div>
 </div>
 </div>`;
@@ -86,8 +85,8 @@ window.scheduler.createCard = (options) => {
   return {
     container: container as HTMLElement,
     weekdays: weekdays as NodeListOf<HTMLElement>,
-    startTime: startTime as HTMLInputElement,
-    endTime: endTime as HTMLInputElement,
+    startTime: startTime as HTMLTimeElement,
+    endTime: endTime as HTMLTimeElement,
     enabled: enabled as HTMLSelectElement,
   };
 };

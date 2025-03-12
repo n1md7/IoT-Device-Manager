@@ -36,7 +36,7 @@ export default defineConfig((env) => {
       emptyOutDir: true,
       assetsDir: ".",
       rollupOptions: {
-        treeshake: false, // Do not combine files unnecessarily
+        treeshake: false,
         input: {
           index: "index.html",
           config: "config.html",
@@ -44,11 +44,18 @@ export default defineConfig((env) => {
         },
         output: {
           manualChunks: (path, { getModuleIds }) => {
-            if (path.endsWith(".ts") && path.includes("schedules")) {
-              const [, file] = path.split("/schedules/");
-              const [name] = file.split(".");
+            if (path.endsWith(".ts")) {
+              if (path.endsWith(".ts") && path.includes("schedules")) {
+                const [, file] = path.split("/schedules/");
+                const [name] = file.split(".");
 
-              return name;
+                return name;
+              }
+
+              if (path.endsWith("footer.ts")) return "footer";
+              if (path.endsWith("nav.ts")) return "nav";
+              if (path.endsWith("dom.utils.ts")) return "dom.utils";
+              if (path.endsWith("dom.text.ts")) return "dom.text";
             }
           },
         },
