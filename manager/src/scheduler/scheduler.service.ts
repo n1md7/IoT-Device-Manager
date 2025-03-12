@@ -43,6 +43,8 @@ export class SchedulerService implements OnModuleInit {
         system,
       });
       await this.cronService.addCronJob(schedule);
+
+      return schedule;
     } catch (error) {
       throw new DatabaseException({
         message: `Error creating schedule with name "${payload.name}"`,

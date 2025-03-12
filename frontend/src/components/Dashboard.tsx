@@ -12,8 +12,8 @@ const Dashboard = () => {
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
-  if (loading) return <p>Loading schedule...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="loading-msg">Loading schedule...</p>;
+  if (error) return <p className="error-msg">Error: {error}</p>;
 
   const handleNewScheduleView = () => {
     setIsNewScheduleOpen(true);
@@ -24,9 +24,9 @@ const Dashboard = () => {
     <>
       {systemList?.systems?.length ? (
         <div className="control-view-container">
-          {scheduleList?.schedules?.length ? (
-            scheduleList.schedules.map((schedule) => (
-              <div key={schedule.id} className="card-item">
+          {scheduleList?.length ? (
+            scheduleList.map((schedule, index) => (
+              <div key={schedule.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
                 <div className="card-header">
                   <div className="system-details">
                     <div className="system-name text-green">{schedule.system?.name}</div>
@@ -48,14 +48,7 @@ const Dashboard = () => {
                   <div className="item-data">
                     <div className="">Component:</div>
                     <div className="text-light-gray font-bold text-right">
-                      {scheduleList?.schedules.map((schedule) => (
-                        <span key={schedule.id}>
-                          {schedule.system?.components
-                            .filter((component) => component.inUse)
-                            .map((component) => component.device.name)
-                            .join(', ')}
-                        </span>
-                      ))}
+                      {schedule.system?.components.map((component) => component.device.name).join(', ')}
                     </div>
                   </div>
                 </div>
@@ -87,7 +80,7 @@ const Dashboard = () => {
               </div>
             ))
           ) : (
-            <p> {error}</p>
+            <p className="error-msg"> {error}</p>
           )}
           <button className="card-item cursor-pointer" onClick={handleNewScheduleView}>
             <div className="card-body new-schedule">
@@ -98,30 +91,6 @@ const Dashboard = () => {
               <div className="text">Add New Schedule</div>
             </div>
           </button>
-          {/*<div className="card-item">*/}
-          {/*  <div className="card-header">*/}
-          {/*    <div className="system-details">*/}
-          {/*      <div className="system-name text-orange">Water System</div>*/}
-          {/*      <span className="uppercase">OFF</span>*/}
-          {/*    </div>*/}
-          {/*    <div className="system-desc">A supply system for water tanks.</div>*/}
-          {/*  </div>*/}
-          {/*  <div className="card-body">*/}
-          {/*    <div className="mb-8">*/}
-          {/*      <label htmlFor="inputTimer" className="">*/}
-          {/*        Set timer:{' '}*/}
-          {/*      </label>*/}
-          {/*      <input id="inputTimer" type="range" className="input-range" />*/}
-          {/*    </div>*/}
-          {/*    <div className="text-center">Total duration: 15 minutes</div>*/}
-          {/*  </div>*/}
-          {/*  <div className="card-tool">*/}
-          {/*    <button className="control-button bg-orange">Turn ON</button>*/}
-          {/*    <button className="edit-button">*/}
-          {/*      <EditIcon className={'text-light-dark'} />*/}
-          {/*    </button>*/}
-          {/*  </div>*/}
-          {/*</div>*/}
         </div>
       ) : (
         <Welcome />

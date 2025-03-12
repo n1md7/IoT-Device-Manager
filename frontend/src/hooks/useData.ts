@@ -1,5 +1,5 @@
 import api, { API_URL } from '../api/api-client.ts';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axios, { CanceledError } from 'axios';
 
 const useData = <T>(endpoint: string) => {
@@ -7,39 +7,37 @@ const useData = <T>(endpoint: string) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
 
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await api.get<T>(`${API_URL}${endpoint}`);
+      if (response.data) {
+        setData(response.data);
+      }
+    } catch (err: unknown) {
+      if (err instanceof CanceledError) return;
+      if (axios.isCancel(err)) return;
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Unknown error occurred.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [endpoint]);
+
   useEffect(() => {
     const controller = new AbortController();
 
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get<T>(`${API_URL}${endpoint}`, {
-          signal: controller.signal,
-        });
-
-        if (response.data) {
-          console.log(response.data);
-          setData(response.data);
-        }
-      } catch (err: unknown) {
-        if (err instanceof CanceledError) return;
-        if (axios.isCancel(err)) return;
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('Unknown error occurred.');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    (async () => {
+      await fetchData();
+    })();
 
     return () => controller.abort();
-  }, [endpoint]);
+  }, [fetchData]);
 
-  return { data, error, loading };
+  return { data, error, loading, refresh: fetchData };
 };
 
 export default useData;

@@ -4,8 +4,8 @@ import useSystems from '../hooks/useSystem.ts';
 const ManageSystem = () => {
   const { systemList, error, loading } = useSystems();
 
-  if (loading) return <p>Loading system...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="loading-msg">Loading system...</p>;
+  if (error) return <p className="error-msg">Error: {error}</p>;
 
   return (
     <div className="control-view-container">
