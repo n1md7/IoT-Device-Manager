@@ -36,11 +36,21 @@ export default defineConfig((env) => {
       emptyOutDir: true,
       assetsDir: ".",
       rollupOptions: {
-        treeshake: true,
+        treeshake: false, // Do not combine files unnecessarily
         input: {
           index: "index.html",
           config: "config.html",
           scheduler: "scheduler.html",
+        },
+        output: {
+          manualChunks: (path, { getModuleIds }) => {
+            if (path.endsWith(".ts") && path.includes("schedules")) {
+              const [, file] = path.split("/schedules/");
+              const [name] = file.split(".");
+
+              return name;
+            }
+          },
         },
       },
     },
