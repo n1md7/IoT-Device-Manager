@@ -22,10 +22,10 @@ const useSchedule = () => {
 
       if (!response.ok) throw new Error('Failed to add schedule');
 
-      const data = await response.json();
-      console.log(data);
-
+      const result = await response.json();
       await refresh();
+
+      return { success: true, data: result };
     } catch (error) {
       console.error('Error adding schedule', error);
     } finally {
@@ -33,7 +33,7 @@ const useSchedule = () => {
     }
   };
 
-  return { scheduleList: data?.schedules || [], systemList, addSchedule, isSubmitting, error, loading };
+  return { scheduleList: data?.schedules || [], systemList, addSchedule, refresh, isSubmitting, error, loading };
 };
 
 export default useSchedule;

@@ -56,6 +56,12 @@
     src: url('./fonts/Michroma-Regular.ttf') format('truetype');
 }
 
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-purple);
+}
+
+
 /*TO DO: for enhancement, please make a block for defaults*/
 body {
     font-family: 'Akatab-Regular', sans-serif;
@@ -99,6 +105,8 @@ button {
 
 .container-body {
     @apply flex-1 overflow-auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-purple);
 }
 
 .page-main {
@@ -176,3 +184,4 @@ input[type="range"]::-moz-range-progress {
     color: var(--color-light-purple);
     text-align: center;
 }
+

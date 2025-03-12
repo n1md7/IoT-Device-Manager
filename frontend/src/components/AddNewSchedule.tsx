@@ -6,8 +6,11 @@ interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
-  const { systemList, addSchedule, isSubmitting } = useSchedule();
+  const { systemList, addSchedule, isSubmitting, refresh } = useSchedule();
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isFailed, setIsFailed] = useState(false);
+  const [addedSchedule, setAddedSchedule] = useState<{ name: string } | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -32,7 +35,8 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
       console.error('Selected system not found!');
       return;
     }
-    await addSchedule({
+
+    const response = await addSchedule({
       name: formData.name,
       startExpression: formData.startExpression,
       duration: {
@@ -42,136 +46,182 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
       systemId: selectedSystemObject.id,
     });
 
-    setIsNewScheduleOpen(false);
+    if (response?.success) {
+      setAddedSchedule({ name: response.data.name });
+      setIsSuccess(true);
+    } else {
+      setIsFailed(true);
+      console.error('Failed to add schedule');
+    }
   };
 
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
-        <h2>Create Schedule</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-5">
-            <label htmlFor="name" className="block">
-              Schedule name:
-            </label>
-            <div className="mt-2">
-              <div className="input-group">
-                <input
-                  type="text"
-                  name="name"
-                  id="scheduleName"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="e.g. water pump afternoon sched"
-                  required
-                />
-              </div>
+        {isSuccess && (
+          <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
+            <div>
+              <h2 className="">Successfully Added</h2>
+              {addedSchedule && (
+                <p>
+                  New schedule <strong className="text-purple">{addedSchedule.name}</strong> has been added!
+                </p>
+              )}
+            </div>
+            <div className="button-container">
+              <button
+                className="button bg-purple text-white mt-4"
+                onClick={async () => {
+                  await refresh();
+                  setIsNewScheduleOpen(false);
+                }}
+              >
+                Done
+              </button>
             </div>
           </div>
-          <div className="mb-5">
-            <label htmlFor="startExpression" className="block">
-              Cron Expression:
-            </label>
-            <div className="mt-2">
-              <div className="input-group">
-                <input
-                  type="text"
-                  name="startExpression"
-                  id="scheduleExpression"
-                  value={formData.startExpression}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="e.g. 5 * * * * *"
-                  required
-                />
-              </div>
+        )}
+        {isFailed && (
+          <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
+            <div>
+              <h2 className="">Failed</h2>
+              <p>There seems to be a problem while adding a new schedule.</p>
+            </div>
+            <div className="button-container">
+              <button className="button bg-purple text-white mt-4" onClick={() => setIsNewScheduleOpen(false)}>
+                Okay
+              </button>
             </div>
           </div>
-          <div className="flex flex-row justify-between">
-            <div className="mb-5 w-1/3">
-              <label htmlFor="min" className="block">
-                Minutes:
-              </label>
-              <div className="mt-2">
-                <div className="input-group">
-                  <input
-                    type="text"
-                    name="min"
-                    id="scheduleMin"
-                    value={formData.min}
-                    onChange={handleChange}
-                    className="input-field"
-                    placeholder="e.g. 30"
-                    required
-                  />
+        )}{' '}
+        {!isSuccess && !isFailed && (
+          <>
+            <h2>Create Schedule</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-5">
+                <label htmlFor="name" className="block">
+                  Schedule name:
+                </label>
+                <div className="mt-2">
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      name="name"
+                      id="scheduleName"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="input-field"
+                      placeholder="e.g. water pump afternoon sched"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="mb-5 w-1/3">
-              <label htmlFor="sec" className="block">
-                Seconds:
-              </label>
-              <div className="mt-2">
-                <div className="input-group">
-                  <input
-                    type="text"
-                    name="sec"
-                    id="scheduleSec"
-                    value={formData.sec}
-                    onChange={handleChange}
-                    className="input-field"
-                    placeholder="e.g. 15"
-                    required
-                  />
+              <div className="mb-5">
+                <label htmlFor="startExpression" className="block">
+                  Cron Expression:
+                </label>
+                <div className="mt-2">
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      name="startExpression"
+                      id="scheduleExpression"
+                      value={formData.startExpression}
+                      onChange={handleChange}
+                      className="input-field"
+                      placeholder="e.g. 5 * * * * *"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="select-with-btn-group">
-            <div className="mb-5 w-full">
-              <label htmlFor="selectedSystem" className="block">
-                Select system:
-              </label>
-              <div className="mt-2">
-                <div className="input-group">
-                  <select
-                    id="selectedSystem"
-                    name="selectedSystem"
-                    value={selectedSystem ?? ''}
-                    onChange={handleSystemChange}
-                    autoComplete=""
-                    className="select-field"
-                    required
-                  >
-                    <option value="" disabled>
-                      please select...
-                    </option>
-                    {systemList?.systems?.length ? (
-                      systemList.systems.map((system) => (
-                        <option key={system.id} value={system.id}>
-                          {system.name}
+              <div className="flex flex-row justify-between">
+                <div className="mb-5 w-1/3">
+                  <label htmlFor="min" className="block">
+                    Minutes:
+                  </label>
+                  <div className="mt-2">
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        name="min"
+                        id="scheduleMin"
+                        value={formData.min}
+                        onChange={handleChange}
+                        className="input-field"
+                        placeholder="e.g. 30"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-5 w-1/3">
+                  <label htmlFor="sec" className="block">
+                    Seconds:
+                  </label>
+                  <div className="mt-2">
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        name="sec"
+                        id="scheduleSec"
+                        value={formData.sec}
+                        onChange={handleChange}
+                        className="input-field"
+                        placeholder="e.g. 15"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="select-with-btn-group">
+                <div className="mb-5 w-full">
+                  <label htmlFor="selectedSystem" className="block">
+                    Select system:
+                  </label>
+                  <div className="mt-2">
+                    <div className="input-group">
+                      <select
+                        id="selectedSystem"
+                        name="selectedSystem"
+                        value={selectedSystem ?? ''}
+                        onChange={handleSystemChange}
+                        autoComplete=""
+                        className="select-field"
+                        required
+                      >
+                        <option value="" disabled>
+                          please select...
                         </option>
-                      ))
-                    ) : (
-                      <option disabled>No systems found</option>
-                    )}
-                  </select>
+                        {systemList?.systems?.length ? (
+                          systemList.systems.map((system) => (
+                            <option key={system.id} value={system.id}>
+                              {system.name}
+                            </option>
+                          ))
+                        ) : (
+                          <option disabled>No systems found</option>
+                        )}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div></div>
-          <div className="button-container">
-            <button className="button bg-purple text-white" disabled={isSubmitting}>
-              Save
-            </button>
-            <button className="button bg-light-gray text-purple" onClick={() => setIsNewScheduleOpen(false)}>
-              Cancel
-            </button>
-          </div>
-        </form>
+              <div></div>
+              <div className="button-container">
+                <button className="button bg-purple text-white" disabled={isSubmitting}>
+                  Save
+                </button>
+                <button className="button bg-light-gray text-purple" onClick={() => setIsNewScheduleOpen(false)}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </>
+        )}
       </div>
     </div>
   );

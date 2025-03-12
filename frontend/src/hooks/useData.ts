@@ -12,7 +12,6 @@ const useData = <T>(endpoint: string) => {
     try {
       const response = await api.get<T>(`${API_URL}${endpoint}`);
       if (response.data) {
-        console.log(response.data);
         setData(response.data);
       }
     } catch (err: unknown) {

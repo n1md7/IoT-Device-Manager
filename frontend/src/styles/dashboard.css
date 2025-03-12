@@ -1,9 +1,9 @@
 .control-view-container {
     @apply h-auto flex flex-col sm:flex-row text-white rounded-lg gap-5 md:gap-7 lg:gap-8 justify-center flex-wrap;
-    overflow: auto;
+    overflow: hidden;
 
     .card-item {
-        @apply flex flex-col h-auto w-full text-white rounded-lg p-5 sm:w-1/2 md:w-1/2 lg:w-1/3;
+        @apply flex flex-col h-auto w-full text-white rounded-lg p-5 sm:w-1/2 md:w-1/3 lg:w-1/3 xl:w-1/4;
         border: 1px solid #242424;
         box-shadow: 0 3px 3px 3px rgba(0, 0, 0, 0.3);
         background: var(--color-card-bg);
@@ -69,8 +69,21 @@
         @apply w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700;
     }
 
+}
 
+.fade-in {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInAnimation 0.5s ease-in-out forwards;
+}
 
-
-
+@keyframes fadeInAnimation {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
