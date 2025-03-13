@@ -50,4 +50,10 @@
         @apply flex flex-col text-center sm:w-auto sm:m-auto;
 
     }
+
+    .error-details {
+        @apply text-left mt-3 p-4 rounded-md;
+        box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.3);
+        border: 1px solid #242424;
+    }
 }

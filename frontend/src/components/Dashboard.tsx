@@ -1,43 +1,49 @@
+import useData from '../hooks/useData.ts';
 import EditIcon from '../icons/EditIcon.tsx';
-import useSchedule from '../hooks/useSchedule.ts';
 import Welcome from './Welcome.tsx';
-import useSystems from '../hooks/useSystem.ts';
 import AddIcon from '../icons/AddIcon.tsx';
 import AddNewSchedule from './AddNewSchedule.tsx';
 import { ReactElement, useState } from 'react';
+import { ScheduleResponseData } from '../types/scheduleTypes.ts';
+import { SystemsResponseData } from '../types/systemTypes.ts';
 
 const Dashboard = () => {
-  const { scheduleList, error, loading } = useSchedule();
-  const { systemList } = useSystems();
+  const scheduleList = useData<ScheduleResponseData>('/api/v1/scheduler');
+  const systemList = useData<SystemsResponseData>('/api/v1/systems');
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
-  if (loading) return <p className="loading-msg">Loading schedule...</p>;
-  if (error) return <p className="error-msg">Error: {error}</p>;
+  if (scheduleList.loading) return <p className="loading-msg">Loading schedule...</p>;
+  if (scheduleList.error) return <p className="error-msg">Error: {scheduleList.error}</p>;
 
+  const refetch = () => {
+    scheduleList.refresh().catch((err: Error) => {
+      console.error(err);
+    });
+  };
   const handleNewScheduleView = () => {
     setIsNewScheduleOpen(true);
-    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
+    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} refetch={refetch} />);
   };
 
   return (
     <>
-      {systemList?.systems?.length ? (
+      {systemList?.data?.systems?.length ? (
         <div className="control-view-container">
-          {scheduleList?.length ? (
-            scheduleList.map((schedule, index) => (
+          {scheduleList.data?.count ? (
+            scheduleList.data.schedules.map((schedule, index) => (
               <div key={schedule.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
                 <div className="card-header">
                   <div className="system-details">
-                    <div className="system-name text-green">{schedule.system?.name}</div>
+                    <div className="system-name text-green">{schedule.name}</div>
                     <span className="uppercase text-green">ON</span>
                   </div>
                   <div className="system-desc">{schedule.system?.description}</div>
                 </div>
                 <div className="card-body">
                   <div className="item-data">
-                    <div className="">Schedule name:</div>
-                    <div className="text-light-gray font-bold">{schedule.name}</div>
+                    <div className="">System:</div>
+                    <div className="text-light-gray font-bold">{schedule.system?.name}</div>
                   </div>
                   <div className="item-data">
                     <div className="">Duration:</div>
@@ -80,7 +86,7 @@ const Dashboard = () => {
               </div>
             ))
           ) : (
-            <p className="error-msg"> {error}</p>
+            <p className="error-msg"> {scheduleList.error}</p>
           )}
           <button className="card-item cursor-pointer" onClick={handleNewScheduleView}>
             <div className="card-body new-schedule">
