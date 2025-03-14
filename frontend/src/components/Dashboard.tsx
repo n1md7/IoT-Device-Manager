@@ -1,4 +1,4 @@
-import useData from '../hooks/useData.ts';
+import useFetch from '../hooks/crud/useFetch.ts';
 import EditIcon from '../icons/EditIcon.tsx';
 import Welcome from './Welcome.tsx';
 import AddIcon from '../icons/AddIcon.tsx';
@@ -8,8 +8,8 @@ import { ScheduleResponseData } from '../types/scheduleTypes.ts';
 import { SystemsResponseData } from '../types/systemTypes.ts';
 
 const Dashboard = () => {
-  const scheduleList = useData<ScheduleResponseData>('/api/v1/scheduler');
-  const systemList = useData<SystemsResponseData>('/api/v1/systems');
+  const scheduleList = useFetch<ScheduleResponseData>('/api/v1/scheduler');
+  const systemList = useFetch<SystemsResponseData>('/api/v1/systems');
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 

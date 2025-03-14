@@ -1,24 +1,34 @@
-import { useState } from 'react';
 import { SchedulePayload, ScheduleData, ScheduleResponseData } from '../types/scheduleTypes.ts';
-import useCreate from './useCreate.ts';
-import useData from './useData.ts';
+import { useEffect, useState } from 'react';
+import useCreate, { ResponseError } from './crud/useCreate.ts';
+import useFetch from './crud/useFetch.ts';
+import useUpdate from './crud/useUpdate.ts';
+import useRemove from './crud/useRemove.ts';
 
 const useSchedule = () => {
   const [isPending, setIsPending] = useState(false);
-  const apiCreate = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
-  const apiFetch = useData<ScheduleResponseData>('/api/v1/scheduler');
+  const [error, setError] = useState<ResponseError | null>(null);
+  const { create, creating, createError } = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
+  const { fetchById, fetchAll, fetching, fetchError } = useFetch<ScheduleResponseData>('/api/v1/scheduler');
+  const { updateById, updating } = useUpdate<ScheduleResponseData>('/api/v1/scheduler');
+  const { removing, removeById } = useRemove('/api/v1/scheduler');
 
-  const create = async (payload: SchedulePayload) => {
-    setIsPending(true);
-    return apiCreate.create(payload).finally(() => setIsPending(false));
-  };
+  useEffect(() => {
+    setIsPending(creating || fetching || updating || removing);
+  }, [creating, fetching, updating, removing]);
 
-  const fetchAll = async () => {};
+  useEffect(() => {
+    setError(createError || fetchError || null);
+  }, [createError, fetchError]);
 
   return {
-    addSchedule,
-    isSubmitting,
-    scheduler,
+    create,
+    fetchAll,
+    fetchById,
+    removeById,
+    updateById,
+    isPending,
+    error,
   };
 };
 

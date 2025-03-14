@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import useSchedule from '../hooks/useSchedule.ts';
-import useData from '../hooks/useData.ts';
+import useFetch from '../hooks/crud/useFetch.ts';
 import { SystemsResponseData } from '../types/systemTypes.ts';
 
 interface Props {
@@ -9,8 +9,8 @@ interface Props {
   refetch: () => void;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
-  const { addSchedule, isSubmitting, scheduler } = useSchedule();
-  const systemList = useData<SystemsResponseData>('/api/v1/systems');
+  const { create, fetchAll, error } = useSchedule();
+  const systemList = useFetch<SystemsResponseData>('/api/v1/systems');
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -67,6 +67,12 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
       setIsSuccess(true);
     }
   }, [scheduler.data]);
+
+  useEffect(() => {
+    const fetching = fetchAll();
+
+    return () => fetching.abort();
+  }, []);
 
   return (
     <div className="modal-wrapper">
