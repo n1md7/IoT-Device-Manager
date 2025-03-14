@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { SchedulePayload, ScheduleData } from '../types/scheduleTypes.ts';
+import { SchedulePayload, ScheduleData, ScheduleResponseData } from '../types/scheduleTypes.ts';
 import useCreate from './useCreate.ts';
+import useData from './useData.ts';
 
 const useSchedule = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const scheduler = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
+  const [isPending, setIsPending] = useState(false);
+  const apiCreate = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
+  const apiFetch = useData<ScheduleResponseData>('/api/v1/scheduler');
 
-  // add new schedule
-  const addSchedule = async (payload: SchedulePayload) => {
-    setIsSubmitting(true);
-    return scheduler.create(payload).finally(() => setIsSubmitting(false));
+  const create = async (payload: SchedulePayload) => {
+    setIsPending(true);
+    return apiCreate.create(payload).finally(() => setIsPending(false));
   };
+
+  const fetchAll = async () => {};
 
   return {
     addSchedule,

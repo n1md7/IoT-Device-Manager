@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { API_URL } from './api.config.ts';
 
-export default axios.create({});
-export const API_URL = import.meta.env.VITE_API_BASE_URL;
+export default axios.create({
+  baseURL: API_URL,
+});
 
 // import axios, { AxiosResponse } from 'axios';
 // import { Devices } from '../types/deviceTypes.ts';
