@@ -1,15 +1,21 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSchedule from '../hooks/useSchedule.ts';
+import useData from '../hooks/useData.ts';
+import { SystemsResponseData } from '../types/systemTypes.ts';
 
 interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
+  refetch: () => void;
 }
-const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
-  const { systemList, addSchedule, isSubmitting, refresh } = useSchedule();
+const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
+  const { addSchedule, isSubmitting, scheduler } = useSchedule();
+  const systemList = useData<SystemsResponseData>('/api/v1/systems');
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [addedSchedule, setAddedSchedule] = useState<{ name: string } | null>(null);
 
   const [formData, setFormData] = useState({
@@ -30,13 +36,13 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const selectedSystemObject = systemList?.systems?.find((system) => system.id === selectedSystem);
+    const selectedSystemObject = systemList.data?.systems?.find((system) => system.id === selectedSystem);
     if (!selectedSystemObject) {
       console.error('Selected system not found!');
       return;
     }
 
-    const response = await addSchedule({
+    await addSchedule({
       name: formData.name,
       startExpression: formData.startExpression,
       duration: {
@@ -45,15 +51,22 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
       },
       systemId: selectedSystemObject.id,
     });
-
-    if (response?.success) {
-      setAddedSchedule({ name: response.data.name });
-      setIsSuccess(true);
-    } else {
-      setIsFailed(true);
-      console.error('Failed to add schedule');
-    }
   };
+
+  useEffect(() => {
+    if (scheduler.error) {
+      setIsFailed(true);
+      setErrorDetail(scheduler.error.details ?? 'Unknown error details.');
+      setErrorMessage(scheduler.error.message ?? 'Unknown error message.');
+    }
+  }, [scheduler.error]);
+
+  useEffect(() => {
+    if (scheduler.data) {
+      setAddedSchedule({ name: scheduler.data.name });
+      setIsSuccess(true);
+    }
+  }, [scheduler.data]);
 
   return (
     <div className="modal-wrapper">
@@ -71,8 +84,8 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
             <div className="button-container">
               <button
                 className="button bg-purple text-white mt-4"
-                onClick={async () => {
-                  await refresh();
+                onClick={() => {
+                  refetch();
                   setIsNewScheduleOpen(false);
                 }}
               >
@@ -84,11 +97,21 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
         {isFailed && (
           <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
             <div>
-              <h2 className="">Failed</h2>
+              <h2 className="text-red-600">Failed</h2>
               <p>There seems to be a problem while adding a new schedule.</p>
+
+              <div className="error-details">
+                <span className="text-red-600">{errorMessage}: </span>
+                <span className="text-gray-500">{errorDetail}</span>
+              </div>
             </div>
             <div className="button-container">
-              <button className="button bg-purple text-white mt-4" onClick={() => setIsNewScheduleOpen(false)}>
+              <button
+                className="button bg-light-gray text-purple mt-4"
+                onClick={() => {
+                  setIsNewScheduleOpen(false);
+                }}
+              >
                 Okay
               </button>
             </div>
@@ -195,8 +218,8 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
                         <option value="" disabled>
                           please select...
                         </option>
-                        {systemList?.systems?.length ? (
-                          systemList.systems.map((system) => (
+                        {systemList?.data?.systems?.length ? (
+                          systemList.data.systems.map((system) => (
                             <option key={system.id} value={system.id}>
                               {system.name}
                             </option>
