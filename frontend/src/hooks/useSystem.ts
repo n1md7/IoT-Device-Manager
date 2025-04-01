@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 const useSystems = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const system = useCreate<SystemPayload, SystemData>('api/v1/systems/create');
+  const system = useCreate<SystemPayload, SystemData>('api/v1/systems');
 
   const addSystem = async (payload: SystemPayload) => {
     setIsSubmitting(true);
