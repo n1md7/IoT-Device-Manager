@@ -1,4 +1,4 @@
-import { SystemsDetails } from './systemTypes.ts';
+import { SystemData } from './systemTypes.ts';
 
 export type ScheduleDetails = {
   min: number;
@@ -10,7 +10,7 @@ export type ScheduleData = {
   name: string;
   startExpression: string;
   duration: ScheduleDetails;
-  system: SystemsDetails;
+  system: SystemData;
   createdAt: string;
   updatedAt: string;
 };

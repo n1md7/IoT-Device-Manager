@@ -39,6 +39,9 @@
             .edit-button {
                 @apply rounded-md cursor-pointer bg-light-gray h-12 w-12 flex items-center justify-center;
             }
+            .delete-button {
+                @apply rounded-md cursor-pointer bg-light-gray h-12 w-12 flex items-center justify-center;
+            }
         }
 
         .new-schedule {

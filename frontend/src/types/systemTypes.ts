@@ -1,6 +1,6 @@
 import { ComponentsDetails } from './componentTypes.ts';
 
-export type SystemsDetails = {
+export type SystemData = {
   id: number;
   name: string;
   description: string;
@@ -11,5 +11,10 @@ export type SystemsDetails = {
 
 export type SystemsResponseData = {
   count: number;
-  systems: SystemsDetails[];
+  systems: SystemData[];
+};
+
+export type SystemPayload = {
+  name: string;
+  description: string;
 };

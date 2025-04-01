@@ -23,6 +23,10 @@ function App() {
     [ManageComponent, 'Component'],
   ]);
 
+  const refetch = () => {
+    setActiveView(<Dashboard />);
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isNewSystemOpen) setIsNewSystemOpen(false);
@@ -47,7 +51,7 @@ function App() {
 
   const handleNewScheduleView = () => {
     setIsNewScheduleOpen(true);
-    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
+    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} refetch={refetch} />);
   };
 
   const handleMenuClick = (component: ReactElement) => {
