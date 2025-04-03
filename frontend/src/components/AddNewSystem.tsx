@@ -1,16 +1,15 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import useSystem from '../hooks/useSystem.ts';
-//import useData from '../hooks/useData.ts';
-//import { SystemsResponseData } from '../types/systemTypes.ts';
+import useData from '../hooks/useData.ts';
+import { SystemsResponseData } from '../types/systemTypes.ts';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;
-  refetch: () => void | undefined;
 }
 
-const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
-  //const systemList = useData<SystemsResponseData>('/api/v1/systems');
+const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
+  const systemList = useData<SystemsResponseData>('/api/v1/systems');
   const { addSystem, isSubmitting, system } = useSystem();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -22,11 +21,11 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
     description: '',
   });
 
-  // const refetch = () => {
-  //   systemList.refresh().catch((err: Error) => {
-  //     console.log(err);
-  //   });
-  // };
+  const refetch = () => {
+    systemList.refresh().catch((err: Error) => {
+      console.log(err);
+    });
+  };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -75,7 +74,6 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
                 className="button bg-purple text-white mt-4"
                 onClick={() => {
                   refetch();
-                  console.log('refetch');
                   setIsNewSystemOpen(false);
                 }}
               >

@@ -10,15 +10,9 @@ const ManageSystem = () => {
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
-  const refetch = () => {
-    systemList.refresh().catch((err: Error) => {
-      console.log(err);
-    });
-  };
-
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
-    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} refetch={refetch} />);
+    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} />);
   };
 
   return (
