@@ -19,6 +19,7 @@ const useCreate = <PayloadType, ResponseType>(endpoint: string) => {
     async (payload: PayloadType) => {
       setLoading(true);
       try {
+        console.log(`${API_URL}${endpoint}`, payload);
         const response = await api.post<ResponseType>(`${API_URL}${endpoint}`, payload);
         if (response.data) {
           setData(response.data);

@@ -86,6 +86,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
                 className="button bg-purple text-white mt-4"
                 onClick={() => {
                   refetch();
+                  console.log('refetch');
                   setIsNewScheduleOpen(false);
                 }}
               >

@@ -1,21 +1,32 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import useSystem from '../hooks/useSystem.ts';
+//import useData from '../hooks/useData.ts';
+//import { SystemsResponseData } from '../types/systemTypes.ts';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;
+  refetch: () => void | undefined;
 }
 
-const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
+const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
+  //const systemList = useData<SystemsResponseData>('/api/v1/systems');
   const { addSystem, isSubmitting, system } = useSystem();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
+  const [addedSystem, setAddedSystem] = useState<{ systemName: string } | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
   });
+
+  // const refetch = () => {
+  //   systemList.refresh().catch((err: Error) => {
+  //     console.log(err);
+  //   });
+  // };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -42,6 +53,7 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
   useEffect(() => {
     if (system.data) {
       setIsSuccess(true);
+      setAddedSystem({ systemName: system.data.name });
     }
   }, [system.data]);
 
@@ -52,18 +64,19 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
           <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
             <div>
               <h2 className="">Successfully Added</h2>
-              {/*{addedSchedule && (*/}
-              {/*  <p>*/}
-              {/*    New schedule <strong className="text-purple">{addedSchedule.name}</strong> has been added!*/}
-              {/*  </p>*/}
-              {/*)}*/}
+              {addedSystem && (
+                <p>
+                  New system <strong className="text-purple">{addedSystem.systemName}</strong> has been added!
+                </p>
+              )}
             </div>
             <div className="button-container">
               <button
                 className="button bg-purple text-white mt-4"
                 onClick={() => {
-                  // refetch();
-                  // setIsNewScheduleOpen(false);
+                  refetch();
+                  console.log('refetch');
+                  setIsNewSystemOpen(false);
                 }}
               >
                 Done
