@@ -2,12 +2,15 @@ interface Props {
   className?: string;
 }
 
-const EditIcon = ({ className } : Props) => {
+const EditIcon = ({ className }: Props) => {
   return (
     <svg
+      width="40px"
+      height="40px"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 800 800"
-      className={`stroke-current ${className}`}>
+      className={`stroke-current ${className}`}
+    >
       <path
         className="stroke-inherit stroke-[57px] fill-none"
         strokeLinecap="round"

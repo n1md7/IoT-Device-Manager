@@ -6,6 +6,7 @@ import AddNewSchedule from './AddNewSchedule.tsx';
 import { ReactElement, useState } from 'react';
 import { ScheduleResponseData } from '../types/scheduleTypes.ts';
 import { SystemsResponseData } from '../types/systemTypes.ts';
+//import DeleteIcon from '../icons/DeleteIcon.tsx';
 
 const Dashboard = () => {
   const scheduleList = useData<ScheduleResponseData>('/api/v1/scheduler');
@@ -79,9 +80,14 @@ const Dashboard = () => {
                 </div>
                 <div className="card-tool">
                   <button className="control-button bg-green">Turn OFF</button>
+
                   <button className="edit-button">
                     <EditIcon className={'text-light-dark'} />
                   </button>
+                  {/*TO DO: edit the icon*/}
+                  {/*<button className="delete-button">*/}
+                  {/*  <DeleteIcon className={'text-red-300'} />*/}
+                  {/*</button>*/}
                 </div>
               </div>
             ))

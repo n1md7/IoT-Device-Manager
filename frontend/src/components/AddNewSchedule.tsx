@@ -6,7 +6,7 @@ import { SystemsResponseData } from '../types/systemTypes.ts';
 
 interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
-  refetch: () => void;
+  refetch: () => void | undefined;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
   const { addSchedule, isSubmitting, scheduler } = useSchedule();
@@ -28,7 +28,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
   const handleSystemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSystem(Number(e.target.value));
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -86,6 +86,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
                 className="button bg-purple text-white mt-4"
                 onClick={() => {
                   refetch();
+                  console.log('refetch');
                   setIsNewScheduleOpen(false);
                 }}
               >
@@ -132,7 +133,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
                       name="name"
                       id="scheduleName"
                       value={formData.name}
-                      onChange={handleChange}
+                      onChange={handleFormChange}
                       className="input-field"
                       placeholder="e.g. water pump afternoon sched"
                       required
@@ -151,7 +152,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
                       name="startExpression"
                       id="scheduleExpression"
                       value={formData.startExpression}
-                      onChange={handleChange}
+                      onChange={handleFormChange}
                       className="input-field"
                       placeholder="e.g. 5 * * * * *"
                       required
@@ -171,7 +172,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
                         name="min"
                         id="scheduleMin"
                         value={formData.min}
-                        onChange={handleChange}
+                        onChange={handleFormChange}
                         className="input-field"
                         placeholder="e.g. 30"
                         required
@@ -190,7 +191,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
                         name="sec"
                         id="scheduleSec"
                         value={formData.sec}
-                        onChange={handleChange}
+                        onChange={handleFormChange}
                         className="input-field"
                         placeholder="e.g. 15"
                         required

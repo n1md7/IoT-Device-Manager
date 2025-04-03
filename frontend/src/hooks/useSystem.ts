@@ -1,10 +1,21 @@
-import useData from './useData.ts';
-import { SystemsResponseData } from '../types/systemTypes.ts';
-//const fileType = import.meta.env.VITE_TYPE || '';
+import { SystemPayload, SystemData } from '../types/systemTypes.ts';
+import useCreate from './useCreate.ts';
+import { useState } from 'react';
 
 const useSystems = () => {
-  const { data, error, loading } = useData<SystemsResponseData>('/api/v1/systems');
-  return { systemList: data, error, loading };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const system = useCreate<SystemPayload, SystemData>('/api/v1/systems/create');
+
+  const addSystem = async (payload: SystemPayload) => {
+    setIsSubmitting(true);
+    return system.create(payload).finally(() => setIsSubmitting(false));
+  };
+
+  return {
+    addSystem,
+    isSubmitting,
+    system,
+  };
 };
 
 export default useSystems;

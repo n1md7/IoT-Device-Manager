@@ -6,7 +6,6 @@ const useSchedule = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const scheduler = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
 
-  // add new schedule
   const addSchedule = async (payload: SchedulePayload) => {
     setIsSubmitting(true);
     return scheduler.create(payload).finally(() => setIsSubmitting(false));
