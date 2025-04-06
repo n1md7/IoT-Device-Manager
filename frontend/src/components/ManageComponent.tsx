@@ -1,16 +1,14 @@
 import EditIcon from '../icons/EditIcon.tsx';
-import useComponent from '../hooks/useComponent.ts';
+import { ComponentsResponseData } from '../types/componentTypes.ts';
+import useData from '../hooks/useData.ts';
 
 const ManageComponent = () => {
-  const { componentList, error, loading } = useComponent();
-
-  if (loading) return <p className="loading-msg">Loading system...</p>;
-  if (error) return <p className="error-msg">Error: {error}</p>;
+  const componentList = useData<ComponentsResponseData>('/api/v1/components');
 
   return (
     <div className="control-view-container">
-      {componentList?.length ? (
-        componentList.map((component) => (
+      {componentList?.data?.count ? (
+        componentList.data.components.map((component) => (
           <div key={component.id} className="card-item">
             <div className="card-header">
               <form className="system-details">

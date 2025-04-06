@@ -23,6 +23,7 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
 
   const refetch = () => {
     systemList.refresh().catch((err: Error) => {
+      //TO DO: make the error modal reusable for this if ever there's error fetching
       console.log(err);
     });
   };

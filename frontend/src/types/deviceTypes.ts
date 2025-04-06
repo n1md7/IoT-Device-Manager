@@ -1,4 +1,4 @@
-import { ComponentsDetails } from './componentTypes.ts';
+import { ComponentsData } from './componentTypes.ts';
 
 export type DeviceDetails = {
   ipAddress: string | null;
@@ -9,7 +9,7 @@ export type DeviceDetails = {
   version: string;
   createdAt: string;
   updatedAt: string;
-  components: ComponentsDetails[];
+  components: ComponentsData[];
 };
 
 export type DevicesResponseData = {

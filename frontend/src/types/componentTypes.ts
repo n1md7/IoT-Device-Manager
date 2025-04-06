@@ -1,7 +1,7 @@
 import { DeviceDetails } from './deviceTypes.ts';
 import { SystemData } from './systemTypes.ts';
 
-export type ComponentsDetails = {
+export type ComponentsData = {
   id: number;
   inUse: boolean;
   shared: boolean;
@@ -13,5 +13,11 @@ export type ComponentsDetails = {
 
 export type ComponentsResponseData = {
   count: number;
-  components: ComponentsDetails[];
+  components: ComponentsData[];
+};
+
+export type ComponentPayloadData = {
+  deviceCode: string;
+  systemId: number;
+  shared?: boolean;
 };
