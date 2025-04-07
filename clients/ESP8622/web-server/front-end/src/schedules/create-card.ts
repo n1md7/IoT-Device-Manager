@@ -85,8 +85,8 @@ window.scheduler.createCard = (options) => {
   return {
     container: container as HTMLElement,
     weekdays: weekdays as NodeListOf<HTMLElement>,
-    startTime: startTime as HTMLTimeElement,
-    endTime: endTime as HTMLTimeElement,
+    startTime: startTime as HTMLInputElement,
+    endTime: endTime as HTMLInputElement,
     enabled: enabled as HTMLSelectElement,
   };
 };

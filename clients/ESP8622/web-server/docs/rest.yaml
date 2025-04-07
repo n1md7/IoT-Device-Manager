@@ -349,7 +349,7 @@ paths:
         - name: active
           in: query
           schema:
-            type: boolean
+            enum: ['enable', '']
           required: true
           description: Whether the schedule is active or not
         - name: activateForSeconds

@@ -6,15 +6,21 @@ type ScheduleType = {
   hour: number;
   minute: number;
   weekdays: string;
-  active: boolean;
+  active: "enable" | "";
   activateForSeconds: number;
 };
 
 type Deserialized = {
   id: number;
   name: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: {
+    hour: number;
+    minute: number;
+  };
+  endTime: {
+    hour: number;
+    minute: number;
+  };
   weekdays: number[];
   enabled: boolean;
 };
@@ -23,12 +29,12 @@ declare global {
   interface Window {
     scheduler: {
       formatNumber: (n: number) => string;
-      formatTime: (n: Date) => string;
+      formatTime: (n: { hour: number; minute: number }) => string;
       createCard(options: ScheduleType): {
         container: HTMLElement;
         weekdays: NodeListOf<HTMLElement>;
-        startTime: HTMLTimeElement;
-        endTime: HTMLTimeElement;
+        startTime: HTMLInputElement;
+        endTime: HTMLInputElement;
         enabled: HTMLSelectElement;
       };
       deserialize(card: ScheduleType): Deserialized;
