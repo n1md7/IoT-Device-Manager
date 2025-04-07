@@ -1,16 +1,15 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import useSchedule from '../hooks/useSchedule.ts';
-import useData from '../hooks/useData.ts';
-import { SystemsResponseData } from '../types/systemTypes.ts';
+import useSystems from '../hooks/useSystem.ts';
 
 interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
-  refetch: () => void | undefined;
+  refetch: () => void;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
   const { addSchedule, isSubmitting, scheduler } = useSchedule();
-  const systemList = useData<SystemsResponseData>('/api/v1/systems');
+  const { systemList } = useSystems();
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -36,8 +35,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const selectedSystemObject = systemList.data?.systems?.find((system) => system.id === selectedSystem);
-    if (!selectedSystemObject) {
+    if (!selectedSystem) {
       console.error('Selected system not found!');
       return;
     }
@@ -49,7 +47,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
         min: Number(formData.min),
         sec: Number(formData.sec),
       },
-      systemId: selectedSystemObject.id,
+      systemId: selectedSystem,
     });
   };
 

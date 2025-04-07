@@ -9,9 +9,13 @@ const ManageSystem = () => {
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
+  const refetch = () => {
+    systemList.refresh().catch((e) => console.error(e));
+  };
+
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
-    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} />);
+    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} refetch={refetch} />);
   };
 
   return (
@@ -60,8 +64,8 @@ const ManageSystem = () => {
           <p className="error-msg"> {systemList.error}</p>
         )}
         <button className="card-item cursor-pointer" onClick={handleNewSystemView}>
-          <div className="card-body new-schedule">
-            <div className="icon button-add-schedule">
+          <div className="card-body new-item">
+            <div className="icon button-add-item">
               {' '}
               <AddIcon className="text-light-dark" />{' '}
             </div>

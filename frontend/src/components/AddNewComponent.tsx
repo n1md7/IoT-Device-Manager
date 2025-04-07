@@ -1,18 +1,18 @@
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import AddIcon from '../icons/AddIcon.tsx';
-import useData from '../hooks/useData.ts';
-import { SystemsResponseData } from '../types/systemTypes.ts';
-import { DevicesResponseData } from '../types/deviceTypes.ts';
-import * as React from 'react';
 import useComponent from '../hooks/useComponent.ts';
+import useSystems from '../hooks/useSystem.ts';
+import useDevice from '../hooks/useDevice.ts';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
+  refetch: () => void;
 }
-const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
+const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
   const { addComponent, isSubmitting, component } = useComponent();
-  const systemList = useData<SystemsResponseData>('/api/v1/systems');
-  const deviceList = useData<DevicesResponseData>('/api/v1/devices');
+  const { systemList } = useSystems();
+  const { deviceList } = useDevice();
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [isFailed, setIsFailed] = useState(false);
@@ -39,18 +39,15 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const selectedDeviceObject = deviceList?.data?.devices.find((device) => device.code === selectedDevice);
-    const selectedSystemObject = systemList?.data?.systems.find((system) => system.id === selectedSystem);
-
-    if (!selectedDeviceObject || !selectedSystemObject) {
+    if (!selectedDevice || !selectedSystem) {
       console.error('Select item not found not found');
       return;
     }
 
     await addComponent({
-      deviceCode: selectedDeviceObject.code,
-      systemId: selectedSystemObject.id,
-      //shared: formData.shared,
+      deviceCode: selectedDevice,
+      systemId: selectedSystem,
+      shared: formData.shared,
     });
   };
 
@@ -86,8 +83,7 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
               <button
                 className="button bg-purple text-white mt-4"
                 onClick={() => {
-                  console.log('button clicked');
-                  //refetch();
+                  refetch();
                   setIsNewComponentOpen(false);
                 }}
               >
@@ -140,8 +136,8 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
                       <option value="" disabled>
                         please select...
                       </option>
-                      {deviceList?.data?.devices?.length ? (
-                        deviceList.data?.devices.map((device) => (
+                      {deviceList?.devices?.length ? (
+                        deviceList?.devices.map((device) => (
                           <option key={device.code} value={device.code}>
                             {device.name}
                           </option>
@@ -202,7 +198,6 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
                     }}
                     checked={formData.shared}
                     className="hidden"
-                    disabled
                   />
                   <div className={`toggle-icon ${formData.shared ? 'translate-x-6' : ''}`}></div>
                   <span className="sr-only">Toggle switch</span>

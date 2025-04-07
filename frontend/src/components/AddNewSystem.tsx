@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import useSystem from '../hooks/useSystem.ts';
-import useData from '../hooks/useData.ts';
-import { SystemsResponseData } from '../types/systemTypes.ts';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;
+  refetch: () => void;
 }
 
-const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
-  const systemList = useData<SystemsResponseData>('/api/v1/systems');
+const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
   const { addSystem, isSubmitting, system } = useSystem();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -20,13 +18,6 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
     name: '',
     description: '',
   });
-
-  const refetch = () => {
-    systemList.refresh().catch((err: Error) => {
-      //TO DO: make the error modal reusable for this if ever there's error fetching
-      console.log(err);
-    });
-  };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

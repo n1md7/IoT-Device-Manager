@@ -1,31 +1,33 @@
 import * as React from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import NavBar from './components/NavBar.tsx';
 import PageHeader from './components/PageHeader.tsx';
+import AddNewSchedule from './components/AddNewSchedule.tsx';
 import AddNewSystem from './components/AddNewSystem.tsx';
 import AddNewComponent from './components/AddNewComponent.tsx';
-import Dashboard from './components/Dashboard.tsx';
-import { ReactElement, useEffect, useState } from 'react';
+import ManageSchedule from './components/ManageSchedule.tsx';
 import ManageSystem from './components/ManageSystem.tsx';
 import ManageComponent from './components/ManageComponent.tsx';
-import AddNewSchedule from './components/AddNewSchedule.tsx';
+import useSystem from './hooks/useSystem.ts';
+import useSchedule from './hooks/useSchedule.ts';
+import useComponent from './hooks/useComponent.ts';
 
 function App() {
+  const { systemList } = useSystem();
+  const { scheduleList } = useSchedule();
+  const { componentList } = useComponent();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
-  const [activeView, setActiveView] = useState<ReactElement>(<Dashboard />);
+  const [activeView, setActiveView] = useState<ReactElement>(<ManageSchedule />);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [pageTitle, setPageTitle] = useState('Dashboard');
 
   const pageTitleMap = new Map<React.FC, string>([
-    [Dashboard, 'Dashboard'],
+    [ManageSchedule, 'Dashboard'],
     [ManageSystem, 'System'],
     [ManageComponent, 'Component'],
   ]);
-
-  const refetch = () => {
-    setActiveView(<Dashboard />);
-  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -39,14 +41,20 @@ function App() {
     };
   }, [isNewSystemOpen, isNewComponentOpen, isNewScheduleOpen]);
 
+  const refetch = () => {
+    if (isNewSystemOpen) systemList.refresh().catch((e) => console.error(e));
+    if (isNewComponentOpen) componentList.refresh().catch((e) => console.error(e));
+    if (isNewScheduleOpen) scheduleList.refresh().catch((e) => console.error(e));
+  };
+
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
-    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} />);
+    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} refetch={refetch} />);
   };
 
   const handleNewComponentView = () => {
     setIsNewComponentOpen(true);
-    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
+    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} refetch={refetch} />);
   };
 
   const handleNewScheduleView = () => {

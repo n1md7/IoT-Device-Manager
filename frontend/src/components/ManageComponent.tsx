@@ -1,9 +1,24 @@
 import EditIcon from '../icons/EditIcon.tsx';
 import useComponent from '../hooks/useComponent.ts';
+import AddIcon from '../icons/AddIcon.tsx';
+import { ReactElement, useState } from 'react';
+import AddNewComponent from './AddNewComponent.tsx';
 
 const ManageComponent = () => {
   const { componentList } = useComponent();
+  const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
+  const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
+  const refetch = () => {
+    componentList.refresh().catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const handleNewComponentView = () => {
+    setIsNewComponentOpen(true);
+    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} refetch={refetch} />);
+  };
   return (
     <div className="control-view-container">
       {componentList?.data?.count ? (
@@ -44,8 +59,18 @@ const ManageComponent = () => {
           </div>
         ))
       ) : (
-        <p>No components found. </p>
+        <p className="error-msg"> {componentList.error}</p>
       )}
+      <button className="card-item cursor-pointer" onClick={handleNewComponentView}>
+        <div className="card-body new-item">
+          <div className="icon button-add-item">
+            {' '}
+            <AddIcon className="text-light-dark" />{' '}
+          </div>
+          <div className="text">Add New Component</div>
+        </div>
+      </button>
+      {isNewComponentOpen && <div className="block">{showModal}</div>}
     </div>
   );
 };

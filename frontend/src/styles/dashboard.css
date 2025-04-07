@@ -44,9 +44,9 @@
             }
         }
 
-        .new-schedule {
+        .new-item {
             @apply text-light-dark flex flex-col justify-center items-center;
-            .button-add-schedule > svg{
+            .button-add-item > svg{
                 @apply block w-full h-56;
             }
             .text {
