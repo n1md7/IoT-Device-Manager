@@ -1,26 +1,29 @@
 import EditIcon from '../icons/EditIcon.tsx';
-import useData from '../hooks/useData.ts';
-import { SystemsResponseData } from '../types/systemTypes.ts';
 import AddIcon from '../icons/AddIcon.tsx';
 import { ReactElement, useState } from 'react';
 import AddNewSystem from './AddNewSystem.tsx';
+import useSystem from '../hooks/useSystem.ts';
 
 const ManageSystem = () => {
-  const systemList = useData<SystemsResponseData>('/api/v1/systems');
+  const { systemList } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
+  const refetch = () => {
+    systemList.refresh().catch((e) => console.error(e));
+  };
+
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
-    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} />);
+    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} refetch={refetch} />);
   };
 
   return (
     <>
       <div className="control-view-container">
         {systemList?.data?.systems.length ? (
-          systemList?.data?.systems.map((system) => (
-            <div key={system.id} className="card-item">
+          systemList?.data?.systems.map((system, index) => (
+            <div key={system.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
               <div className="card-header">
                 <form className="system-details">
                   <label htmlFor="edit-component-id" className="system-name text-orange">
@@ -61,8 +64,8 @@ const ManageSystem = () => {
           <p className="error-msg"> {systemList.error}</p>
         )}
         <button className="card-item cursor-pointer" onClick={handleNewSystemView}>
-          <div className="card-body new-schedule">
-            <div className="icon button-add-schedule">
+          <div className="card-body new-item">
+            <div className="icon button-add-item">
               {' '}
               <AddIcon className="text-light-dark" />{' '}
             </div>

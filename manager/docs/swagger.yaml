@@ -593,6 +593,14 @@ components:
           type: number
           description: The System ID of the component type.
           example: 1
+        shared:
+          type: boolean
+          description: >-
+            This flag is used to determine whether the component is shared.
+            Usually, this flag is used to mark the component as a sensor. The
+            component that only emits/reports data but not receiving anything
+            back.
+          default: false
       required:
         - deviceCode
         - systemId
@@ -607,10 +615,6 @@ components:
           type: number
           description: The System ID of the component type.
           example: 1
-        inUse:
-          type: boolean
-          description: This flag is used to determine whether the component is in use.
-          default: false
         shared:
           type: boolean
           description: >-
@@ -618,6 +622,10 @@ components:
             Usually, this flag is used to mark the component as a sensor. The
             component that only emits/reports data but not receiving anything
             back.
+          default: false
+        inUse:
+          type: boolean
+          description: This flag is used to determine whether the component is in use.
           default: false
     CreateSystemRequest:
       type: object

@@ -1,4 +1,4 @@
-import { ComponentsDetails } from './componentTypes.ts';
+import { ComponentsData } from './componentTypes.ts';
 
 export type SystemData = {
   id: number;
@@ -6,7 +6,7 @@ export type SystemData = {
   description: string;
   createdAt: string;
   updatedAt: string;
-  components: ComponentsDetails[];
+  components: ComponentsData[];
 };
 
 export type SystemsResponseData = {

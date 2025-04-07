@@ -44,9 +44,9 @@
             }
         }
 
-        .new-schedule {
+        .new-item {
             @apply text-light-dark flex flex-col justify-center items-center;
-            .button-add-schedule > svg{
+            .button-add-item > svg{
                 @apply block w-full h-56;
             }
             .text {
@@ -74,19 +74,3 @@
 
 }
 
-.fade-in {
-    opacity: 0;
-    transform: translateY(10px);
-    animation: fadeInAnimation 0.5s ease-in-out forwards;
-}
-
-@keyframes fadeInAnimation {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
