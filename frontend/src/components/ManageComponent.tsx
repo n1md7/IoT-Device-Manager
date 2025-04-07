@@ -1,15 +1,14 @@
 import EditIcon from '../icons/EditIcon.tsx';
-import { ComponentsResponseData } from '../types/componentTypes.ts';
-import useData from '../hooks/useData.ts';
+import useComponent from '../hooks/useComponent.ts';
 
 const ManageComponent = () => {
-  const componentList = useData<ComponentsResponseData>('/api/v1/components');
+  const { componentList } = useComponent();
 
   return (
     <div className="control-view-container">
       {componentList?.data?.count ? (
-        componentList.data.components.map((component) => (
-          <div key={component.id} className="card-item">
+        componentList.data.components.map((component, index) => (
+          <div key={component.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
             <div className="card-header">
               <form className="system-details">
                 <label htmlFor="edit-component-id" className="system-name text-green">

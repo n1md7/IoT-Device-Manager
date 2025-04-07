@@ -1,16 +1,15 @@
-import useData from '../hooks/useData.ts';
 import EditIcon from '../icons/EditIcon.tsx';
 import Welcome from './Welcome.tsx';
 import AddIcon from '../icons/AddIcon.tsx';
 import AddNewSchedule from './AddNewSchedule.tsx';
 import { ReactElement, useState } from 'react';
-import { ScheduleResponseData } from '../types/scheduleTypes.ts';
-import { SystemsResponseData } from '../types/systemTypes.ts';
+import useSystem from '../hooks/useSystem.ts';
+import useSchedule from '../hooks/useSchedule.ts';
 //import DeleteIcon from '../icons/DeleteIcon.tsx';
 
 const Dashboard = () => {
-  const scheduleList = useData<ScheduleResponseData>('/api/v1/scheduler');
-  const systemList = useData<SystemsResponseData>('/api/v1/systems');
+  const { scheduleList } = useSchedule();
+  const { systemList } = useSystem();
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 

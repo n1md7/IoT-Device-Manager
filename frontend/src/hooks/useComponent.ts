@@ -1,10 +1,12 @@
-import { ComponentPayloadData, ComponentsData } from '../types/componentTypes.ts';
+import { ComponentPayloadData, ComponentsData, ComponentsResponseData } from '../types/componentTypes.ts';
 import useCreate from './useCreate.ts';
 import { useState } from 'react';
+import useData from './useData.ts';
 
 const useComponent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const component = useCreate<ComponentPayloadData, ComponentsData>('/api/v1/components');
+  const componentList = useData<ComponentsResponseData>('/api/v1/components');
 
   const addComponent = async (payload: ComponentPayloadData) => {
     setIsSubmitting(true);
@@ -15,6 +17,7 @@ const useComponent = () => {
     addComponent,
     isSubmitting,
     component,
+    componentList,
   };
 };
 
