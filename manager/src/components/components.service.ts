@@ -17,19 +17,20 @@ export class ComponentsService {
   ) {}
 
   /** @throws DatabaseException */
-  async create(payload: CreateComponentRequest) {
+  async create({ shared, systemId, deviceCode }: CreateComponentRequest) {
     try {
-      const system = await this.systemRepository.findOneByOrFail({ id: payload.systemId });
-      const device = await this.deviceRepository.findOneByOrFail({ code: payload.deviceCode });
+      const system = await this.systemRepository.findOneByOrFail({ id: systemId });
+      const device = await this.deviceRepository.findOneByOrFail({ code: deviceCode });
       const component = this.componentRepository.create({
         device,
         system,
+        shared,
       });
 
       return await this.componentRepository.save(component);
     } catch (error) {
       throw new DatabaseException({
-        message: `Error creating component with deviceCode: "${payload.deviceCode}" and systemId: "${payload.systemId}"`,
+        message: `Error creating component with deviceCode: "${deviceCode}" and systemId: "${systemId}"`,
         code: HttpStatus.UNPROCESSABLE_ENTITY,
         error,
       });
