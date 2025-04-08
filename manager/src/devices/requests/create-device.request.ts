@@ -33,6 +33,7 @@ export class CreateDeviceRequest {
     type: String,
     example: 'A timer device.',
     description: 'The description of the device.',
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -56,6 +57,7 @@ export class CreateDeviceRequest {
       'The IP address of the device. ' +
       'When it is set it will use HTTP request otherwise it fallbacks to MQTT protocol. ' +
       'Omit this property if the device supposed to communicate over MQTT messages.',
+    required: false,
   })
   @IsString()
   @MaxLength(15)

@@ -5,6 +5,7 @@ import CloseIcon from '../icons/CloseIcon.tsx';
 import HomeIcon from '../icons/HomeIcon.tsx';
 import MenuIcon from '../icons/MenuIcon.tsx';
 import ManageSystem from './ManageSystem.tsx';
+import ManageDevice from './ManageDevice.tsx';
 
 interface Props {
   onMenuClick: (component: JSX.Element) => void;
@@ -48,13 +49,16 @@ const NavBar = ({ onMenuClick }: Props) => {
           </div>
           <div className="nav-items">
             <button className="nav-item" onClick={() => onMenuClick(<ManageSchedule />)}>
-              Manage Schedules
+              Schedules
             </button>
             <button className="nav-item" onClick={() => onMenuClick(<ManageSystem />)}>
-              Manage systems
+              Systems
             </button>
             <button className="nav-item" onClick={() => onMenuClick(<ManageComponent />)}>
-              Manage components
+              Components
+            </button>
+            <button className="nav-item" onClick={() => onMenuClick(<ManageDevice />)}>
+              Devices
             </button>
             <button className="nav-item">Report a bug</button>
           </div>
