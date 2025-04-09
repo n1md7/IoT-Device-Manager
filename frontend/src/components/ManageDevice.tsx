@@ -32,16 +32,16 @@ const ManageDevice = () => {
               </div>
               <div className="card-body">
                 <div className="item-data">
-                  <div className="">Description:</div>
-                  <div className="text-light-gray font-bold">{device.description}</div>
-                </div>
-                <div className="item-data">
                   <div className="">Code:</div>
                   <div className="text-light-gray font-bold">{device.code}</div>
                 </div>
                 <div className="item-data">
                   <div className="">Type:</div>
                   <div className="text-light-gray font-bold">{device.type}</div>
+                </div>
+                <div className="item-data">
+                  <div className="">Description:</div>
+                  <div className="text-light-gray font-bold">{device.description}</div>
                 </div>
                 <div className="item-data">
                   <div className="">IP Address:</div>

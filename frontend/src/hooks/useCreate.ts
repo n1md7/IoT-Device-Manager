@@ -22,6 +22,7 @@ const useCreate = <PayloadType, ResponseType>(endpoint: string) => {
         console.log(`${API_URL}${endpoint}`, payload);
         const response = await api.post<ResponseType>(`${API_URL}${endpoint}`, payload);
         if (response.data) {
+          console.log('submitted');
           setData(response.data);
         }
       } catch (err: unknown) {

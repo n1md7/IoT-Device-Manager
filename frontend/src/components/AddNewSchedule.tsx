@@ -119,9 +119,11 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
           <>
             <h2>Create Schedule</h2>
             <form onSubmit={handleSubmit}>
+              <p className="mb-3 text-light-purple">All fields with * are required.</p>
+
               <div className="mb-5">
                 <label htmlFor="name" className="block">
-                  Schedule name:
+                  Schedule name *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
@@ -140,7 +142,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
               </div>
               <div className="mb-5">
                 <label htmlFor="startExpression" className="block">
-                  Cron Expression:
+                  Cron Expression *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
@@ -160,7 +162,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
               <div className="flex flex-row justify-between">
                 <div className="mb-5 w-1/3">
                   <label htmlFor="min" className="block">
-                    Minutes:
+                    Minutes *
                   </label>
                   <div className="mt-2">
                     <div className="input-group">
@@ -179,7 +181,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
                 </div>
                 <div className="mb-5 w-1/3">
                   <label htmlFor="sec" className="block">
-                    Seconds:
+                    Seconds *
                   </label>
                   <div className="mt-2">
                     <div className="input-group">
@@ -200,7 +202,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
               <div className="select-with-btn-group">
                 <div className="mb-5 w-full">
                   <label htmlFor="selectedSystem" className="block">
-                    Select system:
+                    Select system *
                   </label>
                   <div className="mt-2">
                     <div className="input-group">

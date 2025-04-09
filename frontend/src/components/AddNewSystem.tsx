@@ -101,9 +101,11 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
           <>
             <h2>Create System</h2>
             <form onSubmit={handleSubmit}>
+              <p className="mb-3 text-light-purple">All fields with * are required.</p>
+
               <div className="mb-5">
                 <label htmlFor="systemName" className="block">
-                  System name:
+                  System name *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
@@ -122,7 +124,7 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
               </div>
               <div className="mb-5">
                 <label htmlFor="systemDesc" className="block">
-                  Description:{' '}
+                  Description *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">

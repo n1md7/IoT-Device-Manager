@@ -51,6 +51,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
 
   useEffect(() => {
     if (device.data) {
+      console.log('success');
       setIsSuccess(true);
       setAddedDevice({ DeviceName: device.data.name });
     }
@@ -112,7 +113,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
               <p className="mb-3 text-light-purple">All fields with * are required.</p>
               <div className="mb-5">
                 <label htmlFor="DeviceName" className="block">
-                  Device name*:
+                  Device name *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
@@ -131,7 +132,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
               </div>
               <div className="mb-5">
                 <label htmlFor="DeviceDesc" className="block">
-                  Description:
+                  Description
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
@@ -148,7 +149,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
               </div>
               <div className="mb-5">
                 <label htmlFor="DeviceCode" className="block">
-                  Device code*:
+                  Device code *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
@@ -168,7 +169,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
               <div className="flex flex-row w-full justify-between">
                 <div className="mb-5 w-1/2">
                   <label htmlFor="DeviceType" className="block">
-                    Type*:
+                    Type *
                   </label>
                   <div className="mt-2">
                     <div className="input-group">
@@ -187,7 +188,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
                 </div>
                 <div className="mb-5 w-1/3">
                   <label htmlFor="DeviceVersion" className="block">
-                    Version*:
+                    Version *
                   </label>
                   <div className="mt-2">
                     <div className="input-group">
@@ -207,7 +208,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
               </div>
               <div className="mb-5">
                 <label htmlFor="DeviceIpVersion" className="block">
-                  IP address:
+                  IP address
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
