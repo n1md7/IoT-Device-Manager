@@ -13,7 +13,6 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
   const [isFailed, setIsFailed] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
-  const [addedSystem, setAddedSystem] = useState<{ systemName: string } | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -44,7 +43,6 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
   useEffect(() => {
     if (system.data) {
       setIsSuccess(true);
-      setAddedSystem({ systemName: system.data.name });
     }
   }, [system.data]);
 
@@ -55,11 +53,9 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
           <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
             <div>
               <h2 className="">Successfully Added</h2>
-              {addedSystem && (
-                <p>
-                  New system <strong className="text-purple">{addedSystem.systemName}</strong> has been added!
-                </p>
-              )}
+              <p>
+                New system <strong className="text-purple">{formData.name}</strong> has been added!
+              </p>
             </div>
             <div className="button-container">
               <button
@@ -101,9 +97,11 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
           <>
             <h2>Create System</h2>
             <form onSubmit={handleSubmit}>
+              <p className="mb-3 text-light-purple">All fields with * are required.</p>
+
               <div className="mb-5">
                 <label htmlFor="systemName" className="block">
-                  System name:
+                  System name *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
@@ -122,7 +120,7 @@ const AddNewSystem = ({ setIsNewSystemOpen, refetch }: Props) => {
               </div>
               <div className="mb-5">
                 <label htmlFor="systemDesc" className="block">
-                  Description:{' '}
+                  Description *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">

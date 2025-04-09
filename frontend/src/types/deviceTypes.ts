@@ -16,3 +16,12 @@ export type DevicesResponseData = {
   count: number;
   devices: DeviceDetails[];
 };
+
+export type DevicePayloadData = {
+  code: string;
+  type: string;
+  name: string;
+  description: string;
+  version: string;
+  ipAddress: string;
+};

@@ -57,6 +57,8 @@ export class DevicesService implements OnModuleInit {
         type: device.type,
         name: device.name,
         version: device.version,
+        description: device.description,
+        ipAddress: device.ipAddress,
       });
     } catch (error) {
       throw new DatabaseException({

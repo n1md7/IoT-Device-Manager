@@ -484,9 +484,7 @@ components:
         - code
         - type
         - name
-        - description
         - version
-        - ipAddress
     UpdateDeviceRequest:
       type: object
       properties:

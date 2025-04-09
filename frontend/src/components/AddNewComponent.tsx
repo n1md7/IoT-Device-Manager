@@ -119,9 +119,11 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
           <>
             <h2>Create Component</h2>
             <form onSubmit={handleSubmit}>
+              <p className="mb-3 text-light-purple">All fields with * are required.</p>
+
               <div className="mb-5">
                 <label htmlFor="selectedDevice" className="block">
-                  Select device:
+                  Select device *
                 </label>
                 <div className="mt-2 grid grid-cols-1">
                   <div className="input-group">
@@ -136,8 +138,8 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
                       <option value="" disabled>
                         please select...
                       </option>
-                      {deviceList?.devices?.length ? (
-                        deviceList?.devices.map((device) => (
+                      {deviceList?.data?.devices.length ? (
+                        deviceList.data.devices.map((device) => (
                           <option key={device.code} value={device.code}>
                             {device.name}
                           </option>
@@ -152,7 +154,7 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
               <div className="select-with-btn-group">
                 <div className="mb-5 w-full">
                   <label htmlFor="selectedSystem" className="block">
-                    Select system:
+                    Select system *
                   </label>
                   <div className="mt-2">
                     <div className="input-group">

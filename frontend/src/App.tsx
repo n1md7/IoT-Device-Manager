@@ -5,20 +5,24 @@ import PageHeader from './components/PageHeader.tsx';
 import AddNewSchedule from './components/AddNewSchedule.tsx';
 import AddNewSystem from './components/AddNewSystem.tsx';
 import AddNewComponent from './components/AddNewComponent.tsx';
+import AddNewDevice from './components/AddNewDevice.tsx';
 import ManageSchedule from './components/ManageSchedule.tsx';
 import ManageSystem from './components/ManageSystem.tsx';
 import ManageComponent from './components/ManageComponent.tsx';
 import useSystem from './hooks/useSystem.ts';
 import useSchedule from './hooks/useSchedule.ts';
 import useComponent from './hooks/useComponent.ts';
+import useDevice from './hooks/useDevice.ts';
 
 function App() {
   const { systemList } = useSystem();
   const { scheduleList } = useSchedule();
   const { componentList } = useComponent();
+  const { deviceList } = useDevice();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
+  const [isNewDeviceOpen, setIsNewDeviceOpen] = useState(false);
   const [activeView, setActiveView] = useState<ReactElement>(<ManageSchedule />);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [pageTitle, setPageTitle] = useState('Dashboard');
@@ -34,17 +38,19 @@ function App() {
       if (event.key === 'Escape' && isNewSystemOpen) setIsNewSystemOpen(false);
       if (event.key === 'Escape' && isNewComponentOpen) setIsNewComponentOpen(false);
       if (event.key === 'Escape' && isNewScheduleOpen) setIsNewScheduleOpen(false);
+      if (event.key === 'Escape' && isNewDeviceOpen) setIsNewDeviceOpen(false);
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isNewSystemOpen, isNewComponentOpen, isNewScheduleOpen]);
+  }, [isNewSystemOpen, isNewComponentOpen, isNewScheduleOpen, isNewDeviceOpen]);
 
   const refetch = () => {
     if (isNewSystemOpen) systemList.refresh().catch((e) => console.error(e));
     if (isNewComponentOpen) componentList.refresh().catch((e) => console.error(e));
     if (isNewScheduleOpen) scheduleList.refresh().catch((e) => console.error(e));
+    if (isNewDeviceOpen) deviceList.refresh().catch((e) => console.error(e));
   };
 
   const handleNewSystemView = () => {
@@ -60,6 +66,11 @@ function App() {
   const handleNewScheduleView = () => {
     setIsNewScheduleOpen(true);
     setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} refetch={refetch} />);
+  };
+
+  const handleNewDeviceView = () => {
+    setIsNewDeviceOpen(true);
+    setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} refetch={refetch} />);
   };
 
   const handleMenuClick = (component: ReactElement) => {
@@ -89,7 +100,10 @@ function App() {
             <button className="button bg-light-gray text-purple" onClick={handleNewComponentView}>
               Add Component
             </button>
-            <button className="button bg-purple text-white" onClick={handleNewScheduleView}>
+            <button className="button bg-purple text-white" onClick={handleNewDeviceView}>
+              Add Device
+            </button>
+            <button className="button bg-light-gray text-purple" onClick={handleNewScheduleView}>
               Add Schedule
             </button>
           </div>
@@ -101,6 +115,8 @@ function App() {
       {isNewComponentOpen && <div className="block">{showModal}</div>}
 
       {isNewScheduleOpen && <div className="block">{showModal}</div>}
+
+      {isNewDeviceOpen && <div className="block">{showModal}</div>}
     </>
   );
 }
