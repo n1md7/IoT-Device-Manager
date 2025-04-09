@@ -13,7 +13,6 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
   const [isFailed, setIsFailed] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
-  const [addedDevice, setAddedDevice] = useState<{ DeviceName: string } | null>(null);
   const [formData, setFormData] = useState({
     code: '',
     type: '',
@@ -50,12 +49,10 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
   }, [device.error]);
 
   useEffect(() => {
-    if (device.data) {
-      console.log('success');
+    if (device.statusCode) {
       setIsSuccess(true);
-      setAddedDevice({ DeviceName: device.data.name });
     }
-  }, [device.data]);
+  }, [device.statusCode]);
 
   return (
     <div className="modal-wrapper">
@@ -64,11 +61,9 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
           <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
             <div>
               <h2 className="">Successfully Added</h2>
-              {addedDevice && (
-                <p>
-                  New Device <strong className="text-purple">{addedDevice.DeviceName}</strong> has been added!
-                </p>
-              )}
+              <p>
+                New Device <strong className="text-purple">{formData.name}</strong> has been added!
+              </p>
             </div>
             <div className="button-container">
               <button

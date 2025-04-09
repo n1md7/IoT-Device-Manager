@@ -15,7 +15,6 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
   const [isFailed, setIsFailed] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
-  const [addedSchedule, setAddedSchedule] = useState<{ name: string } | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -61,7 +60,6 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
 
   useEffect(() => {
     if (scheduler.data) {
-      setAddedSchedule({ name: scheduler.data.name });
       setIsSuccess(true);
     }
   }, [scheduler.data]);
@@ -73,11 +71,9 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
           <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
             <div>
               <h2 className="">Successfully Added</h2>
-              {addedSchedule && (
-                <p>
-                  New schedule <strong className="text-purple">{addedSchedule.name}</strong> has been added!
-                </p>
-              )}
+              <p>
+                New schedule <strong className="text-purple">{formData.name}</strong> has been added!
+              </p>
             </div>
             <div className="button-container">
               <button
