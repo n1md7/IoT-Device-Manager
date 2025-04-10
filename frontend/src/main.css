@@ -1,6 +1,6 @@
 @import "./styles/modal.css";
 @import "./styles/page-header.css";
-@import "./styles/dashboard.css";
+@import "./styles/card-style.css";
 @import "./styles/welcome.css";
 
 @import "tailwindcss";
@@ -118,12 +118,26 @@ button {
     @apply h-full;
 }
 
-.page-bottom {
-    @apply flex flex-row h-full justify-between text-center pt-4 sm:w-lg sm:m-auto gap-3;
+.setting-item {
+    @apply flex flex-col justify-center bg-modal-bg/100 max-h-72 absolute p-8 items-center gap-4;
+    min-width: 15%;
+    max-width: 100%;
+    z-index: 100;
+    right: 50px;
+    bottom: 130px;
+    border-radius: 10px;
+    box-shadow: 0 3px 3px 3px rgba(0, 0, 0, 0.3);
+    border: 1px solid #1a1a1a;
+
     .button {
-        @apply w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2;
+        @apply w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2 bg-data-bg text-light-gray;
         font-family: 'Akatab-Bold', sans-serif;
-        box-shadow: 0px 3px 3px 3px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 2px 3px 1px rgba(0, 0, 0, 0.3);
+        &:hover {
+            @apply bg-card-bg/100;
+            cursor: pointer;
+
+        }
     }
 }
 
@@ -185,7 +199,25 @@ input[type="range"]::-moz-range-progress {
     text-align: center;
 }
 
+.settings-icon {
+    @apply size-15 bg-cover flex justify-center items-center;
+    position: absolute;
+    right: 50px;
+    bottom: 50px;
+    background: var(--color-menu-bg);
+    border-radius: 50%;
+    border: 1px solid #242424;
+    box-shadow: 0 3px 3px 3px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    &:hover {
+        @apply bg-menu-bg/80;
+        background: var(--color-dark);
+        border: 1px solid #373737;
+        box-shadow: 0 3px 3px 3px rgb(0 0 0 / 47%);
+    }
+}
 
+/* Animation */
 .fade-in {
     opacity: 0;
     transform: translateY(10px);
@@ -202,3 +234,4 @@ input[type="range"]::-moz-range-progress {
         transform: translateY(0);
     }
 }
+
