@@ -5,7 +5,7 @@ window.scheduler.updateSchedule = async (payload) => {
     headers: {
       "x-body-vars": Object.entries(payload)
         .map(([key, value]) => {
-          return `${key}=${encodeURIComponent(value)}`;
+          return `${key}=${value}`;
         })
         .join(";"),
     },

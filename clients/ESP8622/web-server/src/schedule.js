@@ -213,6 +213,7 @@ export default class ScheduleManager {
       if (error) return error;
     }
 
+    this.#logger.info(index, week, hour, minute, active, runForSeconds);
     this.#logger.info(`Updated schedule: ${schedule.getName()}`);
   }
 

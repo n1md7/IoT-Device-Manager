@@ -21,6 +21,6 @@ window.scheduler.deserialize = (options) => {
       minute: endM,
     },
     weekdays,
-    enabled: options.active === "enable",
+    active: !!options.active,
   };
 };

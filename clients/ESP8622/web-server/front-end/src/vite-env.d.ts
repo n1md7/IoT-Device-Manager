@@ -6,7 +6,7 @@ type ScheduleType = {
   hour: number;
   minute: number;
   weekdays: string;
-  active: "enable" | "";
+  active: boolean;
   activateForSeconds: number;
 };
 
@@ -22,7 +22,7 @@ type Deserialized = {
     minute: number;
   };
   weekdays: number[];
-  enabled: boolean;
+  active: boolean;
 };
 
 declare global {
@@ -35,7 +35,8 @@ declare global {
         weekdays: NodeListOf<HTMLElement>;
         startTime: HTMLInputElement;
         endTime: HTMLInputElement;
-        enabled: HTMLSelectElement;
+        active: HTMLSelectElement;
+        id: number;
       };
       deserialize(card: ScheduleType): Deserialized;
       serialize(card: Deserialized): ScheduleType;

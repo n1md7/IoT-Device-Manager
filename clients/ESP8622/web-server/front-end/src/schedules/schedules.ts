@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       main.appendChild(dom.container);
 
-      const id = +dom.container.getAttribute("data-id")!;
       const name = dom.container.querySelector(
         ".schedule-name",
       ) as HTMLDivElement;
@@ -45,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.scheduler
           .updateSchedule(
             window.scheduler.serialize({
-              id,
+              id: dom.id,
               name: name.innerHTML,
               startTime: {
                 hour: startH,
@@ -55,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hour: endH,
                 minute: endM,
               },
-              enabled: dom.enabled.value === "enable",
+              active: !!dom.active.value,
               weekdays,
             }),
           )

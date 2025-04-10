@@ -63,10 +63,10 @@ window.scheduler.createCard = (options) => {
 </div>
 </div>
 <div class="form-group">
-<label for="id${deserialized.id}-enabled">Status: </label>
-<select id="id${deserialized.id}-enabled" class="status">
-<option value="disable" ${selected(!deserialized.enabled)}>Disable</option>
-<option value="enable"${selected(deserialized.enabled)}>Enable</option>
+<label for="id${deserialized.id}-active">Status: </label>
+<select id="id${deserialized.id}-active" class="status">
+<option value="" ${selected(!deserialized.active)}>Disable</option>
+<option value="Active"${selected(!!deserialized.active)}>Enable</option>
 </select>
 </div>
 <div class="button-container">
@@ -80,13 +80,14 @@ window.scheduler.createCard = (options) => {
   );
   const startTime = container.querySelector(`#id${deserialized.id}-start-time`);
   const endTime = container.querySelector(`#id${deserialized.id}-end-time`);
-  const enabled = container.querySelector(`#id${deserialized.id}-enabled`);
+  const active = container.querySelector(`#id${deserialized.id}-active`);
 
   return {
+    id: deserialized.id,
     container: container as HTMLElement,
     weekdays: weekdays as NodeListOf<HTMLElement>,
     startTime: startTime as HTMLInputElement,
     endTime: endTime as HTMLInputElement,
-    enabled: enabled as HTMLSelectElement,
+    active: active as HTMLSelectElement,
   };
 };

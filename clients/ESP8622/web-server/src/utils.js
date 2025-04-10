@@ -102,6 +102,22 @@ export const getQueryParams = (query = "") => {
     }, {});
 };
 
+/**
+ * @description Custom parser for key-value pais concatenated by '='
+ * @param headerValue
+ * @returns {{}}
+ * @example a=1;c='d';my-var=123
+ */
+export const getBodyVars = (headerValue = "") => {
+  return headerValue.split(";").reduce((acc, item) => {
+    const [key, value] = item.split("=");
+
+    acc[key] = value;
+
+    return acc;
+  }, {});
+};
+
 const methodType = (method = "") => ({
   get: method === "GET",
   post: method === "POST",
@@ -129,28 +145,6 @@ const methodType = (method = "") => ({
  * @typedef {Object.<string, RouteHandler|Routes>} Routes - Server routes
  */
 
-const headers = {
-  "x-body-json"(payload) {
-    try {
-      return [null, JSON.parse(payload)];
-    } catch (error) {
-      return [`Unable to parse JSON body: ${error.message}`, null];
-    }
-  },
-  "x-body-vars"(payload) {
-    return [
-      null,
-      payload.split(";").reduce((acc, item) => {
-        const [key, value] = decodeURIComponent(item);
-
-        acc[key] = value;
-
-        return acc;
-      }, {}),
-    ];
-  },
-};
-
 /**
  * @param {Routes} routes - Server routes
  * @returns {(function(*, *): (*))|*}
@@ -173,11 +167,8 @@ export const requestHandler = (routes = {}) => {
       }
       case Server.header: {
         this.headers[value] = etc;
-        const fn = headers[value];
-        if (fn) {
-          const [error, payload] = fn(etc);
-          if (error) return apiError(error, 400);
-          this.body = payload;
+        if (value.toLowerCase() === "x-body-vars") {
+          this.body = getBodyVars(etc);
         }
         break;
       }
@@ -231,7 +222,6 @@ export class SystemTime {
         case SNTP.time:
           console.log("[SNTP] Received time from net", value);
           Time.set(value);
-          Time.timezone = +4;
           break;
 
         case SNTP.retry:

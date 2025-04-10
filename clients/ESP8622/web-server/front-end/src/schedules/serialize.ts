@@ -20,6 +20,6 @@ window.scheduler.serialize = (options) => {
     hour: startTime.hour,
     minute: startTime.minute,
     activateForSeconds,
-    active: options.enabled ? "enable" : "",
+    active: !!options.active,
   };
 };

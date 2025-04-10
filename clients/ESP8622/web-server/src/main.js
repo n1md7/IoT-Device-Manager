@@ -203,7 +203,7 @@ server.callback = requestHandler({
             String(weekdays),
             parseInt(hour),
             parseInt(minute),
-            Boolean(active),
+            active.toLowerCase() === "true",
             parseInt(activateForSeconds),
           );
 
