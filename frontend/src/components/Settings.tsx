@@ -73,7 +73,7 @@ const Settings = () => {
       </button>
 
       <div className={`${isMenuOpen ? 'block' : 'hidden'}`}>
-        <div className="setting-item fade-in" style={{ animationDelay: `0` }}>
+        <div className="setting-item fade-in">
           <button className="button" onClick={handleModal('system')}>
             Add System
           </button>
