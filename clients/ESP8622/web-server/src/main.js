@@ -117,6 +117,8 @@ server.callback = requestHandler({
         time: timer.getCurrentTime(),
       });
     },
+
+    "/system-time": (ctx) => plainResponse(new Date().toString()),
     "/info": (ctx) => {
       const occupiedInPercent = (info.used / info.total) * 100;
       const time = new Date();
@@ -180,7 +182,7 @@ server.callback = requestHandler({
       switch (ctx.method) {
         case "GET":
           return jsonResponse(scheduler.toJson());
-        case "POST":
+        case "POST": {
           switch (ctx.params.action) {
             case "ON":
               scheduler.turnOn();
@@ -191,9 +193,10 @@ server.callback = requestHandler({
             default:
               return apiError(`Invalid action: ${ctx.params.action}`);
           }
-        case "PUT":
-          const { id, weekdays, hour, minute } = ctx.params;
-          const { active, activateForSeconds } = ctx.params;
+        }
+        case "PUT": {
+          const { id, weekdays, hour, minute } = ctx.body;
+          const { active, activateForSeconds } = ctx.body;
 
           const error = scheduler.updateScheduleByIndex(
             parseInt(id),
@@ -209,6 +212,7 @@ server.callback = requestHandler({
           }
 
           return { status: 204 };
+        }
 
         default:
           return apiError(`Method not allowed: ${ctx.method}`);

@@ -129,6 +129,28 @@ const methodType = (method = "") => ({
  * @typedef {Object.<string, RouteHandler|Routes>} Routes - Server routes
  */
 
+const headers = {
+  "x-body-json"(payload) {
+    try {
+      return [null, JSON.parse(payload)];
+    } catch (error) {
+      return [`Unable to parse JSON body: ${error.message}`, null];
+    }
+  },
+  "x-body-vars"(payload) {
+    return [
+      null,
+      payload.split(";").reduce((acc, item) => {
+        const [key, value] = decodeURIComponent(item);
+
+        acc[key] = value;
+
+        return acc;
+      }, {}),
+    ];
+  },
+};
+
 /**
  * @param {Routes} routes - Server routes
  * @returns {(function(*, *): (*))|*}
@@ -139,7 +161,7 @@ export const requestHandler = (routes = {}) => {
     this.body ||= {};
 
     switch (message) {
-      case Server.status:
+      case Server.status: {
         const [route, query] = value.split("?");
         this.path = value;
         this.query = query;
@@ -148,17 +170,18 @@ export const requestHandler = (routes = {}) => {
         this.is = methodType(etc);
         this.params = getQueryParams(this.query);
         break;
-      case Server.header:
+      }
+      case Server.header: {
         this.headers[value] = etc;
-        if (value === "x-body-json") {
-          try {
-            this.body = JSON.parse(etc);
-          } catch (error) {
-            return apiError(`Unable to parse JSON body: "etc"`, 400);
-          }
+        const fn = headers[value];
+        if (fn) {
+          const [error, payload] = fn(etc);
+          if (error) return apiError(error, 400);
+          this.body = payload;
         }
         break;
-      case Server.prepareResponse:
+      }
+      case Server.prepareResponse: {
         if (routes[this.route]) return routes[this.route](this);
 
         if (this.path.startsWith(API)) {
@@ -177,6 +200,7 @@ export const requestHandler = (routes = {}) => {
         }
 
         return routes["404"](this);
+      }
     }
   };
 };
@@ -207,6 +231,7 @@ export class SystemTime {
         case SNTP.time:
           console.log("[SNTP] Received time from net", value);
           Time.set(value);
+          Time.timezone = +4;
           break;
 
         case SNTP.retry:
