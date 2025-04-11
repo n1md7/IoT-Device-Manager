@@ -1,9 +1,9 @@
 import { ReactElement, useEffect, useState } from 'react';
 import AddIcon from '../icons/AddIcon.tsx';
-import AddNewSystem from './AddNewSystem.tsx';
-import AddNewComponent from './AddNewComponent.tsx';
-import AddNewSchedule from './AddNewSchedule.tsx';
-import AddNewDevice from './AddNewDevice.tsx';
+import AddNewSystem from './modals/AddNewSystem.tsx';
+import AddNewComponent from './modals/AddNewComponent.tsx';
+import AddNewSchedule from './modals/AddNewSchedule.tsx';
+import AddNewDevice from './modals/AddNewDevice.tsx';
 import useSystem from '../hooks/useSystem.ts';
 import useSchedule from '../hooks/useSchedule.ts';
 import useComponent from '../hooks/useComponent.ts';

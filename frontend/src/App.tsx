@@ -37,7 +37,21 @@ function App() {
       <div className="container-body h-dvh">
         <div className="page-body">{activeView}</div>
       </div>
-      <div className="container-toolbar"></div>
+      <div className="container-toolbar">
+        <div className="flex items-center justify-center pt-7">
+          <div className="text-card-label">
+            <span>Created with love by </span>
+            <a className="font-bold" href="https://github.com/n1md7">
+              Harry
+            </a>
+            <span> and </span>
+            <a className="font-bold" href="https://github.com/kaeri-gg">
+              Katie
+            </a>
+            . ❤️🕹️🎮 🥰{' '}
+          </div>
+        </div>
+      </div>
       <Settings />
     </div>
   );

@@ -1,28 +1,32 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import useDevice from '../hooks/useDevice.ts';
+import useSchedule from '../../hooks/useSchedule.ts';
+import useSystems from '../../hooks/useSystem.ts';
 
 interface Props {
-  setIsNewDeviceOpen: (value: boolean) => void;
+  setIsNewScheduleOpen: (value: boolean) => void;
   refetch: () => void;
 }
-
-const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
-  const { addDevice, isSubmitting, device } = useDevice();
+const AddNewSchedule = ({ setIsNewScheduleOpen, refetch }: Props) => {
+  const { addSchedule, isSubmitting, scheduler } = useSchedule();
+  const { systemList } = useSystems();
+  const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
-    code: '',
-    type: '',
     name: '',
-    description: '',
-    version: '',
-    ipAddress: '',
+    startExpression: '',
+    min: '',
+    sec: '',
   });
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSystemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSystem(Number(e.target.value));
+  };
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -30,29 +34,35 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await addDevice({
-      code: formData.code,
-      type: formData.type,
+    if (!selectedSystem) {
+      console.error('Selected system not found!');
+      return;
+    }
+
+    await addSchedule({
       name: formData.name,
-      description: formData.description,
-      version: formData.version,
-      ipAddress: formData.ipAddress,
+      startExpression: formData.startExpression,
+      duration: {
+        min: Number(formData.min),
+        sec: Number(formData.sec),
+      },
+      systemId: selectedSystem,
     });
   };
 
   useEffect(() => {
-    if (device.error) {
+    if (scheduler.error) {
       setIsFailed(true);
-      setErrorDetail(device.error.details ?? 'Unknown error details.');
-      setErrorMessage(device.error.message ?? 'Unknown error message.');
+      setErrorDetail(scheduler.error.details ?? 'Unknown error details.');
+      setErrorMessage(scheduler.error.message ?? 'Unknown error message.');
     }
-  }, [device.error]);
+  }, [scheduler.error]);
 
   useEffect(() => {
-    if (device.statusCode) {
+    if (scheduler.data) {
       setIsSuccess(true);
     }
-  }, [device.statusCode]);
+  }, [scheduler.data]);
 
   return (
     <div className="modal-wrapper">
@@ -62,7 +72,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
             <div>
               <h2 className="">Successfully Added</h2>
               <p>
-                New Device <strong className="text-purple">{formData.name}</strong> has been added!
+                New schedule <strong className="text-purple">{formData.name}</strong> has been added!
               </p>
             </div>
             <div className="button-container">
@@ -70,7 +80,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
                 className="button bg-purple text-white mt-4"
                 onClick={() => {
                   refetch();
-                  setIsNewDeviceOpen(false);
+                  setIsNewScheduleOpen(false);
                 }}
               >
                 Done
@@ -82,7 +92,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
           <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
             <div>
               <h2 className="text-red-600">Failed</h2>
-              <p>There seems to be a problem while adding a new Device.</p>
+              <p>There seems to be a problem while adding a new schedule.</p>
 
               <div className="error-details">
                 <span className="text-red-600">{errorMessage}: </span>
@@ -93,7 +103,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
               <button
                 className="button bg-light-gray text-purple mt-4"
                 onClick={() => {
-                  setIsNewDeviceOpen(false);
+                  setIsNewScheduleOpen(false);
                 }}
               >
                 Okay
@@ -103,127 +113,128 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
         )}{' '}
         {!isSuccess && !isFailed && (
           <>
-            <h2>Create Device</h2>
+            <h2>Create Schedule</h2>
             <form onSubmit={handleSubmit}>
               <p className="mb-3 text-light-purple">All fields with * are required.</p>
+
               <div className="mb-5">
-                <label htmlFor="DeviceName" className="block">
-                  Device name *
+                <label htmlFor="name" className="block">
+                  Schedule name *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
                     <input
                       type="text"
                       name="name"
-                      id="DeviceName"
+                      id="scheduleName"
                       value={formData.name}
                       onChange={handleFormChange}
                       className="input-field"
-                      placeholder="e.g. feeder"
+                      placeholder="e.g. water pump afternoon sched"
                       required
                     />
                   </div>
                 </div>
               </div>
               <div className="mb-5">
-                <label htmlFor="DeviceDesc" className="block">
-                  Description
-                </label>
-                <div className="mt-2">
-                  <div className="input-group">
-                    <textarea
-                      name="description"
-                      id="DeviceDesc"
-                      value={formData.description}
-                      onChange={handleFormChange}
-                      className="input-field"
-                      placeholder="e.g. device for outdoor pump"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="mb-5">
-                <label htmlFor="DeviceCode" className="block">
-                  Device code *
+                <label htmlFor="startExpression" className="block">
+                  Cron Expression *
                 </label>
                 <div className="mt-2">
                   <div className="input-group">
                     <input
                       type="text"
-                      name="code"
-                      id="DeviceCode"
-                      value={formData.code}
+                      name="startExpression"
+                      id="scheduleExpression"
+                      value={formData.startExpression}
                       onChange={handleFormChange}
                       className="input-field"
-                      placeholder="e.g. D0001"
+                      placeholder="e.g. 5 * * * * *"
                       required
                     />
                   </div>
                 </div>
               </div>
-              <div className="flex flex-row w-full justify-between">
-                <div className="mb-5 w-1/2">
-                  <label htmlFor="DeviceType" className="block">
-                    Type *
+              <div className="flex flex-row justify-between">
+                <div className="mb-5 w-1/3">
+                  <label htmlFor="min" className="block">
+                    Minutes *
                   </label>
                   <div className="mt-2">
                     <div className="input-group">
                       <input
                         type="text"
-                        name="type"
-                        id="DeviceType"
-                        value={formData.type}
+                        name="min"
+                        id="scheduleMin"
+                        value={formData.min}
                         onChange={handleFormChange}
                         className="input-field"
-                        placeholder="e.g. switch"
+                        placeholder="e.g. 30"
                         required
                       />
                     </div>
                   </div>
                 </div>
                 <div className="mb-5 w-1/3">
-                  <label htmlFor="DeviceVersion" className="block">
-                    Version *
+                  <label htmlFor="sec" className="block">
+                    Seconds *
                   </label>
                   <div className="mt-2">
                     <div className="input-group">
                       <input
                         type="text"
-                        name="version"
-                        id="DeviceVersion"
-                        value={formData.version}
+                        name="sec"
+                        id="scheduleSec"
+                        value={formData.sec}
                         onChange={handleFormChange}
                         className="input-field"
-                        placeholder="e.g. 1"
+                        placeholder="e.g. 15"
                         required
                       />
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="mb-5">
-                <label htmlFor="DeviceIpVersion" className="block">
-                  IP address
-                </label>
-                <div className="mt-2">
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      name="ipAddress"
-                      id="DeviceIpVersion"
-                      value={formData.ipAddress}
-                      onChange={handleFormChange}
-                      className="input-field"
-                      placeholder="e.g. 192.168.1.7"
-                    />
+              <div className="select-with-btn-group">
+                <div className="mb-5 w-full">
+                  <label htmlFor="selectedSystem" className="block">
+                    Select system *
+                  </label>
+                  <div className="mt-2">
+                    <div className="input-group">
+                      <select
+                        id="selectedSystem"
+                        name="selectedSystem"
+                        value={selectedSystem ?? ''}
+                        onChange={handleSystemChange}
+                        autoComplete=""
+                        className="select-field"
+                        required
+                      >
+                        <option value="" disabled>
+                          please select...
+                        </option>
+                        {systemList?.data?.systems?.length ? (
+                          systemList.data.systems.map((system) => (
+                            <option key={system.id} value={system.id}>
+                              {system.name}
+                            </option>
+                          ))
+                        ) : (
+                          <option disabled>No systems found</option>
+                        )}
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <div></div>
               <div className="button-container">
-                <button type="submit" className="button bg-purple text-white" disabled={isSubmitting}>
+                <button className="button bg-purple text-white" disabled={isSubmitting}>
                   Save
                 </button>
-                <button type="button" className="button bg-light-gray text-purple" onClick={() => setIsNewDeviceOpen(false)}>
+                <button className="button bg-light-gray text-purple" onClick={() => setIsNewScheduleOpen(false)}>
                   Cancel
                 </button>
               </div>
@@ -235,4 +246,4 @@ const AddNewDevice = ({ setIsNewDeviceOpen, refetch }: Props) => {
   );
 };
 
-export default AddNewDevice;
+export default AddNewSchedule;

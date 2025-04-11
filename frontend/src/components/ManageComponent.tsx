@@ -2,7 +2,7 @@ import EditIcon from '../icons/EditIcon.tsx';
 import useComponent from '../hooks/useComponent.ts';
 import AddIcon from '../icons/AddIcon.tsx';
 import { ReactElement, useState } from 'react';
-import AddNewComponent from './AddNewComponent.tsx';
+import AddNewComponent from './modals/AddNewComponent.tsx';
 
 const ManageComponent = () => {
   const { componentList } = useComponent();

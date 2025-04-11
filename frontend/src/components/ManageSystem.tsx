@@ -1,7 +1,7 @@
 import EditIcon from '../icons/EditIcon.tsx';
 import AddIcon from '../icons/AddIcon.tsx';
 import { ReactElement, useState } from 'react';
-import AddNewSystem from './AddNewSystem.tsx';
+import AddNewSystem from './modals/AddNewSystem.tsx';
 import useSystem from '../hooks/useSystem.ts';
 
 const ManageSystem = () => {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import useSystem from '../hooks/useSystem.ts';
+import useSystem from '../../hooks/useSystem.ts';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;

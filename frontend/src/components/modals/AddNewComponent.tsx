@@ -1,9 +1,13 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import AddIcon from '../icons/AddIcon.tsx';
-import useComponent from '../hooks/useComponent.ts';
-import useSystems from '../hooks/useSystem.ts';
-import useDevice from '../hooks/useDevice.ts';
+import AddIcon from '../../icons/AddIcon.tsx';
+import useComponent from '../../hooks/useComponent.ts';
+import useSystems from '../../hooks/useSystem.ts';
+import useDevice from '../../hooks/useDevice.ts';
+import { useAtom } from 'jotai';
+import { errorDetailsAtom, errorMessageAtom, isFailedAtom, isSuccessAtom } from '../../atoms/statusAtoms.ts';
+import Status from './Status.tsx';
+import useResetStatus from '../../hooks/useResetStatus.ts';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
@@ -15,11 +19,11 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
   const { deviceList } = useDevice();
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
-  const [isFailed, setIsFailed] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [errorDetails, setErrorDetails] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [addedComponent, setAddedComponent] = useState<{ device: string } | null>(null);
+  const [isFailed, setIsFailed] = useAtom(isFailedAtom);
+  const [isSuccess, setIsSuccess] = useAtom(isSuccessAtom);
+  const [, setErrorDetails] = useAtom(errorDetailsAtom);
+  const [, setErrorMessage] = useAtom(errorMessageAtom);
+  const resetStatus = useResetStatus();
 
   const [formData, setFormData] = useState({
     shared: false,
@@ -27,13 +31,8 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    if (name === 'selectedDevice') {
-      setSelectedDevice(String(value));
-    }
-    if (name === 'selectedSystem') {
-      setSelectedSystem(Number(value));
-    }
+    if (name === 'selectedDevice') setSelectedDevice(String(value));
+    if (name === 'selectedSystem') setSelectedSystem(Number(value));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,64 +56,26 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
       setErrorDetails(component.error.details ?? 'Unknown error details.');
       setErrorMessage(component.error.message ?? 'Unknown error message.');
     }
-  }, [component.error]);
+  }, [component.error, setErrorDetails, setErrorMessage, setIsFailed]);
 
   useEffect(() => {
     if (component.data) {
       setIsSuccess(true);
-      setAddedComponent({ device: component.data.device.name });
     }
-  }, [component.data]);
+  }, [component.data, setIsSuccess]);
 
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
-        {isSuccess && (
-          <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
-            <div>
-              <h2 className="">Successfully Added</h2>
-              {addedComponent && (
-                <p>
-                  New component <strong className="text-purple">{addedComponent.device}</strong> has been added!
-                </p>
-              )}
-            </div>
-            <div className="button-container">
-              <button
-                className="button bg-purple text-white mt-4"
-                onClick={() => {
-                  refetch();
-                  setIsNewComponentOpen(false);
-                }}
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        )}
-        {isFailed && (
-          <div className="status-div fade-in" style={{ animationDelay: `0.05` }}>
-            <div>
-              <h2 className="text-red-600">Failed</h2>
-              <p>There seems to be a problem while adding a new component.</p>
-
-              <div className="error-details">
-                <span className="text-red-600">{errorMessage}: </span>
-                <span className="text-gray-500">{errorDetails}</span>
-              </div>
-            </div>
-            <div className="button-container">
-              <button
-                className="button bg-light-gray text-purple mt-4"
-                onClick={() => {
-                  setIsNewComponentOpen(false);
-                }}
-              >
-                Okay
-              </button>
-            </div>
-          </div>
-        )}
+        <Status
+          onClose={() => setIsNewComponentOpen(false)}
+          onDone={() => {
+            refetch();
+            resetStatus();
+            setIsNewComponentOpen(false);
+          }}
+          newItem={component?.data?.device.name}
+        />
         {!isSuccess && !isFailed && (
           <>
             <h2>Create Component</h2>
