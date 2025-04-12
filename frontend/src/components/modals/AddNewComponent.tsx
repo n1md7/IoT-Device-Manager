@@ -60,15 +60,16 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
 
   useEffect(() => {
     if (component.data) {
-      console.log('success');
       showAlert({
         type: 'success',
         title: 'Successfully Added!',
         message: 'New component has been added!',
         onClick: () => {
+          console.log('ayyyyyyyyyyyyyy');
           refetch();
           setIsNewComponentOpen(false);
-          hideAlert();
+          console.log('oyy');
+          //hideAlert();
         },
       });
       setIsSuccess(true);

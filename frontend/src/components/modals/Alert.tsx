@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useAlert } from '../../hooks/useAlert.ts';
 import { AlertType } from '../../atoms/alertAtoms.ts';
 
@@ -11,13 +10,8 @@ const classes: Record<AlertType, string> = {
 
 const Alert = () => {
   const alert = useAlert();
-  useEffect(() => {
-    console.log('alert.show value:', alert.show);
-  }, [alert.show]);
 
-  console.log('helloooooo');
   if (!alert.show) return null;
-  console.log('should display alert');
 
   return (
     <div className="modal-wrapper">
