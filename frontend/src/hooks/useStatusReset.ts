@@ -1,7 +1,7 @@
 import { useSetAtom } from 'jotai';
 import { errorDetailsAtom, errorMessageAtom, isFailedAtom, isSuccessAtom } from '../atoms/statusAtoms.ts';
 
-export const useResetStatus = () => {
+export const useStatusReset = () => {
   const setIsFailed = useSetAtom(isFailedAtom);
   const setIsSuccess = useSetAtom(isSuccessAtom);
   const setErrorDetails = useSetAtom(errorDetailsAtom);
@@ -15,4 +15,4 @@ export const useResetStatus = () => {
   };
 };
 
-export default useResetStatus;
+export default useStatusReset;

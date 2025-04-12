@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
 import AddIcon from '../../icons/AddIcon.tsx';
 import useComponent from '../../hooks/useComponent.ts';
 import useSystems from '../../hooks/useSystem.ts';
 import useDevice from '../../hooks/useDevice.ts';
-import { useAtom } from 'jotai';
-import { errorDetailsAtom, errorMessageAtom, isFailedAtom, isSuccessAtom } from '../../atoms/statusAtoms.ts';
-import Status from './Status.tsx';
-import useResetStatus from '../../hooks/useResetStatus.ts';
+import { isFailedAtom, isSuccessAtom, errorDetailsAtom, errorMessageAtom } from '../../atoms/statusAtoms.ts';
+import { useAlert } from '../../hooks/useAlert.ts';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
   refetch: () => void;
 }
+
 const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
   const { addComponent, isSubmitting, component } = useComponent();
   const { systemList } = useSystems();
@@ -21,9 +21,9 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [isFailed, setIsFailed] = useAtom(isFailedAtom);
   const [isSuccess, setIsSuccess] = useAtom(isSuccessAtom);
-  const [, setErrorDetails] = useAtom(errorDetailsAtom);
-  const [, setErrorMessage] = useAtom(errorMessageAtom);
-  const resetStatus = useResetStatus();
+  const setErrorDetails = useSetAtom(errorDetailsAtom);
+  const setErrorMessage = useSetAtom(errorMessageAtom);
+  const { showAlert, hideAlert } = useAlert();
 
   const [formData, setFormData] = useState({
     shared: false,
@@ -60,22 +60,33 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
 
   useEffect(() => {
     if (component.data) {
+      console.log('success');
+      showAlert({
+        type: 'success',
+        title: 'Successfully Added!',
+        message: 'New component has been added!',
+        onClick: () => {
+          refetch();
+          setIsNewComponentOpen(false);
+          hideAlert();
+        },
+      });
       setIsSuccess(true);
     }
-  }, [component.data, setIsSuccess]);
+  }, [component.data, showAlert, setIsSuccess, refetch, setIsNewComponentOpen, hideAlert]);
 
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
-        <Status
-          onClose={() => setIsNewComponentOpen(false)}
-          onDone={() => {
-            refetch();
-            resetStatus();
-            setIsNewComponentOpen(false);
-          }}
-          newItem={component?.data?.device.name}
-        />
+        {/*<Status*/}
+        {/*  onClose={() => setIsNewComponentOpen(false)}*/}
+        {/*  onDone={() => {*/}
+        {/*    refetch();*/}
+        {/*    resetStatus();*/}
+        {/*    setIsNewComponentOpen(false);*/}
+        {/*  }}*/}
+        {/*  newItem={component?.data?.device.name}*/}
+        {/*/>*/}
         {!isSuccess && !isFailed && (
           <>
             <h2>Create Component</h2>

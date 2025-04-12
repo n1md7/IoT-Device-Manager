@@ -7,6 +7,7 @@ import ManageSystem from './components/ManageSystem.tsx';
 import ManageComponent from './components/ManageComponent.tsx';
 import Settings from './components/Settings.tsx';
 import ManageDevice from './components/ManageDevice.tsx';
+import Alert from './components/modals/Alert.tsx';
 
 function App() {
   const [activeView, setActiveView] = useState<ReactElement>(<ManageSchedule />);
@@ -53,6 +54,7 @@ function App() {
         </div>
       </div>
       <Settings />
+      <Alert />
     </div>
   );
 }
