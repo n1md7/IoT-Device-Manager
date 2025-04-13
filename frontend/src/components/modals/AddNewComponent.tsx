@@ -57,7 +57,6 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
 
   useEffect(() => {
     if (component.data) {
-      console.log('component saved');
       showAlert({
         type: 'success',
         title: 'Successfully Added!',
