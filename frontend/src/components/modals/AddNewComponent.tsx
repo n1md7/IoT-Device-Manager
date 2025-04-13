@@ -10,9 +10,10 @@ import { useAlert } from '../../hooks/useAlert.ts';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
+  refetch?: () => void;
 }
 
-const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
+const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
   const { addComponent, isSubmitting, component, componentList } = useComponent();
   const { systemList } = useSystems();
   const { deviceList } = useDevice();
@@ -63,10 +64,10 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
         message: 'New component has been added!',
         modalType: 'component',
       });
+      if (refetch) refetch();
       setIsNewComponentOpen(false);
-      componentList.refresh().catch((e) => console.error(e));
     }
-  }, [component.data, showAlert, setIsNewComponentOpen, hideAlert, componentList]);
+  }, [component.data, showAlert, setIsNewComponentOpen, hideAlert, componentList, refetch]);
 
   return (
     <div className="modal-wrapper">

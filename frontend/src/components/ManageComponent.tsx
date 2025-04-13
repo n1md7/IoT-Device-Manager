@@ -9,9 +9,13 @@ const ManageComponent = () => {
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
+  const refetch = () => {
+    componentList.refresh().catch((e) => console.error(e));
+  };
+
   const handleNewComponentView = () => {
     setIsNewComponentOpen(true);
-    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
+    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} refetch={refetch} />);
   };
   return (
     <div className="control-view-container">

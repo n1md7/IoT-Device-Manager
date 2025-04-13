@@ -37,7 +37,6 @@ const Settings = () => {
 
   const refetch = () => {
     if (isNewSystemOpen) systemList.refresh().catch((e) => console.error(e));
-    if (isNewComponentOpen) componentList.refresh().catch((e) => console.error(e));
     if (isNewScheduleOpen) scheduleList.refresh().catch((e) => console.error(e));
     if (isNewDeviceOpen) deviceList.refresh().catch((e) => console.error(e));
   };
