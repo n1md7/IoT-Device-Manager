@@ -9,19 +9,13 @@ const ManageComponent = () => {
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
-  const refetch = () => {
-    componentList.refresh().catch((error) => {
-      console.log(error);
-    });
-  };
-
   const handleNewComponentView = () => {
     setIsNewComponentOpen(true);
-    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} refetch={refetch} />);
+    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
   };
   return (
     <div className="control-view-container">
-      {componentList?.data?.count ? (
+      {componentList.data?.count ? (
         componentList.data.components.map((component, index) => (
           <div key={component.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
             <div className="card-header">

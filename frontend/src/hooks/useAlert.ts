@@ -1,4 +1,5 @@
 import { useAtom } from 'jotai';
+
 import {
   alertBtnText,
   alertMessage,
@@ -8,13 +9,14 @@ import {
   AlertType,
   alertType,
 } from '../atoms/alertAtoms.ts';
+import { ModalType, modalType } from '../atoms/modalAtoms.ts';
 
 type ShowAlertProps = {
   type: AlertType;
   title: string;
   message: string;
   btnText?: string;
-  onClick?: () => void;
+  modalType: ModalType;
 };
 
 export const useAlert = () => {
@@ -24,14 +26,15 @@ export const useAlert = () => {
   const [show, setShow] = useAtom(alertShow);
   const [btnText, setBtnText] = useAtom(alertBtnText);
   const [onClick, setOnClick] = useAtom(alertOnBtnClick);
+  const [modalName, setModalName] = useAtom(modalType);
 
-  const showAlert = ({ type, title, message, btnText, onClick }: ShowAlertProps) => {
+  const showAlert = ({ type, title, message, btnText, modalType }: ShowAlertProps) => {
     setShow(true);
     setType(type);
     setTitle(title);
     setMessage(message);
+    setModalName(modalType);
     if (btnText) setBtnText(btnText);
-    if (onClick) setOnClick(onClick);
   };
 
   const resetAlert = () => {
@@ -53,5 +56,6 @@ export const useAlert = () => {
     onClick,
     showAlert,
     hideAlert,
+    modalName,
   };
 };

@@ -12,7 +12,7 @@ const useData = <T>(endpoint: string) => {
     try {
       const response = await api.get<T>(`${API_URL}${endpoint}`);
       if (response.data) {
-        setData(response.data);
+        setData({ ...response.data });
       }
     } catch (err: unknown) {
       if (err instanceof CanceledError) return;

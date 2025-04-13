@@ -8,6 +8,7 @@ import useSystem from '../hooks/useSystem.ts';
 import useSchedule from '../hooks/useSchedule.ts';
 import useComponent from '../hooks/useComponent.ts';
 import useDevice from '../hooks/useDevice.ts';
+import { ModalType } from '../atoms/modalAtoms.ts';
 
 const Settings = () => {
   const { systemList } = useSystem();
@@ -41,21 +42,21 @@ const Settings = () => {
     if (isNewDeviceOpen) deviceList.refresh().catch((e) => console.error(e));
   };
 
-  const handleModal = (view: 'system' | 'component' | 'device' | 'schedule') => () => {
+  const handleModal = (modal: ModalType) => () => {
     setIsMenuOpen(false);
-    if (view === 'system') {
+    if (modal === 'system') {
       setIsNewSystemOpen(true);
       setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} refetch={refetch} />);
     }
-    if (view === 'component') {
+    if (modal === 'component') {
       setIsNewComponentOpen(true);
-      setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} refetch={refetch} />);
+      setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
     }
-    if (view === 'schedule') {
+    if (modal === 'schedule') {
       setIsNewScheduleOpen(true);
       setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} refetch={refetch} />);
     }
-    if (view === 'device') {
+    if (modal === 'device') {
       setIsNewDeviceOpen(true);
       setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} refetch={refetch} />);
     }

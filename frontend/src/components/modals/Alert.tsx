@@ -11,8 +11,11 @@ const classes: Record<AlertType, string> = {
 const Alert = () => {
   const alert = useAlert();
 
-  if (!alert.show) return null;
+  const handleClose = () => {
+    alert.hideAlert();
+  };
 
+  if (!alert.show) return null;
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
@@ -22,7 +25,7 @@ const Alert = () => {
             <p> {alert.message} </p>
           </div>
           <div className="button-container">
-            <button className="button bg-purple text-white mt-4" onClick={alert.onClick}>
+            <button className="button bg-purple text-white mt-4" onClick={() => handleClose()}>
               {alert.btnText}
             </button>
           </div>
