@@ -14,6 +14,7 @@ const useData = <T>(endpoint: string) => {
       if (response.data) {
         setData(response.data);
       }
+      return response;
     } catch (err: unknown) {
       if (err instanceof CanceledError) return;
       if (axios.isCancel(err)) return;

@@ -1,6 +1,6 @@
 import EditIcon from '../icons/EditIcon.tsx';
 import AddIcon from '../icons/AddIcon.tsx';
-import AddNewSchedule from './AddNewSchedule.tsx';
+import AddNewSchedule from './modals/AddNewSchedule.tsx';
 import { ReactElement, useState } from 'react';
 import useSchedule from '../hooks/useSchedule.ts';
 //import DeleteIcon from '../icons/DeleteIcon.tsx';

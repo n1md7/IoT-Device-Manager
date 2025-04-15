@@ -1,18 +1,17 @@
 import { ReactElement, useEffect, useState } from 'react';
 import AddIcon from '../icons/AddIcon.tsx';
-import AddNewSystem from './AddNewSystem.tsx';
-import AddNewComponent from './AddNewComponent.tsx';
-import AddNewSchedule from './AddNewSchedule.tsx';
-import AddNewDevice from './AddNewDevice.tsx';
+import AddNewSystem from './modals/AddNewSystem.tsx';
+import AddNewComponent from './modals/AddNewComponent.tsx';
+import AddNewSchedule from './modals/AddNewSchedule.tsx';
+import AddNewDevice from './modals/AddNewDevice.tsx';
 import useSystem from '../hooks/useSystem.ts';
 import useSchedule from '../hooks/useSchedule.ts';
-import useComponent from '../hooks/useComponent.ts';
 import useDevice from '../hooks/useDevice.ts';
+import { ModalType } from '../atoms/modalAtoms.ts';
 
 const Settings = () => {
   const { systemList } = useSystem();
   const { scheduleList } = useSchedule();
-  const { componentList } = useComponent();
   const { deviceList } = useDevice();
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
@@ -36,26 +35,25 @@ const Settings = () => {
 
   const refetch = () => {
     if (isNewSystemOpen) systemList.refresh().catch((e) => console.error(e));
-    if (isNewComponentOpen) componentList.refresh().catch((e) => console.error(e));
     if (isNewScheduleOpen) scheduleList.refresh().catch((e) => console.error(e));
     if (isNewDeviceOpen) deviceList.refresh().catch((e) => console.error(e));
   };
 
-  const handleModal = (view: 'system' | 'component' | 'device' | 'schedule') => () => {
+  const handleModal = (modal: ModalType) => () => {
     setIsMenuOpen(false);
-    if (view === 'system') {
+    if (modal === 'system') {
       setIsNewSystemOpen(true);
       setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} refetch={refetch} />);
     }
-    if (view === 'component') {
+    if (modal === 'component') {
       setIsNewComponentOpen(true);
-      setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} refetch={refetch} />);
+      setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
     }
-    if (view === 'schedule') {
+    if (modal === 'schedule') {
       setIsNewScheduleOpen(true);
       setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} refetch={refetch} />);
     }
-    if (view === 'device') {
+    if (modal === 'device') {
       setIsNewDeviceOpen(true);
       setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} refetch={refetch} />);
     }

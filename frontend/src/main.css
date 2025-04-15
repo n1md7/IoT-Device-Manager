@@ -100,7 +100,7 @@ button {
 }
 
 .container-toolbar {
-    @apply flex-none h-15;
+    @apply flex-none h-15 justify-center items-center;
 }
 
 .container-body {

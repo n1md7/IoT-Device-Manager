@@ -1,6 +1,6 @@
 import EditIcon from '../icons/EditIcon.tsx';
 import AddIcon from '../icons/AddIcon.tsx';
-import AddNewDevice from './AddNewDevice.tsx';
+import AddNewDevice from './modals/AddNewDevice.tsx';
 import { ReactElement, useState } from 'react';
 import useDevice from '../hooks/useDevice.ts';
 //import DeleteIcon from '../icons/DeleteIcon.tsx';
