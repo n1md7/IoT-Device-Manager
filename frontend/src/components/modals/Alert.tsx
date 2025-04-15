@@ -11,10 +11,6 @@ const classes: Record<AlertType, string> = {
 const Alert = () => {
   const alert = useAlert();
 
-  const handleClose = () => {
-    alert.hideAlert();
-  };
-
   if (!alert.show) return null;
   return (
     <div className="modal-wrapper">
@@ -25,7 +21,7 @@ const Alert = () => {
             <p> {alert.message} </p>
           </div>
           <div className="button-container">
-            <button className="button bg-purple text-white mt-4" onClick={() => handleClose()}>
+            <button className="button bg-purple text-white mt-4" onClick={alert.hideAlert}>
               {alert.btnText}
             </button>
           </div>

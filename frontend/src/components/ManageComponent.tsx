@@ -1,26 +1,24 @@
 import EditIcon from '../icons/EditIcon.tsx';
-import useComponent from '../hooks/useComponent.ts';
 import AddIcon from '../icons/AddIcon.tsx';
 import { ReactElement, useState } from 'react';
 import AddNewComponent from './modals/AddNewComponent.tsx';
+import useComponent from '../hooks/useComponent.ts';
+import { Show } from './utils/Show.tsx';
 
 const ManageComponent = () => {
-  const { componentList } = useComponent();
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
-
-  const refetch = () => {
-    componentList.refresh().catch((e) => console.error(e));
-  };
+  const { componentList } = useComponent();
 
   const handleNewComponentView = () => {
     setIsNewComponentOpen(true);
-    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} refetch={refetch} />);
+    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
   };
+
   return (
     <div className="control-view-container">
-      {componentList.data?.count ? (
-        componentList.data.components.map((component, index) => (
+      <Show when={componentList.components.length > 0} fallback={<p className="error-msg">No available data.</p>}>
+        {componentList.components.map((component, index) => (
           <div key={component.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
             <div className="card-header">
               <form className="system-details">
@@ -55,10 +53,8 @@ const ManageComponent = () => {
               </div>
             </div>
           </div>
-        ))
-      ) : (
-        <p className="error-msg"> {componentList.error}</p>
-      )}
+        ))}
+      </Show>
       <button className="card-item cursor-pointer" onClick={handleNewComponentView}>
         <div className="card-body new-item">
           <div className="icon button-add-item">

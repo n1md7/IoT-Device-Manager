@@ -1,20 +1,20 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useSetAtom } from 'jotai';
+import { useAlert } from '../../hooks/useAlert.ts';
 import AddIcon from '../../icons/AddIcon.tsx';
 import useComponent from '../../hooks/useComponent.ts';
 import useSystems from '../../hooks/useSystem.ts';
 import useDevice from '../../hooks/useDevice.ts';
 import { errorDetailsAtom, errorMessageAtom } from '../../atoms/statusAtoms.ts';
-import { useAlert } from '../../hooks/useAlert.ts';
+import { Show } from '../utils/Show.tsx';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
-  refetch?: () => void;
 }
 
-const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
-  const { addComponent, isSubmitting, component, componentList } = useComponent();
+const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
+  const { addComponent, isSubmitting, component } = useComponent();
   const { systemList } = useSystems();
   const { deviceList } = useDevice();
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
@@ -56,17 +56,16 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
   }, [component.error, setErrorDetails, setErrorMessage]);
 
   useEffect(() => {
-    if (component.data) {
+    if (component.data && !isSubmitting) {
       showAlert({
         type: 'success',
         title: 'Successfully Added!',
         message: 'New component has been added!',
         modalType: 'component',
       });
-      if (refetch) refetch();
       setIsNewComponentOpen(false);
     }
-  }, [component.data, showAlert, setIsNewComponentOpen, hideAlert, componentList, refetch]);
+  }, [component.data, isSubmitting, showAlert, hideAlert, setIsNewComponentOpen]);
 
   return (
     <div className="modal-wrapper">
@@ -91,15 +90,13 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
                   <option value="" disabled>
                     please select...
                   </option>
-                  {deviceList?.data?.devices.length ? (
-                    deviceList.data.devices.map((device) => (
+                  <Show when={!!deviceList?.data?.devices?.length} fallback="Loading...">
+                    {deviceList?.data?.devices.map((device) => (
                       <option key={device.code} value={device.code}>
                         {device.name}
                       </option>
-                    ))
-                  ) : (
-                    <option disabled>No devices found</option>
-                  )}
+                    ))}
+                  </Show>
                 </select>
               </div>
             </div>
@@ -164,7 +161,9 @@ const AddNewComponent = ({ setIsNewComponentOpen, refetch }: Props) => {
           <div></div>
           <div className="button-container">
             <button className="button bg-purple text-white" disabled={isSubmitting}>
-              Save
+              <Show when={!isSubmitting} fallback="Saving...">
+                Save
+              </Show>
             </button>
             <button className="button bg-light-gray text-purple" onClick={() => setIsNewComponentOpen(false)}>
               Cancel

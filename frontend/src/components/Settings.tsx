@@ -6,14 +6,12 @@ import AddNewSchedule from './modals/AddNewSchedule.tsx';
 import AddNewDevice from './modals/AddNewDevice.tsx';
 import useSystem from '../hooks/useSystem.ts';
 import useSchedule from '../hooks/useSchedule.ts';
-import useComponent from '../hooks/useComponent.ts';
 import useDevice from '../hooks/useDevice.ts';
 import { ModalType } from '../atoms/modalAtoms.ts';
 
 const Settings = () => {
   const { systemList } = useSystem();
   const { scheduleList } = useSchedule();
-  const { componentList } = useComponent();
   const { deviceList } = useDevice();
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
