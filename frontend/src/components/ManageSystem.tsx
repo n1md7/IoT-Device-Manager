@@ -5,24 +5,20 @@ import AddNewSystem from './modals/AddNewSystem.tsx';
 import useSystem from '../hooks/useSystem.ts';
 
 const ManageSystem = () => {
-  const { systemList } = useSystem();
+  const { systemList, error } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
-  const refetch = () => {
-    systemList.refresh().catch((e) => console.error(e));
-  };
-
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
-    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} refetch={refetch} />);
+    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} />);
   };
 
   return (
     <>
       <div className="control-view-container">
-        {systemList?.data?.systems.length ? (
-          systemList?.data?.systems.map((system, index) => (
+        {systemList.systems.length ? (
+          systemList.systems.map((system, index) => (
             <div key={system.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
               <div className="card-header">
                 <form className="system-details">
@@ -61,7 +57,7 @@ const ManageSystem = () => {
             </div>
           ))
         ) : (
-          <p className="error-msg"> {systemList.error}</p>
+          <p className="error-msg"> {error}</p>
         )}
         <button className="card-item cursor-pointer" onClick={handleNewSystemView}>
           <div className="card-body new-item">

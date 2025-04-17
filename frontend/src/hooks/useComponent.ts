@@ -15,10 +15,12 @@ const useComponent = () => {
     const clickedAt = new Date();
     const awaitFor = 1500;
     setIsSubmitting(true);
+
     return component.create(payload).finally(async () => {
       const response = await refresh();
-      if (response?.data) setComponentList(response.data);
       const delta = new Date().getTime() - clickedAt.getTime();
+
+      if (response?.data) setComponentList(response.data);
       if (awaitFor <= delta) setIsSubmitting(false);
       else {
         setTimeout(() => setIsSubmitting(false), awaitFor - delta);
@@ -27,9 +29,7 @@ const useComponent = () => {
   };
 
   useEffect(() => {
-    if (data) {
-      setComponentList(data);
-    }
+    if (data) setComponentList(data);
   }, [data, setComponentList]);
 
   return {

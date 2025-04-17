@@ -4,13 +4,10 @@ import AddNewSystem from './modals/AddNewSystem.tsx';
 import AddNewComponent from './modals/AddNewComponent.tsx';
 import AddNewSchedule from './modals/AddNewSchedule.tsx';
 import AddNewDevice from './modals/AddNewDevice.tsx';
-import useSystem from '../hooks/useSystem.ts';
 import useSchedule from '../hooks/useSchedule.ts';
 import useDevice from '../hooks/useDevice.ts';
-import { ModalType } from '../atoms/modalAtoms.ts';
 
 const Settings = () => {
-  const { systemList } = useSystem();
   const { scheduleList } = useSchedule();
   const { deviceList } = useDevice();
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
@@ -34,16 +31,15 @@ const Settings = () => {
   }, [isNewSystemOpen, isNewComponentOpen, isNewScheduleOpen, isNewDeviceOpen]);
 
   const refetch = () => {
-    if (isNewSystemOpen) systemList.refresh().catch((e) => console.error(e));
     if (isNewScheduleOpen) scheduleList.refresh().catch((e) => console.error(e));
     if (isNewDeviceOpen) deviceList.refresh().catch((e) => console.error(e));
   };
 
-  const handleModal = (modal: ModalType) => () => {
+  const handleModal = (modal: 'system' | 'component' | 'schedule' | 'device') => () => {
     setIsMenuOpen(false);
     if (modal === 'system') {
       setIsNewSystemOpen(true);
-      setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} refetch={refetch} />);
+      setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} />);
     }
     if (modal === 'component') {
       setIsNewComponentOpen(true);

@@ -14,14 +14,14 @@ interface Props {
 }
 
 const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
-  const { addComponent, isSubmitting, component } = useComponent();
-  const { systemList } = useSystems();
-  const { deviceList } = useDevice();
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const setErrorDetails = useSetAtom(errorDetailsAtom);
   const setErrorMessage = useSetAtom(errorMessageAtom);
+  const { addComponent, isSubmitting, component } = useComponent();
   const { showAlert, hideAlert } = useAlert();
+  const { systemList } = useSystems();
+  const { deviceList } = useDevice();
 
   const [formData, setFormData] = useState({
     shared: false,
@@ -61,7 +61,6 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
         type: 'success',
         title: 'Successfully Added!',
         message: 'New component has been added!',
-        modalType: 'component',
       });
       setIsNewComponentOpen(false);
     }
@@ -119,14 +118,14 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
                     <option value="" disabled>
                       please select...
                     </option>
-                    {systemList?.data?.systems?.length ? (
-                      systemList.data.systems.map((system) => (
+                    {systemList.systems.length ? (
+                      systemList.systems.map((system) => (
                         <option key={system.id} value={system.id}>
                           {system.name}
                         </option>
                       ))
                     ) : (
-                      <option disabled>No systems found</option>
+                      <option disabled>No system found.</option>
                     )}
                   </select>
                 </div>

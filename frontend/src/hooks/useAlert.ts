@@ -9,14 +9,12 @@ import {
   AlertType,
   alertType,
 } from '../atoms/alertAtoms.ts';
-import { ModalType, modalType } from '../atoms/modalAtoms.ts';
 
 type ShowAlertProps = {
   type: AlertType;
   title: string;
   message: string;
   btnText?: string;
-  modalType: ModalType;
 };
 
 export const useAlert = () => {
@@ -26,14 +24,12 @@ export const useAlert = () => {
   const [show, setShow] = useAtom(alertShow);
   const [btnText, setBtnText] = useAtom(alertBtnText);
   const [onClick, setOnClick] = useAtom(alertOnBtnClick);
-  const [modalName, setModalName] = useAtom(modalType);
 
-  const showAlert = ({ type, title, message, btnText, modalType }: ShowAlertProps) => {
+  const showAlert = ({ type, title, message, btnText }: ShowAlertProps) => {
     setShow(true);
     setType(type);
     setTitle(title);
     setMessage(message);
-    setModalName(modalType);
     if (btnText) setBtnText(btnText);
   };
 
@@ -56,6 +52,5 @@ export const useAlert = () => {
     onClick,
     showAlert,
     hideAlert,
-    modalName,
   };
 };
