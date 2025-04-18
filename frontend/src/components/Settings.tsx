@@ -37,7 +37,6 @@ const Settings = () => {
       setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
     }
     if (modal === 'schedule') {
-      console.log('opening modal');
       setIsNewScheduleOpen(true);
       setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
     }

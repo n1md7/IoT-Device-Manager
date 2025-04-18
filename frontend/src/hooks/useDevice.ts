@@ -21,7 +21,6 @@ const useDevice = () => {
       const delta = new Date().getTime() - clickedAt.getTime();
 
       if (response?.data) setDeviceList(response.data);
-      console.log('Adding device', response?.data);
       if (awaitFor <= delta) setIsSubmitting(false);
       else {
         setTimeout(() => setIsSubmitting(false), awaitFor - delta);
