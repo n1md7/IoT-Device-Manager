@@ -39,7 +39,6 @@ const useSystems = () => {
     systemList,
     error,
     loading,
-    refresh,
   };
 };
 

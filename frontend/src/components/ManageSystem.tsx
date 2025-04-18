@@ -1,11 +1,12 @@
 import EditIcon from '../icons/EditIcon.tsx';
-import AddIcon from '../icons/AddIcon.tsx';
 import { ReactElement, useState } from 'react';
 import AddNewSystem from './modals/AddNewSystem.tsx';
 import useSystem from '../hooks/useSystem.ts';
+import { Show } from './utils/Show.tsx';
+import NewItem from './utils/NewItem.tsx';
 
 const ManageSystem = () => {
-  const { systemList, error } = useSystem();
+  const { systemList } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
@@ -17,8 +18,8 @@ const ManageSystem = () => {
   return (
     <>
       <div className="control-view-container">
-        {systemList.systems.length ? (
-          systemList.systems.map((system, index) => (
+        <Show when={systemList.systems.length > 0}>
+          {systemList.systems.map((system, index) => (
             <div key={system.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
               <div className="card-header">
                 <form className="system-details">
@@ -55,20 +56,14 @@ const ManageSystem = () => {
                 </div>
               </div>
             </div>
-          ))
-        ) : (
-          <p className="error-msg"> {error}</p>
-        )}
-        <button className="card-item cursor-pointer" onClick={handleNewSystemView}>
-          <div className="card-body new-item">
-            <div className="icon button-add-item">
-              {' '}
-              <AddIcon className="text-light-dark" />{' '}
-            </div>
-            <div className="text">Add New System</div>
-          </div>
-        </button>
+          ))}
+        </Show>
+
+        <NewItem item={'System'} btnAction={handleNewSystemView} />
       </div>
+      <Show when={systemList.systems.length <= 0}>
+        <div className="pt-5 error-msg">No available data.</div>
+      </Show>
       {isNewSystemOpen && <div className="block">{showModal}</div>}
     </>
   );

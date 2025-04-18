@@ -1,15 +1,11 @@
 import { ReactElement, useEffect, useState } from 'react';
-import AddIcon from '../icons/AddIcon.tsx';
 import AddNewSystem from './modals/AddNewSystem.tsx';
 import AddNewComponent from './modals/AddNewComponent.tsx';
 import AddNewSchedule from './modals/AddNewSchedule.tsx';
 import AddNewDevice from './modals/AddNewDevice.tsx';
-import useSchedule from '../hooks/useSchedule.ts';
-import useDevice from '../hooks/useDevice.ts';
+import AddIcon from '../icons/AddIcon.tsx';
 
 const Settings = () => {
-  const { scheduleList } = useSchedule();
-  const { deviceList } = useDevice();
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
@@ -30,11 +26,6 @@ const Settings = () => {
     };
   }, [isNewSystemOpen, isNewComponentOpen, isNewScheduleOpen, isNewDeviceOpen]);
 
-  const refetch = () => {
-    if (isNewScheduleOpen) scheduleList.refresh().catch((e) => console.error(e));
-    if (isNewDeviceOpen) deviceList.refresh().catch((e) => console.error(e));
-  };
-
   const handleModal = (modal: 'system' | 'component' | 'schedule' | 'device') => () => {
     setIsMenuOpen(false);
     if (modal === 'system') {
@@ -46,12 +37,13 @@ const Settings = () => {
       setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
     }
     if (modal === 'schedule') {
+      console.log('opening modal');
       setIsNewScheduleOpen(true);
-      setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} refetch={refetch} />);
+      setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
     }
     if (modal === 'device') {
       setIsNewDeviceOpen(true);
-      setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} refetch={refetch} />);
+      setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} />);
     }
   };
 

@@ -1,29 +1,26 @@
-import EditIcon from '../icons/EditIcon.tsx';
-import AddIcon from '../icons/AddIcon.tsx';
-import AddNewDevice from './modals/AddNewDevice.tsx';
 import { ReactElement, useState } from 'react';
+import EditIcon from '../icons/EditIcon.tsx';
+import AddNewDevice from './modals/AddNewDevice.tsx';
 import useDevice from '../hooks/useDevice.ts';
+import NewItem from './utils/NewItem.tsx';
+import { Show } from './utils/Show.tsx';
 //import DeleteIcon from '../icons/DeleteIcon.tsx';
 
 const ManageDevice = () => {
-  const { deviceList } = useDevice();
-  const [isNewDeviceOpen, setIsNewDeviceOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
-
-  const refetch = () => {
-    deviceList.refresh().catch((e) => console.error(e));
-  };
+  const [isNewDeviceOpen, setIsNewDeviceOpen] = useState(false);
+  const { deviceList } = useDevice();
 
   const handleNewDeviceView = () => {
     setIsNewDeviceOpen(true);
-    setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} refetch={refetch} />);
+    setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} />);
   };
 
   return (
     <>
       <div className="control-view-container">
-        {deviceList?.data?.devices?.length ? (
-          deviceList.data.devices.map((device, index) => (
+        <Show when={deviceList.devices.length > 0}>
+          {deviceList.devices.map((device, index) => (
             <div key={device.code} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
               <div className="card-header">
                 <div className="system-details">
@@ -63,21 +60,15 @@ const ManageDevice = () => {
                 {/*</button>*/}
               </div>
             </div>
-          ))
-        ) : (
-          <p className="error-msg"> {''}</p>
-        )}
-        <button className="card-item cursor-pointer" onClick={handleNewDeviceView}>
-          <div className="card-body new-item">
-            <div className="icon button-add-item">
-              {' '}
-              <AddIcon className="text-light-dark" />{' '}
-            </div>
-            <div className="text">Add New Device</div>
-          </div>
-        </button>
+          ))}
+        </Show>
+
+        <NewItem item={'Device'} btnAction={handleNewDeviceView} />
       </div>
-      ){isNewDeviceOpen && <div className="block">{showModal}</div>}
+      <Show when={deviceList.devices.length <= 0}>
+        <div className="pt-5 error-msg">No available data.</div>
+      </Show>
+      {isNewDeviceOpen && <div className="block">{showModal}</div>}
     </>
   );
 };

@@ -59,7 +59,7 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
     if (component.data && !isSubmitting) {
       showAlert({
         type: 'success',
-        title: 'Successfully Added!',
+        title: 'Successfully Added',
         message: 'New component has been added!',
       });
       setIsNewComponentOpen(false);
@@ -89,8 +89,8 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
                   <option value="" disabled>
                     please select...
                   </option>
-                  <Show when={!!deviceList?.data?.devices?.length} fallback="Loading...">
-                    {deviceList?.data?.devices.map((device) => (
+                  <Show when={!!deviceList.devices.length} fallback="Loading...">
+                    {deviceList.devices.map((device) => (
                       <option key={device.code} value={device.code}>
                         {device.name}
                       </option>

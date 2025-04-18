@@ -45,7 +45,7 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
     if (system.data && !isSubmitting) {
       showAlert({
         type: 'success',
-        title: 'Successfully Added!',
+        title: 'Successfully Added',
         message: 'New system has been added!',
       });
       setIsNewSystemOpen(false);
