@@ -1,8 +1,9 @@
-import EditIcon from '../icons/EditIcon.tsx';
-import AddIcon from '../icons/AddIcon.tsx';
-import AddNewSchedule from './modals/AddNewSchedule.tsx';
 import { ReactElement, useState } from 'react';
+import EditIcon from '../icons/EditIcon.tsx';
+import AddNewSchedule from './modals/AddNewSchedule.tsx';
 import useSchedule from '../hooks/useSchedule.ts';
+import { Show } from './utils/Show.tsx';
+import NewItem from './utils/NewItem.tsx';
 //import DeleteIcon from '../icons/DeleteIcon.tsx';
 
 const ManageSchedule = () => {
@@ -10,20 +11,16 @@ const ManageSchedule = () => {
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
 
-  const refetch = () => {
-    scheduleList.refresh().catch((e) => console.error(e));
-  };
-
   const handleNewScheduleView = () => {
     setIsNewScheduleOpen(true);
-    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} refetch={refetch} />);
+    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
   };
 
   return (
     <>
       <div className="control-view-container">
-        {scheduleList.data?.schedules.length ? (
-          scheduleList.data.schedules.map((schedule, index) => (
+        <Show when={scheduleList.schedules.length > 0}>
+          {scheduleList.schedules.map((schedule, index) => (
             <div key={schedule.id} className="card-item fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
               <div className="card-header">
                 <div className="system-details">
@@ -81,21 +78,15 @@ const ManageSchedule = () => {
                 {/*</button>*/}
               </div>
             </div>
-          ))
-        ) : (
-          <p className="error-msg"> {scheduleList.error}</p>
-        )}
-        <button className="card-item cursor-pointer" onClick={handleNewScheduleView}>
-          <div className="card-body new-item">
-            <div className="icon button-add-item">
-              {' '}
-              <AddIcon className="text-light-dark" />{' '}
-            </div>
-            <div className="text">Add New Schedule</div>
-          </div>
-        </button>
+          ))}
+        </Show>
+
+        <NewItem item={'Schedule'} btnAction={handleNewScheduleView} />
       </div>
-      ){isNewScheduleOpen && <div className="block">{showModal}</div>}
+      <Show when={scheduleList.schedules.length <= 0}>
+        <div className="pt-5 error-msg">No available data.</div>
+      </Show>
+      {isNewScheduleOpen && <div className="block">{showModal}</div>}
     </>
   );
 };
