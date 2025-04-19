@@ -6,7 +6,7 @@ type Props = {
 };
 const NewItem = ({ item, btnAction }: Props) => {
   return (
-    <button className="card-item cursor-pointer" onClick={() => btnAction}>
+    <button className="card-item cursor-pointer" onClick={btnAction}>
       <div className="card-body new-item">
         <div className="icon button-add-item">
           {' '}
