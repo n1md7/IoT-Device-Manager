@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useSetAtom } from 'jotai';
 import { useAlert } from '../../hooks/useAlert.ts';
+import { Show } from '../utils/Show.tsx';
 import AddIcon from '../../icons/AddIcon.tsx';
 import useComponent from '../../hooks/useComponent.ts';
 import useSystems from '../../hooks/useSystem.ts';
 import useDevice from '../../hooks/useDevice.ts';
-import { errorDetailsAtom, errorMessageAtom } from '../../atoms/statusAtoms.ts';
-import { Show } from '../utils/Show.tsx';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
@@ -16,8 +14,6 @@ interface Props {
 const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
-  const setErrorDetails = useSetAtom(errorDetailsAtom);
-  const setErrorMessage = useSetAtom(errorMessageAtom);
   const { addComponent, isSubmitting, component } = useComponent();
   const { showAlert, hideAlert } = useAlert();
   const { systemList } = useSystems();
@@ -50,10 +46,16 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
 
   useEffect(() => {
     if (component.error) {
-      setErrorDetails(component.error.details ?? 'Unknown error details.');
-      setErrorMessage(component.error.message ?? 'Unknown error message.');
+      showAlert({
+        type: 'error',
+        title: 'Error',
+        message: 'There seems to be a problem while adding the new item.',
+        errorMessage: component.error.message,
+        errorDetails: component.error.details,
+      });
+      setIsNewComponentOpen(false);
     }
-  }, [component.error, setErrorDetails, setErrorMessage]);
+  }, [component.error, setIsNewComponentOpen, showAlert]);
 
   useEffect(() => {
     if (component.data && !isSubmitting) {
@@ -118,15 +120,13 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
                     <option value="" disabled>
                       please select...
                     </option>
-                    {systemList.systems.length ? (
-                      systemList.systems.map((system) => (
+                    <Show when={!!systemList.systems.length} fallback="Loading...">
+                      {systemList.systems.map((system) => (
                         <option key={system.id} value={system.id}>
                           {system.name}
                         </option>
-                      ))
-                    ) : (
-                      <option disabled>No system found.</option>
-                    )}
+                      ))}
+                    </Show>
                   </select>
                 </div>
               </div>
