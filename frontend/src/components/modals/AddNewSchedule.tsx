@@ -1,18 +1,14 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useSetAtom } from 'jotai/index';
 import { useAlert } from '../../hooks/useAlert.ts';
 import { Show } from '../utils/Show.tsx';
 import useSystems from '../../hooks/useSystem.ts';
 import useSchedule from '../../hooks/useSchedule.ts';
-import { errorDetailsAtom, errorMessageAtom } from '../../atoms/statusAtoms.ts';
 
 interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
-  const setErrorDetails = useSetAtom(errorDetailsAtom);
-  const setErrorMessage = useSetAtom(errorMessageAtom);
   const { addSchedule, isSubmitting, scheduler } = useSchedule();
   const { systemList } = useSystems();
   const { showAlert, hideAlert } = useAlert();
@@ -53,10 +49,16 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
 
   useEffect(() => {
     if (scheduler.error) {
-      setErrorDetails(scheduler.error.details ?? 'Unknown error details.');
-      setErrorMessage(scheduler.error.message ?? 'Unknown error message.');
+      showAlert({
+        type: 'error',
+        title: 'Failed',
+        message: 'There seems to be a problem while adding the new item.',
+        errorMessage: scheduler.error.message,
+        errorDetails: scheduler.error.details,
+      });
+      setIsNewScheduleOpen(false);
     }
-  }, [scheduler.error, setErrorDetails, setErrorMessage]);
+  }, [scheduler.error, setIsNewScheduleOpen, showAlert]);
 
   useEffect(() => {
     if (scheduler.data && !isSubmitting) {

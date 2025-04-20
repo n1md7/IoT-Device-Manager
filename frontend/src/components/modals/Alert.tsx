@@ -1,5 +1,6 @@
 import { useAlert } from '../../hooks/useAlert.ts';
 import { AlertType } from '../../atoms/alertAtoms.ts';
+import { Show } from '../utils/Show.tsx';
 
 const classes: Record<AlertType, string> = {
   success: 'text-light-purple',
@@ -20,6 +21,12 @@ const Alert = () => {
             <h2 className={classes[alert.type]}>{alert.title}</h2>
             <p> {alert.message} </p>
           </div>
+          <Show when={alert.type === 'error'}>
+            <div className="error-details">
+              <span className="text-red-600">{alert.errorMessage}: </span>
+              <span className="text-gray-500">{alert.errorDetails}</span>
+            </div>
+          </Show>
           <div className="button-container">
             <button className="button bg-purple text-white mt-4" onClick={alert.hideAlert}>
               {alert.btnText}

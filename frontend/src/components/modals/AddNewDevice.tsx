@@ -1,18 +1,14 @@
 import * as React from 'react';
-import useDevice from '../../hooks/useDevice.ts';
 import { useEffect, useState } from 'react';
 import { Show } from '../utils/Show.tsx';
-import { useSetAtom } from 'jotai/index';
 import { useAlert } from '../../hooks/useAlert.ts';
-import { errorDetailsAtom, errorMessageAtom } from '../../atoms/statusAtoms.ts';
+import useDevice from '../../hooks/useDevice.ts';
 
 interface Props {
   setIsNewDeviceOpen: (value: boolean) => void;
 }
 
 const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
-  const setErrorDetails = useSetAtom(errorDetailsAtom);
-  const setErrorMessage = useSetAtom(errorMessageAtom);
   const { addDevice, isSubmitting, device } = useDevice();
   const { showAlert, hideAlert } = useAlert();
   const [formData, setFormData] = useState({
@@ -44,10 +40,16 @@ const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
 
   useEffect(() => {
     if (device.error) {
-      setErrorDetails(device.error.details ?? 'Unknown error details.');
-      setErrorMessage(device.error.message ?? 'Unknown error message.');
+      showAlert({
+        type: 'error',
+        title: 'Failed',
+        message: 'There seems to be a problem while adding the new item.',
+        errorMessage: device.error.message,
+        errorDetails: device.error.details,
+      });
+      setIsNewDeviceOpen(false);
     }
-  }, [device.error, setErrorDetails, setErrorMessage]);
+  }, [device.error, setIsNewDeviceOpen, showAlert]);
 
   useEffect(() => {
     if (device.statusCode && !isSubmitting) {

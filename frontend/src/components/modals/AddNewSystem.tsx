@@ -1,18 +1,14 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import useSystem from '../../hooks/useSystem.ts';
 import { useAlert } from '../../hooks/useAlert.ts';
-import { useSetAtom } from 'jotai/index';
-import { errorDetailsAtom, errorMessageAtom } from '../../atoms/statusAtoms.ts';
 import { Show } from '../utils/Show.tsx';
+import useSystem from '../../hooks/useSystem.ts';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;
 }
 
 const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
-  const setErrorDetails = useSetAtom(errorDetailsAtom);
-  const setErrorMessage = useSetAtom(errorMessageAtom);
   const { addSystem, isSubmitting, system } = useSystem();
   const { showAlert, hideAlert } = useAlert();
   const [formData, setFormData] = useState({
@@ -36,10 +32,16 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
 
   useEffect(() => {
     if (system.error) {
-      setErrorDetails(system.error.details ?? 'Unknown error details.');
-      setErrorMessage(system.error.message ?? 'Unknown error message.');
+      showAlert({
+        type: 'error',
+        title: 'Failed',
+        message: 'There seems to be a problem while adding the new item.',
+        errorMessage: system.error.message,
+        errorDetails: system.error.details,
+      });
+      setIsNewSystemOpen(false);
     }
-  }, [setErrorDetails, setErrorMessage, system.error]);
+  }, [setIsNewSystemOpen, showAlert, system.error]);
 
   useEffect(() => {
     if (system.data && !isSubmitting) {
