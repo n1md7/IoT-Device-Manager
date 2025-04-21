@@ -1,7 +1,6 @@
 import { useAtom } from 'jotai';
 
 import {
-  alertBtnText,
   alertErrorDetails,
   alertErrorMessage,
   alertMessage,
@@ -28,21 +27,18 @@ export const useAlert = () => {
   const [errorMessage, setErrorMessage] = useAtom(alertErrorMessage);
   const [errorDetails, setErrorDetails] = useAtom(alertErrorDetails);
   const [show, setShow] = useAtom(alertShow);
-  const [btnText, setBtnText] = useAtom(alertBtnText);
   const [onClick, setOnClick] = useAtom(alertOnBtnClick);
 
-  const showAlert = ({ type, title, message, btnText, errorDetails, errorMessage }: ShowAlertProps) => {
+  const showAlert = ({ type, title, message, errorDetails, errorMessage }: ShowAlertProps) => {
     setShow(true);
     setType(type);
     setTitle(title);
     setMessage(message);
     if (errorMessage) setErrorMessage(errorMessage);
     if (errorDetails) setErrorDetails(errorDetails);
-    if (btnText) setBtnText(btnText);
   };
 
   const resetAlert = () => {
-    setBtnText('Okay');
     setOnClick(() => void 0);
   };
 
@@ -56,7 +52,6 @@ export const useAlert = () => {
     title,
     message,
     show,
-    btnText,
     errorDetails,
     errorMessage,
     onClick,
