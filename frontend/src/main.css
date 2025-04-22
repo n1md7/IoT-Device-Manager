@@ -130,7 +130,7 @@ button {
     border: 1px solid #1a1a1a;
 
     .button {
-        @apply w-40 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2 bg-data-bg text-light-gray;
+        @apply w-32 h-auto p-3 flex items-center justify-center text-sm rounded-lg gap-2 bg-data-bg text-light-gray;
         font-family: 'Akatab-Bold', sans-serif;
         box-shadow: 0 2px 3px 1px rgba(0, 0, 0, 0.3);
         &:hover {

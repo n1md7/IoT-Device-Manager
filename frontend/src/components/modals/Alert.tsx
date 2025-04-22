@@ -29,7 +29,7 @@ const Alert = () => {
           </Show>
           <div className="button-container">
             <button className="button bg-purple text-white mt-4" onClick={alert.hideAlert}>
-              {alert.btnText}
+              Okay
             </button>
           </div>
         </div>

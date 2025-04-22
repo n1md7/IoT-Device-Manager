@@ -15,7 +15,6 @@ type ShowAlertProps = {
   type: AlertType;
   title: string;
   message: string;
-  btnText?: string;
   errorMessage?: string;
   errorDetails?: string;
 };
