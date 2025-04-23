@@ -43,12 +43,11 @@
         border: 0 solid #242424;
     }
     .button-container {
-        @apply flex flex-row h-full justify-between text-center pt-4 sm:w-auto sm:m-auto;
+        @apply flex flex-col h-full justify-between text-center pt-4 sm:w-auto sm:m-auto;
     }
 
     .status-div {
-        @apply flex flex-col text-center sm:w-auto sm:m-auto;
-
+        @apply flex flex-col text-center sm:w-auto sm:m-auto pb-5 w-full;
     }
 
     .error-details {

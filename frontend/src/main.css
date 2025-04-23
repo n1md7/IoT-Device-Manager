@@ -142,8 +142,13 @@ button {
 }
 
 .button {
-    @apply min-w-25 cursor-pointer sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-md gap-2;
+    @apply min-w-20 cursor-pointer sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-md gap-2;
     font-family: 'Akatab-Bold', sans-serif;
+
+    .cancel {
+        @apply h-3.5 w-6 pb-0;
+    }
+
 }
 
 input[type="range"] {
