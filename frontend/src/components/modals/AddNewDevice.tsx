@@ -182,12 +182,16 @@ const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
             </div>
           </div>
           <div className="button-container">
-            <button type="submit" className="button bg-purple text-white">
+            <button type="submit" className="button hover:bg-purple/80 bg-purple text-white">
               <Show when={!isSubmitting} fallback="Saving...">
                 Save
               </Show>
             </button>
-            <button type="button" className="button bg-light-gray text-purple" onClick={() => setIsNewDeviceOpen(false)}>
+            <button
+              type="button"
+              className="button cancel hover:text-light-gray/80 text-card-label"
+              onClick={() => setIsNewDeviceOpen(false)}
+            >
               Cancel
             </button>
           </div>

@@ -188,12 +188,15 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
           </div>
 
           <div className="button-container">
-            <button className="button bg-purple text-white">
+            <button className="button hover:bg-purple/80 bg-purple text-white">
               <Show when={!isSubmitting} fallback="Saving...">
                 Save
               </Show>
             </button>
-            <button className="button bg-light-gray text-purple" onClick={() => setIsNewScheduleOpen(false)}>
+            <button
+              className="button cancel hover:text-light-gray/80 text-card-label"
+              onClick={() => setIsNewScheduleOpen(false)}
+            >
               Cancel
             </button>
           </div>
