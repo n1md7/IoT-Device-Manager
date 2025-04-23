@@ -159,12 +159,15 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
           </div>
           <div></div>
           <div className="button-container">
-            <button className="button bg-purple text-white" disabled={isSubmitting}>
+            <button className="button hover:bg-purple/80 bg-purple text-white" disabled={isSubmitting}>
               <Show when={!isSubmitting} fallback="Saving...">
                 Save
               </Show>
             </button>
-            <button className="button bg-light-gray text-purple" onClick={() => setIsNewComponentOpen(false)}>
+            <button
+              className="button cancel hover:text-light-gray/80 text-card-label"
+              onClick={() => setIsNewComponentOpen(false)}
+            >
               Cancel
             </button>
           </div>
