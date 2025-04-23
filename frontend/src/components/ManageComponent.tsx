@@ -80,7 +80,7 @@ const ManageComponent = () => {
                     setShowConfirmation(true);
                   }}
                 >
-                  <DeleteIcon className={'text-light-red'} />
+                  <DeleteIcon className={'#4f4f4f'} />
                 </button>
                 <button className="edit-button">
                   <EditIcon className={'text-light-dark'} />

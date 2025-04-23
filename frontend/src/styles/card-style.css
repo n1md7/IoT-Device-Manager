@@ -30,7 +30,7 @@
         }
 
         .card-tool {
-            @apply flex flex-row flex-none h-auto justify-between w-full gap-3 mt-5 pt-5;
+            @apply flex flex-row flex-none h-auto justify-between w-full gap-3 mt-5 pt-5 items-center;
             border-top: 1px solid #242424;
 
             .control-button {
@@ -40,7 +40,7 @@
                 @apply rounded-md cursor-pointer bg-light-gray h-12 w-12 flex items-center justify-center;
             }
             .delete-button {
-                @apply rounded-md cursor-pointer bg-light-gray h-12 w-12 flex items-center justify-center;
+                @apply rounded-md cursor-pointer h-8 w-8 flex items-center justify-center;
             }
         }
 
