@@ -1,10 +1,9 @@
 import { ReactElement, useState } from 'react';
+import { Show } from './utils/Show.tsx';
 import EditIcon from '../icons/EditIcon.tsx';
 import AddNewSchedule from './modals/AddNewSchedule.tsx';
-import useSchedule from '../hooks/useSchedule.ts';
-import { Show } from './utils/Show.tsx';
 import NewItem from './utils/NewItem.tsx';
-//import DeleteIcon from '../icons/DeleteIcon.tsx';
+import useSchedule from '../hooks/useSchedule.ts';
 
 const ManageSchedule = () => {
   const { scheduleList } = useSchedule();

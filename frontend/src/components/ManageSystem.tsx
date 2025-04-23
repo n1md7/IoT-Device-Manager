@@ -1,14 +1,33 @@
-import EditIcon from '../icons/EditIcon.tsx';
 import { ReactElement, useState } from 'react';
-import AddNewSystem from './modals/AddNewSystem.tsx';
-import useSystem from '../hooks/useSystem.ts';
 import { Show } from './utils/Show.tsx';
+import EditIcon from '../icons/EditIcon.tsx';
+import AddNewSystem from './modals/AddNewSystem.tsx';
 import NewItem from './utils/NewItem.tsx';
+import useSystem from '../hooks/useSystem.ts';
+import DeleteIcon from '../icons/DeleteIcon.tsx';
+import Confirmation from './modals/Confirmation.tsx';
+import { useAlert } from '../hooks/useAlert.ts';
 
 const ManageSystem = () => {
-  const { systemList } = useSystem();
+  const { systemList, removeSystem } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
+  const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
+  const [selectedSystemName, setSelectedSystemName] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const { showAlert } = useAlert();
+
+  const handleDeleteItem = (id: number, system: string) => {
+    if (id) {
+      showAlert({
+        type: 'success',
+        title: 'Successful',
+        message: `"${system}" has been deleted.`,
+      });
+      removeSystem(id).catch((err) => console.log(err));
+      setShowConfirmation(false);
+    }
+  };
 
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
@@ -26,9 +45,6 @@ const ManageSystem = () => {
                   <label htmlFor="edit-component-id" className="system-name text-orange">
                     {system.name}
                   </label>
-                  <button id="edit-component-id" className="edit-button">
-                    <EditIcon className={'text-light-gray'} />
-                  </button>
                 </form>
               </div>
               <div className="card-body">
@@ -55,12 +71,35 @@ const ManageSystem = () => {
                   </div>
                 </div>
               </div>
+              <div className="card-tool">
+                <button
+                  className="delete-button"
+                  onClick={() => {
+                    setSelectedSystem(system.id);
+                    setSelectedSystemName(system.name);
+                    setShowConfirmation(true);
+                  }}
+                >
+                  <DeleteIcon className={'#4f4f4f'} />
+                </button>
+                <button className="edit-button">
+                  <EditIcon className={'text-light-dark'} />
+                </button>
+              </div>
             </div>
           ))}
         </Show>
 
         <NewItem item={'System'} btnAction={handleNewSystemView} />
       </div>
+
+      <Show when={showConfirmation}>
+        <Confirmation
+          action={() => handleDeleteItem(selectedSystem!, selectedSystemName!)}
+          cancel={() => setShowConfirmation(false)}
+          itemToDelete={selectedSystemName!}
+        />
+      </Show>
       <Show when={systemList.systems.length <= 0}>
         <div className="pt-5 error-msg">No available data.</div>
       </Show>

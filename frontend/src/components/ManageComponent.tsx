@@ -1,12 +1,12 @@
+import { ReactElement, useState } from 'react';
+import { Show } from './utils/Show.tsx';
+import { useAlert } from '../hooks/useAlert.ts';
 import EditIcon from '../icons/EditIcon.tsx';
 import DeleteIcon from '../icons/DeleteIcon.tsx';
-import { ReactElement, useState } from 'react';
 import AddNewComponent from './modals/AddNewComponent.tsx';
-import useComponent from '../hooks/useComponent.ts';
-import { Show } from './utils/Show.tsx';
 import NewItem from './utils/NewItem.tsx';
-import { useAlert } from '../hooks/useAlert.ts';
 import Confirmation from './modals/Confirmation.tsx';
+import useComponent from '../hooks/useComponent.ts';
 
 const ManageComponent = () => {
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
@@ -29,9 +29,7 @@ const ManageComponent = () => {
         title: 'Successful',
         message: `"${component}" has been deleted.`,
       });
-      removeComponent(id).catch((err) => {
-        console.log(err);
-      });
+      removeComponent(id).catch((err) => console.log(err));
       setShowConfirmation(false);
     }
   };
