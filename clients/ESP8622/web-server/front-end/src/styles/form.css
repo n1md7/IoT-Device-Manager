@@ -2,9 +2,8 @@
     min-width: 300px;
 }
 .button-container {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
+    @apply flex flex-col gap-5 justify-between justify-center flex-wrap;
+    width: 100% !important;
 }
 .item-data {
     display: flex;
