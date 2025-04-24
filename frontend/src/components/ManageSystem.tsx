@@ -7,18 +7,19 @@ import useSystem from '../hooks/useSystem.ts';
 import DeleteIcon from '../icons/DeleteIcon.tsx';
 import Confirmation from './modals/Confirmation.tsx';
 import { useAlert } from '../hooks/useAlert.ts';
+import { Nullable } from '../types/utilsType.ts';
 
 const ManageSystem = () => {
   const { systemList, removeSystem } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
-  const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
-  const [selectedSystemName, setSelectedSystemName] = useState<string | null>(null);
+  const [selectedSystem, setSelectedSystem] = useState<Nullable<number>>(null);
+  const [selectedSystemName, setSelectedSystemName] = useState<Nullable<string>>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { showAlert } = useAlert();
 
-  const handleDeleteItem = (id: number, system: string) => {
-    if (id) {
+  const handleDeleteItem = (id: Nullable<number>, system: Nullable<string>) => {
+    if (id && system) {
       showAlert({
         type: 'success',
         title: 'Successful',
@@ -95,9 +96,9 @@ const ManageSystem = () => {
 
       <Show when={showConfirmation}>
         <Confirmation
-          action={() => handleDeleteItem(selectedSystem!, selectedSystemName!)}
+          action={() => handleDeleteItem(selectedSystem, selectedSystemName)}
           cancel={() => setShowConfirmation(false)}
-          itemToDelete={selectedSystemName!}
+          itemToDelete={selectedSystemName ?? 'NO ITEM SELECTED'}
         />
       </Show>
       <Show when={systemList.systems.length <= 0}>

@@ -4,15 +4,35 @@ import EditIcon from '../icons/EditIcon.tsx';
 import AddNewSchedule from './modals/AddNewSchedule.tsx';
 import NewItem from './utils/NewItem.tsx';
 import useSchedule from '../hooks/useSchedule.ts';
+import DeleteIcon from '../icons/DeleteIcon.tsx';
+import Confirmation from './modals/Confirmation.tsx';
+import { useAlert } from '../hooks/useAlert.ts';
+import { Nullable } from '../types/utilsType.ts';
 
 const ManageSchedule = () => {
-  const { scheduleList } = useSchedule();
+  const { scheduleList, removeSchedule } = useSchedule();
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
+  const [selectedId, setSelectedId] = useState<Nullable<number>>(null);
+  const [selectedScheduleName, setSelectedScheduleName] = useState<Nullable<string>>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const { showAlert } = useAlert();
 
   const handleNewScheduleView = () => {
     setIsNewScheduleOpen(true);
     setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
+  };
+
+  const handleDeleteItem = (id: Nullable<number>, schedule: Nullable<string>) => {
+    if (id && schedule) {
+      showAlert({
+        type: 'success',
+        title: 'Successful',
+        message: `"${schedule}" has been deleted.`,
+      });
+      removeSchedule(id).catch((err) => console.log(err));
+      setShowConfirmation(false);
+    }
   };
 
   return (
@@ -68,13 +88,19 @@ const ManageSchedule = () => {
               <div className="card-tool">
                 <button className="control-button bg-green">Turn OFF</button>
 
+                <button
+                  className="delete-button"
+                  onClick={() => {
+                    setSelectedId(schedule.id);
+                    setSelectedScheduleName(schedule.name);
+                    setShowConfirmation(true);
+                  }}
+                >
+                  <DeleteIcon className={'#4f4f4f'} />
+                </button>
                 <button className="edit-button">
                   <EditIcon className={'text-light-dark'} />
                 </button>
-                {/*TO DO: edit the icon*/}
-                {/*<button className="delete-button">*/}
-                {/*  <DeleteIcon className={'text-red-300'} />*/}
-                {/*</button>*/}
               </div>
             </div>
           ))}
@@ -82,6 +108,13 @@ const ManageSchedule = () => {
 
         <NewItem item={'Schedule'} btnAction={handleNewScheduleView} />
       </div>
+      <Show when={showConfirmation}>
+        <Confirmation
+          action={() => handleDeleteItem(selectedId, selectedScheduleName)}
+          cancel={() => setShowConfirmation(false)}
+          itemToDelete={selectedScheduleName ?? 'NO ITEM SELECTED'}
+        />
+      </Show>
       <Show when={scheduleList.schedules.length <= 0}>
         <div className="pt-5 error-msg">No available data.</div>
       </Show>

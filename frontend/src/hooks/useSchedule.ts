@@ -4,12 +4,14 @@ import useCreate from './useCreate.ts';
 import useData from './useData.ts';
 import { useAtom } from 'jotai';
 import { scheduleListAtom } from '../atoms/listAtom.ts';
+import useDelete from './useDelete.ts';
 
 const useSchedule = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduleList, setScheduleList] = useAtom(scheduleListAtom);
   const { data, loading, refresh, error } = useData<ScheduleResponseData>('/api/v1/scheduler');
   const scheduler = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
+  const item = useDelete<SchedulePayload>('/api/v1/scheduler');
 
   const addSchedule = async (payload: SchedulePayload) => {
     const clickedAt = new Date();
@@ -28,12 +30,22 @@ const useSchedule = () => {
     });
   };
 
+  const removeSchedule = async (id: number) => {
+    return item.remove(id).finally(async () => {
+      const response = await refresh();
+
+      if (response?.data) setScheduleList(response.data);
+      setIsSubmitting(false);
+    });
+  };
+
   useEffect(() => {
     if (data) setScheduleList(data);
   }, [data, setScheduleList]);
 
   return {
     addSchedule,
+    removeSchedule,
     isSubmitting,
     scheduler,
     scheduleList,
