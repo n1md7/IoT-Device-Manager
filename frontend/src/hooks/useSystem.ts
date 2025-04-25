@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import useData from './useData.ts';
 import { useAtom } from 'jotai';
 import { systemListAtom } from '../atoms/listAtom.ts';
+import useDelete from './useDelete.ts';
 
 const useSystems = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [systemList, setSystemList] = useAtom(systemListAtom);
-  const system = useCreate<SystemPayload, SystemData>('/api/v1/systems/create');
   const { data, error, loading, refresh } = useData<SystemsResponseData>('/api/v1/systems');
+  const system = useCreate<SystemPayload, SystemData>('/api/v1/systems/create');
+  const item = useDelete<SystemsResponseData>('/api/v1/systems');
 
   const addSystem = async (payload: SystemPayload) => {
     const clickedAt = new Date();
@@ -28,17 +30,27 @@ const useSystems = () => {
     });
   };
 
+  const removeSystem = async (id: string | number) => {
+    return item.remove(id).finally(async () => {
+      const response = await refresh();
+
+      if (response?.data) setSystemList(response.data);
+      setIsSubmitting(false);
+    });
+  };
+
   useEffect(() => {
     if (data) setSystemList(data);
   }, [data, setSystemList]);
 
   return {
     addSystem,
+    removeSystem,
     isSubmitting,
-    system,
     systemList,
-    error,
+    system,
     loading,
+    error,
   };
 };
 

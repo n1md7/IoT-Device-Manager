@@ -1,19 +1,20 @@
+import { ReactElement, useState } from 'react';
+import { Show } from './utils/Show.tsx';
+import { useAlert } from '../hooks/useAlert.ts';
 import EditIcon from '../icons/EditIcon.tsx';
 import DeleteIcon from '../icons/DeleteIcon.tsx';
-import { ReactElement, useState } from 'react';
 import AddNewComponent from './modals/AddNewComponent.tsx';
-import useComponent from '../hooks/useComponent.ts';
-import { Show } from './utils/Show.tsx';
 import NewItem from './utils/NewItem.tsx';
-import { useAlert } from '../hooks/useAlert.ts';
 import Confirmation from './modals/Confirmation.tsx';
+import useComponent from '../hooks/useComponent.ts';
+import { Nullable } from '../types/utilsType.ts';
 
 const ManageComponent = () => {
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [selectedComponentId, setSelectedComponentId] = useState<number | null>(null);
-  const [selectedComponentName, setSelectedComponentName] = useState<string | null>(null);
+  const [selectedComponentId, setSelectedComponentId] = useState<Nullable<number>>(null);
+  const [selectedComponentName, setSelectedComponentName] = useState<Nullable<string>>(null);
   const { componentList, removeComponent } = useComponent();
   const { showAlert } = useAlert();
 
@@ -22,16 +23,14 @@ const ManageComponent = () => {
     setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
   };
 
-  const handleDeleteItem = (id: number, component: string) => {
-    if (id) {
+  const handleDeleteItem = (id: Nullable<number>, component: Nullable<string>) => {
+    if (id && component) {
       showAlert({
         type: 'success',
         title: 'Successful',
         message: `"${component}" has been deleted.`,
       });
-      removeComponent(id).catch((err) => {
-        console.log(err);
-      });
+      removeComponent(id).catch((err) => console.log(err));
       setShowConfirmation(false);
     }
   };
@@ -96,9 +95,9 @@ const ManageComponent = () => {
 
       <Show when={showConfirmation}>
         <Confirmation
-          action={() => handleDeleteItem(selectedComponentId!, selectedComponentName!)}
+          action={() => handleDeleteItem(selectedComponentId, selectedComponentName)}
           cancel={() => setShowConfirmation(false)}
-          itemToDelete={selectedComponentName!}
+          itemToDelete={selectedComponentName ?? 'NO ITEM SELECTED'}
         />
       </Show>
 

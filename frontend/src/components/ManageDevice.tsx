@@ -1,10 +1,10 @@
 import { ReactElement, useState } from 'react';
+import { Show } from './utils/Show.tsx';
 import EditIcon from '../icons/EditIcon.tsx';
 import AddNewDevice from './modals/AddNewDevice.tsx';
 import useDevice from '../hooks/useDevice.ts';
 import NewItem from './utils/NewItem.tsx';
-import { Show } from './utils/Show.tsx';
-//import DeleteIcon from '../icons/DeleteIcon.tsx';
+import DeleteIcon from '../icons/DeleteIcon.tsx';
 
 const ManageDevice = () => {
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
@@ -51,13 +51,12 @@ const ManageDevice = () => {
               </div>
 
               <div className="card-tool">
+                <button className="delete-button" onClick={() => {}}>
+                  <DeleteIcon className={'#4f4f4f'} />
+                </button>
                 <button className="edit-button">
                   <EditIcon className={'text-light-dark'} />
                 </button>
-                {/*TO DO: edit the icon*/}
-                {/*<button className="delete-button">*/}
-                {/*  <DeleteIcon className={'text-red-300'} />*/}
-                {/*</button>*/}
               </div>
             </div>
           ))}

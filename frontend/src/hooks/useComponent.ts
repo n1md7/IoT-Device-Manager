@@ -31,9 +31,7 @@ const useComponent = () => {
   };
 
   const removeComponent = async (id: string | number) => {
-    console.log('deleting component ', id);
     return item.remove(id).finally(async () => {
-      console.log('deleted component ', id);
       const response = await refresh();
 
       if (response?.data) setComponentList(response.data);
@@ -47,12 +45,12 @@ const useComponent = () => {
 
   return {
     addComponent,
+    removeComponent,
     isSubmitting,
+    componentList,
     component,
     loading,
     error,
-    componentList,
-    removeComponent,
   };
 };
 
