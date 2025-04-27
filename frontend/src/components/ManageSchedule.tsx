@@ -84,10 +84,11 @@ const ManageSchedule = () => {
                     </div>
                   </div>
                 </div>
+                <div className="card-controls">
+                  <button className="control-button bg-green">Turn OFF</button>
+                </div>
               </div>
               <div className="card-tool">
-                <button className="control-button bg-green">Turn OFF</button>
-
                 <button
                   className="delete-button"
                   onClick={() => {

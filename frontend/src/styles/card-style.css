@@ -29,13 +29,19 @@
             }
         }
 
-        .card-tool {
-            @apply flex flex-row flex-none h-auto justify-between w-full gap-3 mt-5 pt-5 items-center;
-            border-top: 1px solid #242424;
+        .card-controls {
+            @apply flex flex-row flex-none h-auto w-full gap-3 mt-5 pt-5 items-center justify-center;
 
             .control-button {
                 @apply w-full cursor-pointer sm:w-40 p-3 text-sm text-dark rounded-md font-bold;
             }
+        }
+
+        .card-tool {
+            @apply flex flex-row flex-none h-auto justify-between w-full gap-3 mt-5 pt-5 items-center;
+            border-top: 1px solid #242424;
+
+
             .edit-button {
                 @apply rounded-md cursor-pointer bg-light-gray h-12 w-12 flex items-center justify-center;
             }
