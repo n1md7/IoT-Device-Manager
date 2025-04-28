@@ -37,11 +37,18 @@ const UseDelete = <ResponseType>(endpoint: string) => {
     [endpoint],
   );
 
+  const reset = () => {
+    setData(null);
+    setLoading(false);
+    setError(null);
+  };
+
   return {
     remove,
     data,
     error,
     loading,
+    reset,
   };
 };
 

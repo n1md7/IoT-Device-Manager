@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { Show } from './utils/Show.tsx';
 import EditIcon from '../icons/EditIcon.tsx';
 import AddNewSystem from './modals/AddNewSystem.tsx';
@@ -10,7 +10,7 @@ import { useAlert } from '../hooks/useAlert.ts';
 import { Nullable } from '../types/utilsType.ts';
 
 const ManageSystem = () => {
-  const { systemList, removeSystem } = useSystem();
+  const { systemList, deletingError, isSubmitting, deletedItem, removeSystem, reset } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<Nullable<number>>(null);
@@ -20,15 +20,35 @@ const ManageSystem = () => {
 
   const handleDeleteItem = (id: Nullable<number>, system: Nullable<string>) => {
     if (id && system) {
+      removeSystem(id, system).then(() => {
+        setShowConfirmation(false);
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (deletedItem && !isSubmitting) {
+      reset();
       showAlert({
         type: 'success',
         title: 'Successful',
-        message: `"${system}" has been deleted.`,
+        message: `"${deletedItem}" has been deleted.`,
       });
-      removeSystem(id).catch((err) => console.log(err));
-      setShowConfirmation(false);
     }
-  };
+  }, [deletedItem, isSubmitting, reset, showAlert]);
+
+  useEffect(() => {
+    if (deletingError) {
+      reset();
+      showAlert({
+        type: 'error',
+        title: 'Failed',
+        message: 'There seems to be a problem while deleting the new item.',
+        errorMessage: deletingError.message,
+        errorDetails: deletingError.details,
+      });
+    }
+  }, [deletingError, reset, showAlert]);
 
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);

@@ -10,8 +10,8 @@ const useComponent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [componentList, setComponentList] = useAtom(componentListAtom);
   const { data, error, loading, refresh } = useData<ComponentsResponseData>('/api/v1/components');
+  const { remove, error: deletingError } = useDelete<ComponentsData>('/api/v1/components');
   const component = useCreate<ComponentPayloadData, ComponentsData>('/api/v1/components');
-  const item = useDelete<ComponentsData>('/api/v1/components');
 
   const addComponent = async (payload: ComponentPayloadData) => {
     const clickedAt = new Date();
@@ -31,13 +31,14 @@ const useComponent = () => {
   };
 
   const removeComponent = async (id: string | number) => {
-    return item.remove(id).finally(async () => {
-      const response = await refresh();
-
-      if (response?.data) setComponentList(response.data);
-      setIsSubmitting(false);
+    return remove(id).finally(() => {
+      return refresh().finally(() => setIsSubmitting(false));
     });
   };
+
+  useEffect(() => {
+    if (deletingError) console.log('kath:', { deletingError });
+  }, [deletingError]);
 
   useEffect(() => {
     if (data) setComponentList(data);

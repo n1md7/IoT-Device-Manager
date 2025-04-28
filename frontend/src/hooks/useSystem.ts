@@ -1,17 +1,18 @@
-import { SystemPayload, SystemData, SystemsResponseData } from '../types/systemTypes.ts';
-import useCreate from './useCreate.ts';
 import { useEffect, useState } from 'react';
-import useData from './useData.ts';
 import { useAtom } from 'jotai';
-import { systemListAtom } from '../atoms/listAtom.ts';
+import useCreate from './useCreate.ts';
 import useDelete from './useDelete.ts';
+import useData from './useData.ts';
+import { SystemPayload, SystemData, SystemsResponseData } from '../types/systemTypes.ts';
+import { systemListAtom } from '../atoms/listAtom.ts';
 
 const useSystems = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [systemList, setSystemList] = useAtom(systemListAtom);
+  const [deletedItem, setDeletedItem] = useState<string | null>();
   const { data, error, loading, refresh } = useData<SystemsResponseData>('/api/v1/systems');
+  const { remove, error: deletingError, reset: deleteReset } = useDelete<SystemsResponseData>('/api/v1/systems');
   const system = useCreate<SystemPayload, SystemData>('/api/v1/systems/create');
-  const item = useDelete<SystemsResponseData>('/api/v1/systems');
 
   const addSystem = async (payload: SystemPayload) => {
     const clickedAt = new Date();
@@ -30,13 +31,18 @@ const useSystems = () => {
     });
   };
 
-  const removeSystem = async (id: string | number) => {
-    return item.remove(id).finally(async () => {
-      const response = await refresh();
-
-      if (response?.data) setSystemList(response.data);
-      setIsSubmitting(false);
+  const removeSystem = async (id: number, system: string) => {
+    return remove(id).then(() => {
+      setDeletedItem(system);
+      return refresh().finally(() => {
+        setIsSubmitting(false);
+      });
     });
+  };
+
+  const reset = () => {
+    deleteReset();
+    setDeletedItem(null);
   };
 
   useEffect(() => {
@@ -46,11 +52,14 @@ const useSystems = () => {
   return {
     addSystem,
     removeSystem,
+    reset,
     isSubmitting,
     systemList,
     system,
     loading,
     error,
+    deletingError,
+    deletedItem,
   };
 };
 
