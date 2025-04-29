@@ -1,12 +1,12 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { Show } from './utils/Show.tsx';
+import DeleteIcon from '../icons/DeleteIcon.tsx';
 import EditIcon from '../icons/EditIcon.tsx';
 import AddNewSystem from './modals/AddNewSystem.tsx';
 import NewItem from './utils/NewItem.tsx';
 import useSystem from '../hooks/useSystem.ts';
-import DeleteIcon from '../icons/DeleteIcon.tsx';
 import Confirmation from './modals/Confirmation.tsx';
-import { useAlert } from '../hooks/useAlert.ts';
+import useDeleteAlert from '../hooks/useDeleteAlert.ts';
 import { Nullable } from '../types/utilsType.ts';
 
 const ManageSystem = () => {
@@ -16,7 +16,7 @@ const ManageSystem = () => {
   const [selectedSystem, setSelectedSystem] = useState<Nullable<number>>(null);
   const [selectedSystemName, setSelectedSystemName] = useState<Nullable<string>>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const { showAlert } = useAlert();
+  const { displaySuccess, displayError } = useDeleteAlert();
 
   const handleDeleteItem = (id: Nullable<number>, system: Nullable<string>) => {
     if (id && system) {
@@ -29,26 +29,21 @@ const ManageSystem = () => {
   useEffect(() => {
     if (deletedItem && !isSubmitting) {
       reset();
-      showAlert({
-        type: 'success',
-        title: 'Successful',
-        message: `"${deletedItem}" has been deleted.`,
+      displaySuccess({
+        item: `${deletedItem} system`,
       });
     }
-  }, [deletedItem, isSubmitting, reset, showAlert]);
+  }, [deletedItem, displaySuccess, isSubmitting, reset]);
 
   useEffect(() => {
     if (deletingError) {
       reset();
-      showAlert({
-        type: 'error',
-        title: 'Failed',
-        message: 'There seems to be a problem while deleting the new item.',
+      displayError({
         errorMessage: deletingError.message,
         errorDetails: deletingError.details,
       });
     }
-  }, [deletingError, reset, showAlert]);
+  }, [deletingError, reset, displayError]);
 
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);

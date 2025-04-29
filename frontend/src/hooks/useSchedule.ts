@@ -11,7 +11,8 @@ const useSchedule = () => {
   const [scheduleList, setScheduleList] = useAtom(scheduleListAtom);
   const { data, loading, refresh, error } = useData<ScheduleResponseData>('/api/v1/scheduler');
   const scheduler = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
-  const item = useDelete<SchedulePayload>('/api/v1/scheduler');
+  const { remove, error: deletingError, reset: deleteReset } = useDelete<SchedulePayload>('/api/v1/scheduler');
+  const [deletedItem, setDeletedItem] = useState<string | null>();
 
   const addSchedule = async (payload: SchedulePayload) => {
     const clickedAt = new Date();
@@ -30,13 +31,18 @@ const useSchedule = () => {
     });
   };
 
-  const removeSchedule = async (id: number) => {
-    return item.remove(id).finally(async () => {
-      const response = await refresh();
-
-      if (response?.data) setScheduleList(response.data);
-      setIsSubmitting(false);
+  const removeSchedule = async (id: number, schedule: string) => {
+    return remove(id).then(() => {
+      setDeletedItem(schedule);
+      return refresh().finally(() => {
+        setIsSubmitting(false);
+      });
     });
+  };
+
+  const reset = () => {
+    deleteReset();
+    setDeletedItem(null);
   };
 
   useEffect(() => {
@@ -46,11 +52,14 @@ const useSchedule = () => {
   return {
     addSchedule,
     removeSchedule,
+    reset,
     isSubmitting,
     scheduler,
     scheduleList,
     loading,
     error,
+    deletedItem,
+    deletingError,
   };
 };
 

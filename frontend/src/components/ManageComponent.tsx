@@ -1,6 +1,5 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { Show } from './utils/Show.tsx';
-import { useAlert } from '../hooks/useAlert.ts';
 import EditIcon from '../icons/EditIcon.tsx';
 import DeleteIcon from '../icons/DeleteIcon.tsx';
 import AddNewComponent from './modals/AddNewComponent.tsx';
@@ -8,6 +7,7 @@ import NewItem from './utils/NewItem.tsx';
 import Confirmation from './modals/Confirmation.tsx';
 import useComponent from '../hooks/useComponent.ts';
 import { Nullable } from '../types/utilsType.ts';
+import useDeleteAlert from '../hooks/useDeleteAlert.ts';
 
 const ManageComponent = () => {
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
@@ -15,8 +15,8 @@ const ManageComponent = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedComponentId, setSelectedComponentId] = useState<Nullable<number>>(null);
   const [selectedComponentName, setSelectedComponentName] = useState<Nullable<string>>(null);
-  const { componentList, removeComponent } = useComponent();
-  const { showAlert } = useAlert();
+  const { componentList, removeComponent, deletingError, deletedItem, reset, isSubmitting } = useComponent();
+  const { displaySuccess, displayError } = useDeleteAlert();
 
   const handleNewComponentView = () => {
     setIsNewComponentOpen(true);
@@ -25,15 +25,28 @@ const ManageComponent = () => {
 
   const handleDeleteItem = (id: Nullable<number>, component: Nullable<string>) => {
     if (id && component) {
-      showAlert({
-        type: 'success',
-        title: 'Successful',
-        message: `"${component}" has been deleted.`,
+      removeComponent(id, component).then(() => {
+        setShowConfirmation(false);
       });
-      removeComponent(id).catch((err) => console.log(err));
-      setShowConfirmation(false);
     }
   };
+
+  useEffect(() => {
+    if (deletedItem && !isSubmitting) {
+      reset();
+      displaySuccess({ item: `${deletedItem} component` });
+    }
+  }, [deletedItem, isSubmitting, reset, displaySuccess]);
+
+  useEffect(() => {
+    if (deletingError) {
+      reset();
+      displayError({
+        errorMessage: deletingError.message,
+        errorDetails: deletingError.details,
+      });
+    }
+  }, [deletingError, reset, displayError]);
 
   return (
     <>
