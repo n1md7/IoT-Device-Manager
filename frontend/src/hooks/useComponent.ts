@@ -2,16 +2,17 @@ import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import useCreate from './useCreate.ts';
 import useData from './useData.ts';
+import useDelete from './useDelete.ts';
 import { componentListAtom } from '../atoms/listAtom.ts';
 import { ComponentPayloadData, ComponentsData, ComponentsResponseData } from '../types/componentTypes.ts';
-import useDelete from './useDelete.ts';
 
 const useComponent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [componentList, setComponentList] = useAtom(componentListAtom);
   const { data, error, loading, refresh } = useData<ComponentsResponseData>('/api/v1/components');
+  const { remove, error: deletingError, reset: deleteReset } = useDelete<ComponentsData>('/api/v1/components');
   const component = useCreate<ComponentPayloadData, ComponentsData>('/api/v1/components');
-  const item = useDelete<ComponentsData>('/api/v1/components');
+  const [deletedItem, setDeletedItem] = useState<string | null>();
 
   const addComponent = async (payload: ComponentPayloadData) => {
     const clickedAt = new Date();
@@ -30,13 +31,18 @@ const useComponent = () => {
     });
   };
 
-  const removeComponent = async (id: string | number) => {
-    return item.remove(id).finally(async () => {
-      const response = await refresh();
-
-      if (response?.data) setComponentList(response.data);
-      setIsSubmitting(false);
+  const removeComponent = async (id: number, component: string) => {
+    return remove(id).then(() => {
+      setDeletedItem(component);
+      return refresh().finally(() => {
+        setIsSubmitting(false);
+      });
     });
+  };
+
+  const reset = () => {
+    deleteReset();
+    setDeletedItem(null);
   };
 
   useEffect(() => {
@@ -46,11 +52,14 @@ const useComponent = () => {
   return {
     addComponent,
     removeComponent,
+    reset,
     isSubmitting,
     componentList,
     component,
     loading,
     error,
+    deletingError,
+    deletedItem,
   };
 };
 

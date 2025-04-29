@@ -1,34 +1,49 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { Show } from './utils/Show.tsx';
+import DeleteIcon from '../icons/DeleteIcon.tsx';
 import EditIcon from '../icons/EditIcon.tsx';
 import AddNewSystem from './modals/AddNewSystem.tsx';
 import NewItem from './utils/NewItem.tsx';
 import useSystem from '../hooks/useSystem.ts';
-import DeleteIcon from '../icons/DeleteIcon.tsx';
 import Confirmation from './modals/Confirmation.tsx';
-import { useAlert } from '../hooks/useAlert.ts';
+import useDeleteAlert from '../hooks/useDeleteAlert.ts';
 import { Nullable } from '../types/utilsType.ts';
 
 const ManageSystem = () => {
-  const { systemList, removeSystem } = useSystem();
+  const { systemList, deletingError, isSubmitting, deletedItem, removeSystem, reset } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<Nullable<number>>(null);
   const [selectedSystemName, setSelectedSystemName] = useState<Nullable<string>>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const { showAlert } = useAlert();
+  const { displaySuccess, displayError } = useDeleteAlert();
 
   const handleDeleteItem = (id: Nullable<number>, system: Nullable<string>) => {
     if (id && system) {
-      showAlert({
-        type: 'success',
-        title: 'Successful',
-        message: `"${system}" has been deleted.`,
+      removeSystem(id, system).then(() => {
+        setShowConfirmation(false);
       });
-      removeSystem(id).catch((err) => console.log(err));
-      setShowConfirmation(false);
     }
   };
+
+  useEffect(() => {
+    if (deletedItem && !isSubmitting) {
+      reset();
+      displaySuccess({
+        item: `${deletedItem} system`,
+      });
+    }
+  }, [deletedItem, displaySuccess, isSubmitting, reset]);
+
+  useEffect(() => {
+    if (deletingError) {
+      reset();
+      displayError({
+        errorMessage: deletingError.message,
+        errorDetails: deletingError.details,
+      });
+    }
+  }, [deletingError, reset, displayError]);
 
   const handleNewSystemView = () => {
     setIsNewSystemOpen(true);
