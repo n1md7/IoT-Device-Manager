@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useAlert } from '../../hooks/useAlert.ts';
 import { Show } from '../utils/Show.tsx';
 import useSystem from '../../hooks/useSystem.ts';
+import useDisplayAlert from '../../hooks/useDisplayAlert.ts';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;
@@ -10,7 +10,8 @@ interface Props {
 
 const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
   const { addSystem, isSubmitting, system } = useSystem();
-  const { showAlert, hideAlert } = useAlert();
+  const { displaySuccess, displayError } = useDisplayAlert();
+  const [newSystemName, setNewSystemName] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -23,6 +24,7 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setNewSystemName(formData.name);
 
     await addSystem({
       name: formData.name,
@@ -32,27 +34,24 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
 
   useEffect(() => {
     if (system.error) {
-      showAlert({
-        type: 'error',
-        title: 'Failed',
-        message: 'There seems to be a problem while adding the new item.',
+      displayError({
+        actionText: 'adding',
         errorMessage: system.error.message,
         errorDetails: system.error.details,
       });
       setIsNewSystemOpen(false);
     }
-  }, [setIsNewSystemOpen, showAlert, system.error]);
+  }, [displayError, setIsNewSystemOpen, system.error]);
 
   useEffect(() => {
     if (system.data && !isSubmitting) {
-      showAlert({
-        type: 'success',
-        title: 'Successfully Added',
-        message: 'New system has been added!',
+      displaySuccess({
+        actionText: 'added',
+        item: `${newSystemName}`,
       });
       setIsNewSystemOpen(false);
     }
-  }, [system.data, isSubmitting, setIsNewSystemOpen, showAlert, hideAlert]);
+  }, [system.data, isSubmitting, setIsNewSystemOpen, displaySuccess, newSystemName]);
 
   return (
     <div className="modal-wrapper">

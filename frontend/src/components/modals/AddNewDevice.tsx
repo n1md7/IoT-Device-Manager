@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Show } from '../utils/Show.tsx';
-import { useAlert } from '../../hooks/useAlert.ts';
 import useDevice from '../../hooks/useDevice.ts';
+import useDisplayAlert from '../../hooks/useDisplayAlert.ts';
 
 interface Props {
   setIsNewDeviceOpen: (value: boolean) => void;
@@ -10,7 +10,8 @@ interface Props {
 
 const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
   const { addDevice, isSubmitting, device } = useDevice();
-  const { showAlert, hideAlert } = useAlert();
+  const { displaySuccess, displayError } = useDisplayAlert();
+  const [newDeviceName, setNewDeviceName] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     code: '',
     type: '',
@@ -27,12 +28,13 @@ const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setNewDeviceName(formData.name);
 
     await addDevice({
-      code: formData.code,
-      type: formData.type,
       name: formData.name,
       description: formData.description,
+      code: formData.code,
+      type: formData.type,
       version: formData.version,
       ipAddress: formData.ipAddress,
     });
@@ -40,27 +42,24 @@ const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
 
   useEffect(() => {
     if (device.error) {
-      showAlert({
-        type: 'error',
-        title: 'Failed',
-        message: 'There seems to be a problem while adding the new item.',
+      displayError({
+        actionText: 'adding',
         errorMessage: device.error.message,
         errorDetails: device.error.details,
       });
       setIsNewDeviceOpen(false);
     }
-  }, [device.error, setIsNewDeviceOpen, showAlert]);
+  }, [device.error, displayError, setIsNewDeviceOpen]);
 
   useEffect(() => {
     if (device.statusCode && !isSubmitting) {
-      showAlert({
-        type: 'success',
-        title: 'Successfully Added',
-        message: 'New device has been added!',
+      displaySuccess({
+        actionText: 'added',
+        item: `${newDeviceName}`,
       });
       setIsNewDeviceOpen(false);
     }
-  }, [device.statusCode, setIsNewDeviceOpen, showAlert, hideAlert, isSubmitting]);
+  }, [device.statusCode, setIsNewDeviceOpen, isSubmitting, displaySuccess, newDeviceName]);
 
   return (
     <div className="modal-wrapper">

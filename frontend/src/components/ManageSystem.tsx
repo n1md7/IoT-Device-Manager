@@ -6,7 +6,7 @@ import AddNewSystem from './modals/AddNewSystem.tsx';
 import NewItem from './utils/NewItem.tsx';
 import useSystem from '../hooks/useSystem.ts';
 import Confirmation from './modals/Confirmation.tsx';
-import useDeleteAlert from '../hooks/useDeleteAlert.ts';
+import useDisplayAlert from '../hooks/useDisplayAlert.ts';
 import { Nullable } from '../types/utilsType.ts';
 
 const ManageSystem = () => {
@@ -16,7 +16,7 @@ const ManageSystem = () => {
   const [selectedSystem, setSelectedSystem] = useState<Nullable<number>>(null);
   const [selectedSystemName, setSelectedSystemName] = useState<Nullable<string>>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const { displaySuccess, displayError } = useDeleteAlert();
+  const { displaySuccess, displayError } = useDisplayAlert();
 
   const handleDeleteItem = (id: Nullable<number>, system: Nullable<string>) => {
     if (id && system) {
@@ -30,6 +30,7 @@ const ManageSystem = () => {
     if (deletedItem && !isSubmitting) {
       reset();
       displaySuccess({
+        actionText: 'deleted',
         item: `${deletedItem} system`,
       });
     }
@@ -39,6 +40,7 @@ const ManageSystem = () => {
     if (deletingError) {
       reset();
       displayError({
+        actionText: 'deleting',
         errorMessage: deletingError.message,
         errorDetails: deletingError.details,
       });
