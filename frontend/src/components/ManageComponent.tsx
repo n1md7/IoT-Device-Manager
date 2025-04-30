@@ -7,7 +7,7 @@ import NewItem from './utils/NewItem.tsx';
 import Confirmation from './modals/Confirmation.tsx';
 import useComponent from '../hooks/useComponent.ts';
 import { Nullable } from '../types/utilsType.ts';
-import useDisplayAlert from '../hooks/useDisplayAlert.ts';
+import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 const ManageComponent = () => {
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);

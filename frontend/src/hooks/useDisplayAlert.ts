@@ -2,7 +2,7 @@ import { useAlert } from './useAlert.ts';
 
 type Item = {
   item: string;
-  actionText: string;
+  actionText: 'added' | 'deleted';
 };
 
 type ErrorDetails = {
@@ -27,8 +27,8 @@ const useDisplayAlert = () => {
       type: 'error',
       title: 'Failed',
       message: `There seems to be a problem while ${actionText} the item.`,
-      errorMessage: errorMessage,
-      errorDetails: errorDetails,
+      errorMessage,
+      errorDetails,
     });
   };
 

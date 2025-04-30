@@ -51,7 +51,7 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
       });
       setIsNewSystemOpen(false);
     }
-  }, [system.data, isSubmitting, setIsNewSystemOpen, displaySuccess]);
+  }, [system.data, isSubmitting, setIsNewSystemOpen, displaySuccess, newSystemName]);
 
   return (
     <div className="modal-wrapper">

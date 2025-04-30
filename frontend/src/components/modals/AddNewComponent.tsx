@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Show } from '../utils/Show.tsx';
-import AddIcon from '../../icons/AddIcon.tsx';
-import useComponent from '../../hooks/useComponent.ts';
-import useSystems from '../../hooks/useSystem.ts';
-import useDevice from '../../hooks/useDevice.ts';
-import useDisplayAlert from '../../hooks/useDisplayAlert.ts';
+import { Show } from '@src/components/utils/Show';
+import AddIcon from '@src/icons/AddIcon';
+import useComponent from '@src/hooks/useComponent';
+import useSystems from '@src/hooks/useSystem';
+import useDevice from '@src/hooks/useDevice';
+import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;

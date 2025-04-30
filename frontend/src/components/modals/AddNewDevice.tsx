@@ -59,7 +59,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
       });
       setIsNewDeviceOpen(false);
     }
-  }, [device.statusCode, setIsNewDeviceOpen, isSubmitting, displaySuccess]);
+  }, [device.statusCode, setIsNewDeviceOpen, isSubmitting, displaySuccess, newDeviceName]);
 
   return (
     <div className="modal-wrapper">
