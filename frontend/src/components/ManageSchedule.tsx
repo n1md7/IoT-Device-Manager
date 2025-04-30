@@ -7,7 +7,7 @@ import useSchedule from '../hooks/useSchedule.ts';
 import DeleteIcon from '../icons/DeleteIcon.tsx';
 import Confirmation from './modals/Confirmation.tsx';
 import { Nullable } from '../types/utilsType.ts';
-import useDeleteAlert from '../hooks/useDeleteAlert.ts';
+import useDisplayAlert from '../hooks/useDisplayAlert.ts';
 
 const ManageSchedule = () => {
   const { scheduleList, removeSchedule, deletedItem, deletingError, reset, isSubmitting } = useSchedule();
@@ -16,7 +16,7 @@ const ManageSchedule = () => {
   const [selectedId, setSelectedId] = useState<Nullable<number>>(null);
   const [selectedScheduleName, setSelectedScheduleName] = useState<Nullable<string>>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const { displaySuccess, displayError } = useDeleteAlert();
+  const { displaySuccess, displayError } = useDisplayAlert();
 
   const handleNewScheduleView = () => {
     setIsNewScheduleOpen(true);
@@ -35,6 +35,7 @@ const ManageSchedule = () => {
     if (deletedItem && !isSubmitting) {
       reset();
       displaySuccess({
+        actionText: 'deleted',
         item: `${deletedItem} schedule`,
       });
     }
@@ -44,6 +45,7 @@ const ManageSchedule = () => {
     if (deletingError) {
       reset();
       displayError({
+        actionText: 'deleting',
         errorMessage: deletingError.message,
         errorDetails: deletingError.details,
       });

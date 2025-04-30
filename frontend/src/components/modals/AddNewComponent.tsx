@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useAlert } from '../../hooks/useAlert.ts';
 import { Show } from '../utils/Show.tsx';
 import AddIcon from '../../icons/AddIcon.tsx';
 import useComponent from '../../hooks/useComponent.ts';
 import useSystems from '../../hooks/useSystem.ts';
 import useDevice from '../../hooks/useDevice.ts';
+import useDisplayAlert from '../../hooks/useDisplayAlert.ts';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
@@ -15,7 +15,7 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const { addComponent, isSubmitting, component } = useComponent();
-  const { showAlert, hideAlert } = useAlert();
+  const { displaySuccess, displayError } = useDisplayAlert();
   const { systemList } = useSystems();
   const { deviceList } = useDevice();
 
@@ -46,27 +46,25 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
 
   useEffect(() => {
     if (component.error) {
-      showAlert({
-        type: 'error',
-        title: 'Error',
-        message: 'There seems to be a problem while adding the new item.',
+      displayError({
+        actionText: 'adding',
         errorMessage: component.error.message,
         errorDetails: component.error.details,
       });
       setIsNewComponentOpen(false);
     }
-  }, [component.error, setIsNewComponentOpen, showAlert]);
+  }, [component.error, displayError, setIsNewComponentOpen]);
 
   useEffect(() => {
     if (component.data && !isSubmitting) {
-      showAlert({
-        type: 'success',
-        title: 'Successfully Added',
-        message: 'New component has been added!',
+      displaySuccess({
+        actionText: 'added',
+        item: `New component`,
       });
+
       setIsNewComponentOpen(false);
     }
-  }, [component.data, isSubmitting, showAlert, hideAlert, setIsNewComponentOpen]);
+  }, [component.data, displaySuccess, isSubmitting, selectedDevice, setIsNewComponentOpen]);
 
   return (
     <div className="modal-wrapper">

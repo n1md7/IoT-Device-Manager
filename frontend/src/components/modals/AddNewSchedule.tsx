@@ -1,18 +1,20 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useAlert } from '../../hooks/useAlert.ts';
 import { Show } from '../utils/Show.tsx';
 import useSystems from '../../hooks/useSystem.ts';
 import useSchedule from '../../hooks/useSchedule.ts';
+import useDisplayAlert from '../../hooks/useDisplayAlert.ts';
 
 interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
   const { addSchedule, isSubmitting, scheduler } = useSchedule();
-  const { systemList } = useSystems();
-  const { showAlert, hideAlert } = useAlert();
+  const { displaySuccess, displayError } = useDisplayAlert();
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
+  const [newScheduleName, setNewScheduleName] = useState<string | null>(null);
+  const { systemList } = useSystems();
+
   const [formData, setFormData] = useState({
     name: '',
     startExpression: '',
@@ -30,6 +32,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setNewScheduleName(formData.name);
 
     if (!selectedSystem) {
       console.error('Selected system not found!');
@@ -49,27 +52,24 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
 
   useEffect(() => {
     if (scheduler.error) {
-      showAlert({
-        type: 'error',
-        title: 'Failed',
-        message: 'There seems to be a problem while adding the new item.',
+      displayError({
+        actionText: 'adding',
         errorMessage: scheduler.error.message,
         errorDetails: scheduler.error.details,
       });
       setIsNewScheduleOpen(false);
     }
-  }, [scheduler.error, setIsNewScheduleOpen, showAlert]);
+  }, [displayError, scheduler.error, setIsNewScheduleOpen]);
 
   useEffect(() => {
     if (scheduler.data && !isSubmitting) {
-      showAlert({
-        type: 'success',
-        title: 'Successfully Added',
-        message: 'New schedule has been added!',
+      displaySuccess({
+        actionText: 'added',
+        item: `${newScheduleName}`,
       });
       setIsNewScheduleOpen(false);
     }
-  }, [isSubmitting, scheduler.data, setIsNewScheduleOpen, showAlert, hideAlert]);
+  }, [isSubmitting, scheduler.data, setIsNewScheduleOpen, displaySuccess, newScheduleName]);
 
   return (
     <div className="modal-wrapper">

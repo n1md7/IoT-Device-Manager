@@ -7,7 +7,7 @@ import NewItem from './utils/NewItem.tsx';
 import Confirmation from './modals/Confirmation.tsx';
 import useComponent from '../hooks/useComponent.ts';
 import { Nullable } from '../types/utilsType.ts';
-import useDeleteAlert from '../hooks/useDeleteAlert.ts';
+import useDisplayAlert from '../hooks/useDisplayAlert.ts';
 
 const ManageComponent = () => {
   const [isNewComponentOpen, setIsNewComponentOpen] = useState(false);
@@ -16,7 +16,7 @@ const ManageComponent = () => {
   const [selectedComponentId, setSelectedComponentId] = useState<Nullable<number>>(null);
   const [selectedComponentName, setSelectedComponentName] = useState<Nullable<string>>(null);
   const { componentList, removeComponent, deletingError, deletedItem, reset, isSubmitting } = useComponent();
-  const { displaySuccess, displayError } = useDeleteAlert();
+  const { displaySuccess, displayError } = useDisplayAlert();
 
   const handleNewComponentView = () => {
     setIsNewComponentOpen(true);
@@ -34,7 +34,10 @@ const ManageComponent = () => {
   useEffect(() => {
     if (deletedItem && !isSubmitting) {
       reset();
-      displaySuccess({ item: `${deletedItem} component` });
+      displaySuccess({
+        actionText: 'deleted',
+        item: `${deletedItem} component`,
+      });
     }
   }, [deletedItem, isSubmitting, reset, displaySuccess]);
 
@@ -42,6 +45,7 @@ const ManageComponent = () => {
     if (deletingError) {
       reset();
       displayError({
+        actionText: 'deleting',
         errorMessage: deletingError.message,
         errorDetails: deletingError.details,
       });
