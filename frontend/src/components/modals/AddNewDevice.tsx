@@ -181,7 +181,7 @@ const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
             </div>
           </div>
           <div className="button-container">
-            <button type="submit" className="button hover:bg-purple/80 bg-purple text-white">
+            <button type="submit" className="button hover:bg-purple/80 bg-purple text-white" disabled={isSubmitting}>
               <Show when={!isSubmitting} fallback="Saving...">
                 Save
               </Show>

@@ -69,6 +69,12 @@ body {
 
 button {
     cursor: pointer;
+
+    &:disabled {
+        background-color: var(--color-card-label);
+        color: var(--color-light-dark);
+        cursor: not-allowed;
+    }
 }
 
 /*TO DO: add hover color to icons */
@@ -142,7 +148,7 @@ button {
 }
 
 .button {
-    @apply min-w-20 cursor-pointer sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-md gap-2;
+    @apply min-w-20 sm:w-40 h-auto p-3 flex items-center justify-center text-sm rounded-md gap-2;
     font-family: 'Akatab-Bold', sans-serif;
 
     .cancel {
