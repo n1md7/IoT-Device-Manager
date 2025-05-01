@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { ReactElement, useState } from 'react';
-import NavBar from './components/NavBar.tsx';
-import PageHeader from './components/PageHeader.tsx';
-import ManageSchedule from './components/ManageSchedule.tsx';
-import ManageSystem from './components/ManageSystem.tsx';
-import ManageComponent from './components/ManageComponent.tsx';
-import Settings from './components/Settings.tsx';
-import ManageDevice from './components/ManageDevice.tsx';
-import Alert from './components/modals/Alert.tsx';
+import NavBar from '@src/components/NavBar';
+import PageHeader from '@src/components/PageHeader';
+import ManageSchedule from '@src/components/ManageSchedule';
+import ManageSystem from '@src/components/ManageSystem';
+import ManageComponent from '@src/components/ManageComponent';
+import Settings from '@src/components/Settings';
+import ManageDevice from '@src/components/ManageDevice';
+import Alert from '@src/components/modals/Alert';
 
 function App() {
   const [activeView, setActiveView] = useState<ReactElement>(<ManageSchedule />);

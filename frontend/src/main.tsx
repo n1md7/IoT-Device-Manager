@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './main.css';
+import '@src/main.css';
 import { Provider } from 'jotai';
 
 import App from './App.tsx';

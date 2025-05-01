@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useData from './useData.ts';
-import useCreate from './useCreate.ts';
-import { deviceListAtom } from '../atoms/listAtom.ts';
-import { DeviceDetails, DevicePayloadData, DevicesResponseData } from '../types/deviceTypes.ts';
+import useData from '@src/hooks/useData';
+import useCreate from '@src/hooks/useCreate';
+import { deviceListAtom } from '@src/atoms/listAtom';
+import { DeviceDetails, DevicePayloadData, DevicesResponseData } from '@src/types/deviceTypes';
 
 const useDevice = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);

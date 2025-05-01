@@ -1,13 +1,13 @@
 import { ReactElement, useEffect, useState } from 'react';
-import { Show } from './utils/Show.tsx';
-import EditIcon from '../icons/EditIcon.tsx';
-import AddNewSchedule from './modals/AddNewSchedule.tsx';
-import NewItem from './utils/NewItem.tsx';
-import useSchedule from '../hooks/useSchedule.ts';
-import DeleteIcon from '../icons/DeleteIcon.tsx';
-import Confirmation from './modals/Confirmation.tsx';
-import { Nullable } from '../types/utilsType.ts';
-import useDisplayAlert from '../hooks/useDisplayAlert.ts';
+import { Show } from '@src/components/utils/Show';
+import { Nullable } from '@src/types/utilsType';
+import EditIcon from '@src/icons/EditIcon';
+import AddNewSchedule from '@src/components/modals/AddNewSchedule';
+import NewItem from '@src/components/utils/NewItem';
+import useSchedule from '@src/hooks/useSchedule';
+import DeleteIcon from '@src/icons/DeleteIcon';
+import Confirmation from '@src/components/modals/Confirmation';
+import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 const ManageSchedule = () => {
   const { scheduleList, removeSchedule, deletedItem, deletingError, reset, isSubmitting } = useSchedule();

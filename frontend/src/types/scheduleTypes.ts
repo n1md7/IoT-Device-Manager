@@ -1,4 +1,4 @@
-import { SystemData } from './systemTypes.ts';
+import { SystemData } from '@src/types/systemTypes';
 
 export type ScheduleDetails = {
   min: number;

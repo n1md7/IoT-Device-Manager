@@ -1,4 +1,4 @@
-import { ComponentsData } from './componentTypes.ts';
+import { ComponentsData } from '@src/types/componentTypes';
 
 export type SystemData = {
   id: number;

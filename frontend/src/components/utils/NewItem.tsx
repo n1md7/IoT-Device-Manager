@@ -1,4 +1,4 @@
-import AddIcon from '../../icons/AddIcon.tsx';
+import AddIcon from '@src/icons/AddIcon';
 
 type Props = {
   item: string;

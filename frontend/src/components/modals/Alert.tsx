@@ -1,6 +1,6 @@
-import { useAlert } from '../../hooks/useAlert.ts';
-import { AlertType } from '../../atoms/alertAtoms.ts';
-import { Show } from '../utils/Show.tsx';
+import { useAlert } from '@src/hooks/useAlert';
+import { AlertType } from '@src/atoms/alertAtoms';
+import { Show } from '@src/components/utils/Show';
 
 const classes: Record<AlertType, string> = {
   success: 'text-light-purple',

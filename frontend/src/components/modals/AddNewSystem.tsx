@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Show } from '../utils/Show.tsx';
-import useSystem from '../../hooks/useSystem.ts';
-import useDisplayAlert from '../../hooks/useDisplayAlert.ts';
+import { Show } from '@src/components/utils/Show';
+import useSystem from '@src/hooks/useSystem';
+import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;

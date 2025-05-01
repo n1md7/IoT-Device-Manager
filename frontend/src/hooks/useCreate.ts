@@ -1,4 +1,4 @@
-import api, { API_URL } from '../api/api-client.ts';
+import api, { API_URL } from '@src/api/api-client';
 import { useCallback, useState } from 'react';
 import axios, { CanceledError } from 'axios';
 

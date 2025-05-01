@@ -1,9 +1,9 @@
 import { ReactElement, useEffect, useState } from 'react';
-import AddNewSystem from './modals/AddNewSystem.tsx';
-import AddNewComponent from './modals/AddNewComponent.tsx';
-import AddNewSchedule from './modals/AddNewSchedule.tsx';
-import AddNewDevice from './modals/AddNewDevice.tsx';
-import AddIcon from '../icons/AddIcon.tsx';
+import AddNewSystem from '@src/components/modals/AddNewSystem';
+import AddNewComponent from '@src/components/modals/AddNewComponent';
+import AddNewSchedule from '@src/components/modals/AddNewSchedule';
+import AddNewDevice from '@src/components/modals/AddNewDevice';
+import AddIcon from '@src/icons/AddIcon';
 
 const Settings = () => {
   const [showModal, setShowModal] = useState<ReactElement | null>(null);

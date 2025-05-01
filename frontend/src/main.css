@@ -1,7 +1,7 @@
-@import "./styles/modal.css";
-@import "./styles/page-header.css";
-@import "./styles/card-style.css";
-@import "./styles/welcome.css";
+@import "@src/styles/modal.css";
+@import "@src/styles/page-header.css";
+@import "@src/styles/card-style.css";
+@import "@src/styles/welcome.css";
 
 @import "tailwindcss";
 

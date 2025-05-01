@@ -1,13 +1,13 @@
 import { ReactElement, useEffect, useState } from 'react';
-import { Show } from './utils/Show.tsx';
-import DeleteIcon from '../icons/DeleteIcon.tsx';
-import EditIcon from '../icons/EditIcon.tsx';
-import AddNewSystem from './modals/AddNewSystem.tsx';
-import NewItem from './utils/NewItem.tsx';
-import useSystem from '../hooks/useSystem.ts';
-import Confirmation from './modals/Confirmation.tsx';
-import useDisplayAlert from '../hooks/useDisplayAlert.ts';
-import { Nullable } from '../types/utilsType.ts';
+import { Show } from '@src/components/utils/Show';
+import DeleteIcon from '@src/icons/DeleteIcon';
+import EditIcon from '@src/icons/EditIcon';
+import AddNewSystem from '@src/components/modals/AddNewSystem';
+import NewItem from '@src/components/utils/NewItem';
+import useSystem from '@src/hooks/useSystem';
+import Confirmation from '@src/components/modals/Confirmation';
+import useDisplayAlert from '@src/hooks/useDisplayAlert';
+import { Nullable } from '@src/types/utilsType';
 
 const ManageSystem = () => {
   const { systemList, deletingError, isSubmitting, deletedItem, removeSystem, reset } = useSystem();
