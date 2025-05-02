@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useCreate from './useCreate.ts';
-import useDelete from './useDelete.ts';
-import useData from './useData.ts';
-import { SystemPayload, SystemData, SystemsResponseData } from '../types/systemTypes.ts';
-import { systemListAtom } from '../atoms/listAtom.ts';
+import useCreate from '@src/hooks/useCreate';
+import useDelete from '@src/hooks/useDelete';
+import useData from '@src/hooks/useData';
+import { SystemPayload, SystemData, SystemsResponseData } from '@src/types/systemTypes';
+import { systemListAtom } from '@src/atoms/listAtom';
 
 const useSystems = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);

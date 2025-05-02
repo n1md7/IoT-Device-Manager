@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Show } from '../utils/Show.tsx';
-import useDevice from '../../hooks/useDevice.ts';
-import useDisplayAlert from '../../hooks/useDisplayAlert.ts';
+import { Show } from '@src/components/utils/Show';
+import useDevice from '@src/hooks/useDevice';
+import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 interface Props {
   setIsNewDeviceOpen: (value: boolean) => void;

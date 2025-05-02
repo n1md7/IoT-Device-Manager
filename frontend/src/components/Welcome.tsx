@@ -1,4 +1,4 @@
-import InfoIcon from '../icons/InfoIcon.tsx';
+import InfoIcon from '@src/icons/InfoIcon';
 
 const Welcome = () => {
   return (

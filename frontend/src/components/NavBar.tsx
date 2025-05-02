@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import ManageComponent from './ManageComponent.tsx';
-import ManageSchedule from './ManageSchedule.tsx';
-import CloseIcon from '../icons/CloseIcon.tsx';
-import HomeIcon from '../icons/HomeIcon.tsx';
-import MenuIcon from '../icons/MenuIcon.tsx';
-import ManageSystem from './ManageSystem.tsx';
-import ManageDevice from './ManageDevice.tsx';
+import ManageComponent from '@src/components/ManageComponent';
+import ManageSchedule from '@src/components/ManageSchedule';
+import CloseIcon from '@src/icons/CloseIcon';
+import HomeIcon from '@src/icons/HomeIcon';
+import MenuIcon from '@src/icons/MenuIcon';
+import ManageSystem from '@src/components/ManageSystem';
+import ManageDevice from '@src/components/ManageDevice';
 
 interface Props {
   onMenuClick: (component: JSX.Element) => void;

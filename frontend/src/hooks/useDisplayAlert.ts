@@ -1,4 +1,4 @@
-import { useAlert } from './useAlert.ts';
+import { useAlert } from '@src/hooks/useAlert';
 
 type Item = {
   item: string;

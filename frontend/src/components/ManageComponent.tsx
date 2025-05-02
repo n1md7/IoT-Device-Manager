@@ -1,12 +1,12 @@
 import { ReactElement, useEffect, useState } from 'react';
-import { Show } from './utils/Show.tsx';
-import EditIcon from '../icons/EditIcon.tsx';
-import DeleteIcon from '../icons/DeleteIcon.tsx';
-import AddNewComponent from './modals/AddNewComponent.tsx';
-import NewItem from './utils/NewItem.tsx';
-import Confirmation from './modals/Confirmation.tsx';
-import useComponent from '../hooks/useComponent.ts';
-import { Nullable } from '../types/utilsType.ts';
+import { Show } from '@src/components/utils/Show';
+import { Nullable } from '@src/types/utilsType';
+import EditIcon from '@src/icons/EditIcon';
+import DeleteIcon from '@src/icons/DeleteIcon';
+import AddNewComponent from './modals/AddNewComponent';
+import NewItem from './utils/NewItem';
+import Confirmation from './modals/Confirmation';
+import useComponent from '@src/hooks/useComponent';
 import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 const ManageComponent = () => {

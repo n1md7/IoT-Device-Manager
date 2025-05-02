@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { SchedulePayload, ScheduleData, ScheduleResponseData } from '../types/scheduleTypes.ts';
-import useCreate from './useCreate.ts';
-import useData from './useData.ts';
+import useCreate from '@src/hooks/useCreate';
+import useData from '@src/hooks/useData';
+import useDelete from '@src/hooks/useDelete';
 import { useAtom } from 'jotai';
-import { scheduleListAtom } from '../atoms/listAtom.ts';
-import useDelete from './useDelete.ts';
+import { scheduleListAtom } from '@src/atoms/listAtom';
+import { SchedulePayload, ScheduleData, ScheduleResponseData } from '@src/types/scheduleTypes';
 
 const useSchedule = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);

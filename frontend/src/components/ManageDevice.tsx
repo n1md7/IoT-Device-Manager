@@ -1,10 +1,10 @@
 import { ReactElement, useState } from 'react';
-import { Show } from './utils/Show.tsx';
-import EditIcon from '../icons/EditIcon.tsx';
-import AddNewDevice from './modals/AddNewDevice.tsx';
-import useDevice from '../hooks/useDevice.ts';
-import NewItem from './utils/NewItem.tsx';
-import DeleteIcon from '../icons/DeleteIcon.tsx';
+import { Show } from '@src/components/utils/Show';
+import EditIcon from '@src/icons/EditIcon';
+import AddNewDevice from '@src/components/modals/AddNewDevice';
+import useDevice from '@src/hooks/useDevice.ts';
+import NewItem from '@src/components/utils/NewItem';
+import DeleteIcon from '@src/icons/DeleteIcon';
 
 const ManageDevice = () => {
   const [showModal, setShowModal] = useState<ReactElement | null>(null);

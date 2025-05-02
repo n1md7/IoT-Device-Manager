@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useCreate from './useCreate.ts';
-import useData from './useData.ts';
-import useDelete from './useDelete.ts';
-import { componentListAtom } from '../atoms/listAtom.ts';
-import { ComponentPayloadData, ComponentsData, ComponentsResponseData } from '../types/componentTypes.ts';
+import useCreate from '@src/hooks/useCreate';
+import useData from '@src/hooks/useData';
+import useDelete from '@src/hooks/useDelete';
+import { componentListAtom } from '@src/atoms/listAtom';
+import { ComponentPayloadData, ComponentsData, ComponentsResponseData } from '@src/types/componentTypes';
 
 const useComponent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -1,5 +1,5 @@
-import { DeviceDetails } from './deviceTypes.ts';
-import { SystemData } from './systemTypes.ts';
+import { DeviceDetails } from '@src/types/deviceTypes';
+import { SystemData } from '@src/types/systemTypes';
 
 export type ComponentsData = {
   id: number;

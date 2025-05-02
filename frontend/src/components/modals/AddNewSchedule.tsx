@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Show } from '../utils/Show.tsx';
-import useSystems from '../../hooks/useSystem.ts';
-import useSchedule from '../../hooks/useSchedule.ts';
-import useDisplayAlert from '../../hooks/useDisplayAlert.ts';
+import { Show } from '@src/components/utils/Show';
+import useSystems from '@src/hooks/useSystem';
+import useSchedule from '@src/hooks/useSchedule';
+import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
