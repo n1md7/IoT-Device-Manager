@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useData from '@src/hooks/useData';
-import useCreate from '@src/hooks/useCreate';
+import useFetch from '@src/hooks/common/useFetch.ts';
+import useCreate from '@src/hooks/common/useCreate.ts';
 import { deviceListAtom } from '@src/atoms/listAtom';
 import { DeviceDetails, DevicePayloadData, DevicesResponseData } from '@src/types/deviceTypes';
 
 const useDevice = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deviceList, setDeviceList] = useAtom(deviceListAtom);
-  const { data, error, loading, refresh } = useData<DevicesResponseData>('/api/v1/devices');
+  const { data, error, loading, refresh } = useFetch<DevicesResponseData>('/api/v1/devices');
   const device = useCreate<DevicePayloadData, DeviceDetails>('/api/v1/devices/create');
 
   const addDevice = async (payload: DevicePayloadData) => {

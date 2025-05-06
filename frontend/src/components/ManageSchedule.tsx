@@ -18,9 +18,10 @@ const ManageSchedule = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { displaySuccess, displayError } = useDisplayAlert();
 
-  const handleNewScheduleView = () => {
+  const handleNewScheduleView = (scheduleId?: number) => {
     setIsNewScheduleOpen(true);
-    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
+    const title = scheduleId ? 'Update' : 'Create';
+    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} selectedId={scheduleId} actionTitle={title} />);
   };
 
   const handleDeleteItem = (id: Nullable<number>, schedule: Nullable<string>) => {
@@ -116,7 +117,12 @@ const ManageSchedule = () => {
                 >
                   <DeleteIcon className={'#4f4f4f'} />
                 </button>
-                <button className="edit-button">
+                <button
+                  className="edit-button"
+                  onClick={() => {
+                    handleNewScheduleView(schedule.id);
+                  }}
+                >
                   <EditIcon className={'text-light-dark'} />
                 </button>
               </div>
@@ -124,7 +130,7 @@ const ManageSchedule = () => {
           ))}
         </Show>
 
-        <NewItem item={'Schedule'} btnAction={handleNewScheduleView} />
+        <NewItem item={'Schedule'} btnAction={() => handleNewScheduleView()} />
       </div>
       <Show when={showConfirmation}>
         <Confirmation

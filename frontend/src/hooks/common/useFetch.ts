@@ -1,8 +1,8 @@
-import api, { API_URL } from '@src/api/api-client';
+import api, { API_URL } from '@src/api/api-client.ts';
 import { useCallback, useEffect, useState } from 'react';
 import axios, { CanceledError } from 'axios';
 
-const useData = <T>(endpoint: string) => {
+const useFetch = <T>(endpoint: string) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
@@ -41,4 +41,4 @@ const useData = <T>(endpoint: string) => {
   return { data, error, loading, refresh: fetchData };
 };
 
-export default useData;
+export default useFetch;

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useCreate from '@src/hooks/useCreate';
-import useDelete from '@src/hooks/useDelete';
-import useData from '@src/hooks/useData';
+import useCreate from '@src/hooks/common/useCreate.ts';
+import useDelete from '@src/hooks/common/useDelete.ts';
+import useFetch from '@src/hooks/common/useFetch.ts';
 import { SystemPayload, SystemData, SystemsResponseData } from '@src/types/systemTypes';
 import { systemListAtom } from '@src/atoms/listAtom';
 
@@ -10,7 +10,7 @@ const useSystems = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [systemList, setSystemList] = useAtom(systemListAtom);
   const [deletedItem, setDeletedItem] = useState<string | null>();
-  const { data, error, loading, refresh } = useData<SystemsResponseData>('/api/v1/systems');
+  const { data, error, loading, refresh } = useFetch<SystemsResponseData>('/api/v1/systems');
   const { remove, error: deletingError, reset: deleteReset } = useDelete<SystemsResponseData>('/api/v1/systems');
   const system = useCreate<SystemPayload, SystemData>('/api/v1/systems/create');
 

@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useCreate from '@src/hooks/useCreate';
-import useData from '@src/hooks/useData';
-import useDelete from '@src/hooks/useDelete';
+import useCreate from '@src/hooks/common/useCreate.ts';
+import useFetch from '@src/hooks/common/useFetch.ts';
+import useDelete from '@src/hooks/common/useDelete.ts';
 import { componentListAtom } from '@src/atoms/listAtom';
 import { ComponentPayloadData, ComponentsData, ComponentsResponseData } from '@src/types/componentTypes';
 
 const useComponent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [componentList, setComponentList] = useAtom(componentListAtom);
-  const { data, error, loading, refresh } = useData<ComponentsResponseData>('/api/v1/components');
+  const { data, error, loading, refresh } = useFetch<ComponentsResponseData>('/api/v1/components');
   const { remove, error: deletingError, reset: deleteReset } = useDelete<ComponentsData>('/api/v1/components');
   const component = useCreate<ComponentPayloadData, ComponentsData>('/api/v1/components');
   const [deletedItem, setDeletedItem] = useState<string | null>();

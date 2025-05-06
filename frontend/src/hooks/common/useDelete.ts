@@ -1,4 +1,4 @@
-import api, { API_URL } from '@src/api/api-client';
+import api, { API_URL } from '@src/api/api-client.ts';
 import { useCallback, useState } from 'react';
 import axios, { CanceledError } from 'axios';
 
@@ -10,18 +10,16 @@ export type ResponseError = {
   details?: string;
 };
 
-const useCreate = <PayloadType, ResponseType>(endpoint: string) => {
+const UseDelete = <ResponseType>(endpoint: string) => {
   const [data, setData] = useState<ResponseType | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<ResponseError | null>(null);
-  const [statusCode, setStatusCode] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const create = useCallback(
-    async (payload: PayloadType) => {
+  const remove = useCallback(
+    async (id: string | number) => {
       setLoading(true);
       try {
-        const response = await api.post<ResponseType>(`${API_URL}${endpoint}`, payload);
-        if (response.status) setStatusCode(response.status);
+        const response = await api.delete<ResponseType>(`${API_URL}${endpoint}/${id}`);
         if (response.data) setData(response.data);
       } catch (err: unknown) {
         if (err instanceof CanceledError || axios.isCancel(err)) return;
@@ -30,7 +28,7 @@ const useCreate = <PayloadType, ResponseType>(endpoint: string) => {
         } else if (err instanceof Error) {
           setError({ message: err.message });
         } else {
-          setError({ message: 'Unknown error occurred.' });
+          setError({ message: 'Error deleting item' });
         }
       } finally {
         setLoading(false);
@@ -39,13 +37,19 @@ const useCreate = <PayloadType, ResponseType>(endpoint: string) => {
     [endpoint],
   );
 
+  const reset = () => {
+    setData(null);
+    setLoading(false);
+    setError(null);
+  };
+
   return {
+    remove,
     data,
     error,
     loading,
-    create,
-    statusCode,
+    reset,
   };
 };
 
-export default useCreate;
+export default UseDelete;
