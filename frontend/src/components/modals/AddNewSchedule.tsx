@@ -11,7 +11,7 @@ interface Props {
   actionTitle: string;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props) => {
-  const { addSchedule, isSubmitting, scheduler, updateSchedule } = useSchedule();
+  const { addSchedule, isSubmitting, scheduler, updateSchedule, updatingError, updatedItem, updating } = useSchedule();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [newScheduleName, setNewScheduleName] = useState<string | null>(null);
@@ -52,12 +52,26 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props
       },
       systemId: selectedSystem,
     };
+
     if (selectedId) {
+      console.log('update ', payload);
       await updateSchedule(selectedId, payload, formData.name);
     } else {
+      console.log('add ', payload);
       await addSchedule(payload);
     }
   };
+
+  useEffect(() => {
+    if (updatingError) {
+      displayError({
+        actionText: 'updating',
+        errorMessage: updatingError.message,
+        errorDetails: updatingError.details,
+      });
+      setIsNewScheduleOpen(false);
+    }
+  }, [displayError, setIsNewScheduleOpen, updatingError]);
 
   useEffect(() => {
     if (scheduler.error) {
@@ -79,6 +93,16 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props
       setIsNewScheduleOpen(false);
     }
   }, [isSubmitting, scheduler.data, setIsNewScheduleOpen, displaySuccess, newScheduleName]);
+
+  useEffect(() => {
+    if (updating && !updatingError) {
+      displaySuccess({
+        actionText: 'updated',
+        item: 'item',
+      });
+      setIsNewScheduleOpen(false);
+    }
+  }, [displaySuccess, setIsNewScheduleOpen, updatedItem, updating, updatingError]);
 
   const updateItem = scheduleList?.schedules.find((item) => item.id === selectedId);
   useEffect(() => {

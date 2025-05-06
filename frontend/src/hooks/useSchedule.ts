@@ -8,12 +8,14 @@ import { SchedulePayload, ScheduleData, ScheduleResponseData } from '@src/types/
 import useUpdate from '@src/hooks/common/useUpdate.ts';
 
 const useSchedule = () => {
+  const endpoint = '/api/v1/scheduler';
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduleList, setScheduleList] = useAtom(scheduleListAtom);
-  const { data, loading, refresh, error } = useFetch<ScheduleResponseData>('/api/v1/scheduler');
-  const scheduler = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
-  const { update } = useUpdate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
-  const { remove, error: deletingError, reset: deleteReset } = useDelete<SchedulePayload>('/api/v1/scheduler');
+  const { data, loading, refresh, error } = useFetch<ScheduleResponseData>(endpoint);
+  const scheduler = useCreate<SchedulePayload, ScheduleData>(endpoint);
+  const { update, error: updatingError, loading: updating } = useUpdate<SchedulePayload, ScheduleData>(endpoint);
+  const { remove, error: deletingError, reset: deleteReset } = useDelete<SchedulePayload>(endpoint);
   const [deletedItem, setDeletedItem] = useState<string | null>();
   const [updatedItem, setUpdatedItem] = useState<string | null>();
 
@@ -74,6 +76,8 @@ const useSchedule = () => {
     deletedItem,
     deletingError,
     updatedItem,
+    updatingError,
+    updating,
   };
 };
 

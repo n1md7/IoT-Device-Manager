@@ -20,9 +20,8 @@ const useUpdate = <PayloadType, ResponseType>(endpoint: string) => {
     async (id: string | number, payload: PayloadType) => {
       setLoading(true);
       try {
-        const response = await api.put<SchedulePayload, ResponseType>(`${API_URL}${endpoint}/${id}`, payload);
+        const response = await api.patch<SchedulePayload, ResponseType>(`${API_URL}${endpoint}/${id}`, payload);
         if (response) setData(response);
-        console.log('item is getting updated, calling useUpdate');
       } catch (err: unknown) {
         if (err instanceof CanceledError || axios.isCancel(err)) return;
         if (axios.isAxiosError(err)) {

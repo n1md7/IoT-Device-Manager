@@ -2,7 +2,7 @@ import { useAlert } from '@src/hooks/useAlert';
 
 type Item = {
   item: string;
-  actionText: 'added' | 'deleted';
+  actionText: 'added' | 'deleted' | 'updated';
 };
 
 type ErrorDetails = {
