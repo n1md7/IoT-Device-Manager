@@ -55,7 +55,7 @@ const ManageDevice = () => {
                   <DeleteIcon className={'#4f4f4f'} />
                 </button>
                 <button className="edit-button">
-                  <EditIcon className={'text-light-dark'} />
+                  <EditIcon className={'text-icon'} />
                 </button>
               </div>
             </div>

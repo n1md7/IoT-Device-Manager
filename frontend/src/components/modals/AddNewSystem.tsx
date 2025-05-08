@@ -6,9 +6,11 @@ import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;
+  selectedId?: number;
+  actionTitle?: string;
 }
 
-const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
+const AddNewSystem = ({ setIsNewSystemOpen, selectedId, actionTitle }: Props) => {
   const { addSystem, isSubmitting, system } = useSystem();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [newSystemName, setNewSystemName] = useState<string | null>(null);
@@ -56,7 +58,7 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
-        <h2>Create System</h2>
+        <h2>{actionTitle} System</h2>
         <form onSubmit={handleSubmit}>
           <p className="mb-3 text-light-purple">All fields with * are required.</p>
 

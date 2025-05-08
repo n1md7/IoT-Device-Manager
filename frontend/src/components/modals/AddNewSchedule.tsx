@@ -54,10 +54,8 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props
     };
 
     if (selectedId) {
-      console.log('update ', payload);
       await updateSchedule(selectedId, payload, formData.name);
     } else {
-      console.log('add ', payload);
       await addSchedule(payload);
     }
   };

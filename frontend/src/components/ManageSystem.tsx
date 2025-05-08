@@ -47,9 +47,10 @@ const ManageSystem = () => {
     }
   }, [deletingError, reset, displayError]);
 
-  const handleNewSystemView = () => {
+  const handleNewSystemView = (systemId?: number) => {
     setIsNewSystemOpen(true);
-    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} />);
+    const title = systemId ? 'Update' : 'Create';
+    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} selectedId={systemId} actionTitle={title} />);
   };
 
   return (
@@ -100,8 +101,13 @@ const ManageSystem = () => {
                 >
                   <DeleteIcon className={'#4f4f4f'} />
                 </button>
-                <button className="edit-button">
-                  <EditIcon className={'text-light-dark'} />
+                <button
+                  className="edit-button"
+                  onClick={() => {
+                    handleNewSystemView(system.id);
+                  }}
+                >
+                  <EditIcon className={'text-icon'} />
                 </button>
               </div>
             </div>

@@ -123,7 +123,7 @@ const ManageSchedule = () => {
                     handleNewScheduleView(schedule.id);
                   }}
                 >
-                  <EditIcon className={'text-light-dark'} />
+                  <EditIcon className={'text-icon'} />
                 </button>
               </div>
             </div>
