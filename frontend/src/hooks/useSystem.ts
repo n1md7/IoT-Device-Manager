@@ -5,7 +5,6 @@ import useDelete from '@src/hooks/common/useDelete.ts';
 import useFetch from '@src/hooks/common/useFetch.ts';
 import { SystemPayload, SystemData, SystemsResponseData } from '@src/types/systemTypes';
 import { systemListAtom } from '@src/atoms/listAtom';
-import { ScheduleData, SchedulePayload } from '@src/types/scheduleTypes.ts';
 import useUpdate from '@src/hooks/common/useUpdate.ts';
 
 const useSystems = () => {
@@ -14,7 +13,7 @@ const useSystems = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [systemList, setSystemList] = useAtom(systemListAtom);
   const [deletedItem, setDeletedItem] = useState<string | null>();
-  const { update, error: updatingError, loading: updating } = useUpdate<SchedulePayload, ScheduleData>(endpoint);
+  const { update, error: updatingError, loading: updating } = useUpdate<SystemPayload, SystemData>(endpoint);
   const { data, error, loading, refresh } = useFetch<SystemsResponseData>(endpoint);
   const { remove, error: deletingError, reset: deleteReset } = useDelete<SystemsResponseData>(endpoint);
   const system = useCreate<SystemPayload, SystemData>(endpoint + '/create');
@@ -46,7 +45,7 @@ const useSystems = () => {
     });
   };
 
-  const updateSystem = async (id: number, payload: SchedulePayload, system: string) => {
+  const updateSystem = async (id: number, payload: SystemPayload, system: string) => {
     return update(id, payload).then(() => {
       setUpdatedItem(system);
       return refresh().finally(() => {

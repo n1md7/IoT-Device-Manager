@@ -10,7 +10,7 @@ import useDisplayAlert from '@src/hooks/useDisplayAlert';
 import { Nullable } from '@src/types/utilsType';
 
 const ManageSystem = () => {
-  const { systemList, deletingError, isSubmitting, deletedItem, removeSystem, reset } = useSystem();
+  const { removeSystem, reset, systemList, deletingError, isSubmitting, deletedItem } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<Nullable<number>>(null);
@@ -114,7 +114,7 @@ const ManageSystem = () => {
           ))}
         </Show>
 
-        <NewItem item={'System'} btnAction={handleNewSystemView} />
+        <NewItem item={'System'} btnAction={() => handleNewSystemView()} />
       </div>
 
       <Show when={showConfirmation}>
