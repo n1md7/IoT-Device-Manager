@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react';
-import useCreate from '@src/hooks/useCreate';
-import useData from '@src/hooks/useData';
-import useDelete from '@src/hooks/useDelete';
+import useCreate from '@src/hooks/common/useCreate.ts';
+import useFetch from '@src/hooks/common/useFetch.ts';
+import useDelete from '@src/hooks/common/useDelete.ts';
 import { useAtom } from 'jotai';
 import { scheduleListAtom } from '@src/atoms/listAtom';
 import { SchedulePayload, ScheduleData, ScheduleResponseData } from '@src/types/scheduleTypes';
+import useUpdate from '@src/hooks/common/useUpdate.ts';
 
 const useSchedule = () => {
+  const endpoint = '/api/v1/scheduler';
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduleList, setScheduleList] = useAtom(scheduleListAtom);
-  const { data, loading, refresh, error } = useData<ScheduleResponseData>('/api/v1/scheduler');
-  const scheduler = useCreate<SchedulePayload, ScheduleData>('/api/v1/scheduler');
-  const { remove, error: deletingError, reset: deleteReset } = useDelete<SchedulePayload>('/api/v1/scheduler');
+  const { data, loading, refresh, error } = useFetch<ScheduleResponseData>(endpoint);
+  const scheduler = useCreate<SchedulePayload, ScheduleData>(endpoint);
+  const { update, error: updatingError, loading: updating } = useUpdate<SchedulePayload, ScheduleData>(endpoint);
+  const { remove, error: deletingError, reset: deleteReset } = useDelete<SchedulePayload>(endpoint);
   const [deletedItem, setDeletedItem] = useState<string | null>();
+  const [updatedItem, setUpdatedItem] = useState<string | null>();
 
   const addSchedule = async (payload: SchedulePayload) => {
     const clickedAt = new Date();
@@ -40,6 +45,15 @@ const useSchedule = () => {
     });
   };
 
+  const updateSchedule = async (id: number, payload: SchedulePayload, schedule: string) => {
+    return update(id, payload).then(() => {
+      setUpdatedItem(schedule);
+      return refresh().finally(() => {
+        setIsSubmitting(false);
+      });
+    });
+  };
+
   const reset = () => {
     deleteReset();
     setDeletedItem(null);
@@ -52,6 +66,7 @@ const useSchedule = () => {
   return {
     addSchedule,
     removeSchedule,
+    updateSchedule,
     reset,
     isSubmitting,
     scheduler,
@@ -60,6 +75,9 @@ const useSchedule = () => {
     error,
     deletedItem,
     deletingError,
+    updatedItem,
+    updatingError,
+    updating,
   };
 };
 

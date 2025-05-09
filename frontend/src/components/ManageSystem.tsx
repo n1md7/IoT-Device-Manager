@@ -10,7 +10,7 @@ import useDisplayAlert from '@src/hooks/useDisplayAlert';
 import { Nullable } from '@src/types/utilsType';
 
 const ManageSystem = () => {
-  const { systemList, deletingError, isSubmitting, deletedItem, removeSystem, reset } = useSystem();
+  const { removeSystem, reset, systemList, deletingError, isSubmitting, deletedItem } = useSystem();
   const [isNewSystemOpen, setIsNewSystemOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<Nullable<number>>(null);
@@ -47,9 +47,10 @@ const ManageSystem = () => {
     }
   }, [deletingError, reset, displayError]);
 
-  const handleNewSystemView = () => {
+  const handleNewSystemView = (systemId?: number) => {
     setIsNewSystemOpen(true);
-    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} />);
+    const title = systemId ? 'Update' : 'Create';
+    setShowModal(<AddNewSystem setIsNewSystemOpen={setIsNewSystemOpen} selectedId={systemId} actionTitle={title} />);
   };
 
   return (
@@ -100,15 +101,20 @@ const ManageSystem = () => {
                 >
                   <DeleteIcon className={'#4f4f4f'} />
                 </button>
-                <button className="edit-button">
-                  <EditIcon className={'text-light-dark'} />
+                <button
+                  className="edit-button"
+                  onClick={() => {
+                    handleNewSystemView(system.id);
+                  }}
+                >
+                  <EditIcon className={'text-icon'} />
                 </button>
               </div>
             </div>
           ))}
         </Show>
 
-        <NewItem item={'System'} btnAction={handleNewSystemView} />
+        <NewItem item={'System'} btnAction={() => handleNewSystemView()} />
       </div>
 
       <Show when={showConfirmation}>

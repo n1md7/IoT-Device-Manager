@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column } from 'typeorm';
 import { IsString, MaxLength } from 'class-validator';
 
 export class CreateSystemRequest {

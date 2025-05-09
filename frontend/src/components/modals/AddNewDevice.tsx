@@ -6,10 +6,12 @@ import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 interface Props {
   setIsNewDeviceOpen: (value: boolean) => void;
+  selectedId?: string;
+  actionTitle?: string;
 }
 
-const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
-  const { addDevice, isSubmitting, device } = useDevice();
+const AddNewDevice = ({ setIsNewDeviceOpen, selectedId, actionTitle }: Props) => {
+  const { addDevice, isSubmitting, device, deviceList, updateDevice, updating, updatingError } = useDevice();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [newDeviceName, setNewDeviceName] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -30,14 +32,19 @@ const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
     e.preventDefault();
     setNewDeviceName(formData.name);
 
-    await addDevice({
+    const payload = {
       name: formData.name,
       description: formData.description,
       code: formData.code,
       type: formData.type,
       version: formData.version,
       ipAddress: formData.ipAddress,
-    });
+    };
+
+    if (selectedId) {
+      await updateDevice(selectedId, payload, formData.name);
+    }
+    await addDevice(payload);
   };
 
   useEffect(() => {
@@ -61,10 +68,37 @@ const AddNewDevice = ({ setIsNewDeviceOpen }: Props) => {
     }
   }, [device.statusCode, setIsNewDeviceOpen, isSubmitting, displaySuccess, newDeviceName]);
 
+  useEffect(() => {
+    if (updating && !updatingError) {
+      displaySuccess({
+        actionText: 'updated',
+        item: 'item',
+      });
+      setIsNewDeviceOpen(false);
+    }
+  }, [displaySuccess, setIsNewDeviceOpen, updating, updatingError]);
+
+  useEffect(() => {
+    if (deviceList.devices.length > 0) {
+      const updatedItem = deviceList.devices.find((item) => item.code === selectedId);
+
+      if (updatedItem) {
+        setFormData({
+          name: updatedItem.name,
+          description: updatedItem.description ?? '',
+          code: updatedItem.code,
+          type: updatedItem.type,
+          version: updatedItem.version,
+          ipAddress: updatedItem.ipAddress ?? '',
+        });
+      }
+    }
+  }, [deviceList.devices, selectedId]);
+
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
-        <h2>Create Device</h2>
+        <h2>{actionTitle} Device</h2>
         <form onSubmit={handleSubmit}>
           <p className="mb-3 text-light-purple">All fields with * are required.</p>
           <div className="mb-5">

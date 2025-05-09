@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useData from '@src/hooks/useData';
-import useCreate from '@src/hooks/useCreate';
+import useFetch from '@src/hooks/common/useFetch.ts';
+import useCreate from '@src/hooks/common/useCreate.ts';
 import { deviceListAtom } from '@src/atoms/listAtom';
 import { DeviceDetails, DevicePayloadData, DevicesResponseData } from '@src/types/deviceTypes';
+import useUpdate from '@src/hooks/common/useUpdate.ts';
 
 const useDevice = () => {
+  const endpoint = '/api/v1/devices';
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deviceList, setDeviceList] = useAtom(deviceListAtom);
-  const { data, error, loading, refresh } = useData<DevicesResponseData>('/api/v1/devices');
-  const device = useCreate<DevicePayloadData, DeviceDetails>('/api/v1/devices/create');
+  const [updatedItem, setUpdatedItem] = useState<string | null>();
+  const { data, error, loading, refresh } = useFetch<DevicesResponseData>(endpoint);
+  const { update, error: updatingError, loading: updating } = useUpdate<DevicePayloadData, DeviceDetails>(endpoint + '/update');
+  const device = useCreate<DevicePayloadData, DeviceDetails>(endpoint);
 
   const addDevice = async (payload: DevicePayloadData) => {
     const clickedAt = new Date();
@@ -28,17 +33,30 @@ const useDevice = () => {
     });
   };
 
+  const updateDevice = async (id: string, payload: DevicePayloadData, device: string) => {
+    return update(id, payload).then(() => {
+      setUpdatedItem(device);
+      return refresh().finally(() => {
+        setIsSubmitting(false);
+      });
+    });
+  };
+
   useEffect(() => {
     if (data) setDeviceList(data);
   }, [data, setDeviceList]);
 
   return {
     addDevice,
+    updateDevice,
     isSubmitting,
     device,
     deviceList,
     loading,
     error,
+    updatingError,
+    updatedItem,
+    updating,
   };
 };
 

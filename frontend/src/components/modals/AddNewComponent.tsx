@@ -9,17 +9,21 @@ import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 interface Props {
   setIsNewComponentOpen: (value: boolean) => void;
+  selectedId?: number;
+  actionTitle?: string;
 }
 
-const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
+const AddNewComponent = ({ setIsNewComponentOpen, selectedId, actionTitle }: Props) => {
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
-  const { addComponent, isSubmitting, component } = useComponent();
+  const { addComponent, isSubmitting, component, componentList, updateComponent, updating, updatingError } = useComponent();
   const { displaySuccess, displayError } = useDisplayAlert();
   const { systemList } = useSystems();
   const { deviceList } = useDevice();
 
   const [formData, setFormData] = useState({
+    deviceCode: '',
+    systemId: 0,
     shared: false,
   });
 
@@ -37,12 +41,34 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
       return;
     }
 
-    await addComponent({
+    const payload = {
       deviceCode: selectedDevice,
       systemId: selectedSystem,
       shared: formData.shared,
-    });
+    };
+
+    if (selectedId) {
+      await updateComponent(selectedId, payload, selectedDevice);
+    } else {
+      await addComponent(payload);
+    }
   };
+
+  useEffect(() => {
+    if (componentList.components.length > 0) {
+      const updatedItem = componentList.components.find((item) => item.id === selectedId);
+      if (updatedItem) {
+        setFormData({
+          deviceCode: updatedItem.device.code,
+          systemId: updatedItem.system.id,
+          shared: updatedItem.shared,
+        });
+
+        setSelectedDevice(updatedItem.device.code);
+        setSelectedSystem(updatedItem.system.id);
+      }
+    }
+  }, [componentList.components, selectedId]);
 
   useEffect(() => {
     if (component.error) {
@@ -66,10 +92,20 @@ const AddNewComponent = ({ setIsNewComponentOpen }: Props) => {
     }
   }, [component.data, displaySuccess, isSubmitting, selectedDevice, setIsNewComponentOpen]);
 
+  useEffect(() => {
+    if (updating && !updatingError) {
+      displaySuccess({
+        actionText: 'updated',
+        item: 'item',
+      });
+      setIsNewComponentOpen(false);
+    }
+  }, [displaySuccess, setIsNewComponentOpen, updating, updatingError]);
+
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
-        <h2>Create Component</h2>
+        <h2>{actionTitle} Component</h2>
         <form onSubmit={handleSubmit}>
           <p className="mb-3 text-light-purple">All fields with * are required.</p>
           <div className="mb-5">

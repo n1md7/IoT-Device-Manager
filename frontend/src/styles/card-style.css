@@ -43,7 +43,7 @@
 
 
             .edit-button {
-                @apply rounded-md cursor-pointer bg-light-gray h-12 w-12 flex items-center justify-center;
+                @apply rounded-md cursor-pointer h-12 w-12 flex items-center justify-center;
             }
             .delete-button {
                 @apply rounded-md cursor-pointer h-8 w-8 flex items-center justify-center;

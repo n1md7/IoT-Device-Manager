@@ -7,13 +7,16 @@ import useDisplayAlert from '@src/hooks/useDisplayAlert';
 
 interface Props {
   setIsNewScheduleOpen: (value: boolean) => void;
+  selectedId?: number;
+  actionTitle: string;
 }
-const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
-  const { addSchedule, isSubmitting, scheduler } = useSchedule();
+const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props) => {
+  const { addSchedule, isSubmitting, scheduler, updateSchedule, updatingError, updatedItem, updating } = useSchedule();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [newScheduleName, setNewScheduleName] = useState<string | null>(null);
   const { systemList } = useSystems();
+  const { scheduleList } = useSchedule();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -25,6 +28,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
   const handleSystemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSystem(Number(e.target.value));
   };
+
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -39,7 +43,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
       return;
     }
 
-    await addSchedule({
+    const payload = {
       name: formData.name,
       startExpression: formData.startExpression,
       duration: {
@@ -47,8 +51,25 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
         sec: Number(formData.sec),
       },
       systemId: selectedSystem,
-    });
+    };
+
+    if (selectedId) {
+      await updateSchedule(selectedId, payload, formData.name);
+    } else {
+      await addSchedule(payload);
+    }
   };
+
+  useEffect(() => {
+    if (updatingError) {
+      displayError({
+        actionText: 'updating',
+        errorMessage: updatingError.message,
+        errorDetails: updatingError.details,
+      });
+      setIsNewScheduleOpen(false);
+    }
+  }, [displayError, setIsNewScheduleOpen, updatingError]);
 
   useEffect(() => {
     if (scheduler.error) {
@@ -71,10 +92,33 @@ const AddNewSchedule = ({ setIsNewScheduleOpen }: Props) => {
     }
   }, [isSubmitting, scheduler.data, setIsNewScheduleOpen, displaySuccess, newScheduleName]);
 
+  useEffect(() => {
+    if (updating && !updatingError) {
+      displaySuccess({
+        actionText: 'updated',
+        item: 'item',
+      });
+      setIsNewScheduleOpen(false);
+    }
+  }, [displaySuccess, setIsNewScheduleOpen, updatedItem, updating, updatingError]);
+
+  const updateItem = scheduleList?.schedules.find((item) => item.id === selectedId);
+  useEffect(() => {
+    if (updateItem) {
+      setFormData({
+        name: updateItem.name,
+        startExpression: updateItem.startExpression,
+        min: updateItem.duration.min.toLocaleString(),
+        sec: updateItem.duration.sec.toLocaleString(),
+      });
+      setSelectedSystem(updateItem.system.id);
+    }
+  }, [updateItem]);
+
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
-        <h2>Create Schedule</h2>
+        <h2>{actionTitle} Schedule</h2>
         <form onSubmit={handleSubmit}>
           <p className="mb-3 text-light-purple">All fields with * are required.</p>
           <div className="mb-5">

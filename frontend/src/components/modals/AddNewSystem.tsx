@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Show } from '@src/components/utils/Show';
-import useSystem from '@src/hooks/useSystem';
 import useDisplayAlert from '@src/hooks/useDisplayAlert';
+import useSystem from '@src/hooks/useSystem.ts';
 
 interface Props {
   setIsNewSystemOpen: (value: boolean) => void;
+  selectedId?: number;
+  actionTitle?: string;
 }
 
-const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
-  const { addSystem, isSubmitting, system } = useSystem();
+const AddNewSystem = ({ setIsNewSystemOpen, selectedId, actionTitle }: Props) => {
+  const { addSystem, isSubmitting, system, systemList, updateSystem, updating, updatingError } = useSystem();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [newSystemName, setNewSystemName] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -26,11 +28,30 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
     e.preventDefault();
     setNewSystemName(formData.name);
 
-    await addSystem({
+    const payload = {
       name: formData.name,
       description: formData.description,
-    });
+    };
+
+    if (selectedId) {
+      await updateSystem(selectedId, payload, formData.name);
+    } else {
+      await addSystem(payload);
+    }
   };
+
+  useEffect(() => {
+    if (systemList.systems.length > 0) {
+      const updateItem = systemList.systems.find((item) => item.id === selectedId);
+
+      if (updateItem) {
+        setFormData({
+          name: updateItem.name,
+          description: updateItem.description,
+        });
+      }
+    }
+  }, [selectedId, systemList.systems]);
 
   useEffect(() => {
     if (system.error) {
@@ -53,10 +74,20 @@ const AddNewSystem = ({ setIsNewSystemOpen }: Props) => {
     }
   }, [system.data, isSubmitting, setIsNewSystemOpen, displaySuccess, newSystemName]);
 
+  useEffect(() => {
+    if (updating && !updatingError) {
+      displaySuccess({
+        actionText: 'updated',
+        item: 'item',
+      });
+      setIsNewSystemOpen(false);
+    }
+  }, [displaySuccess, setIsNewSystemOpen, updating, updatingError]);
+
   return (
     <div className="modal-wrapper">
       <div className="modal-container">
-        <h2>Create System</h2>
+        <h2>{actionTitle} System</h2>
         <form onSubmit={handleSubmit}>
           <p className="mb-3 text-light-purple">All fields with * are required.</p>
 

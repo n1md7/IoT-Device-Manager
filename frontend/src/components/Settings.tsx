@@ -38,7 +38,7 @@ const Settings = () => {
     }
     if (modal === 'schedule') {
       setIsNewScheduleOpen(true);
-      setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
+      setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} actionTitle={'Create'} />);
     }
     if (modal === 'device') {
       setIsNewDeviceOpen(true);

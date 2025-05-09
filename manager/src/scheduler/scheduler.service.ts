@@ -14,6 +14,7 @@ export class SchedulerService implements OnModuleInit {
   private readonly logger = new Logger(SchedulerService.name);
   constructor(
     @InjectRepository(Schedule) private readonly schedulerRepository: Repository<Schedule>,
+    @InjectRepository(System) private readonly systemRepository: Repository<System>,
     @Inject(CronService) private readonly cronService: CronService,
   ) {}
 
@@ -86,7 +87,12 @@ export class SchedulerService implements OnModuleInit {
 
   async update(id: number, updateSchedulerDto: UpdateScheduleRequest) {
     try {
-      return await this.schedulerRepository.update(id, updateSchedulerDto);
+      return await this.schedulerRepository.update(id, {
+        name: updateSchedulerDto.name,
+        startExpression: updateSchedulerDto.startExpression,
+        duration: updateSchedulerDto.duration,
+        system: this.systemRepository.create({ id: updateSchedulerDto.systemId }),
+      });
     } catch (error) {
       throw new DatabaseException({
         message: `Error updating schedule with id "${id}"`,

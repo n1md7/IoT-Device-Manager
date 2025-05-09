@@ -2,25 +2,26 @@ import { ReactElement, useEffect, useState } from 'react';
 import { Show } from '@src/components/utils/Show';
 import { Nullable } from '@src/types/utilsType';
 import EditIcon from '@src/icons/EditIcon';
-import AddNewSchedule from '@src/components/modals/AddNewSchedule';
-import NewItem from '@src/components/utils/NewItem';
-import useSchedule from '@src/hooks/useSchedule';
 import DeleteIcon from '@src/icons/DeleteIcon';
+import NewItem from '@src/components/utils/NewItem';
+import AddNewSchedule from '@src/components/modals/AddNewSchedule';
 import Confirmation from '@src/components/modals/Confirmation';
 import useDisplayAlert from '@src/hooks/useDisplayAlert';
+import useSchedule from '@src/hooks/useSchedule';
 
 const ManageSchedule = () => {
-  const { scheduleList, removeSchedule, deletedItem, deletingError, reset, isSubmitting } = useSchedule();
   const [isNewScheduleOpen, setIsNewScheduleOpen] = useState(false);
   const [showModal, setShowModal] = useState<ReactElement | null>(null);
   const [selectedId, setSelectedId] = useState<Nullable<number>>(null);
   const [selectedScheduleName, setSelectedScheduleName] = useState<Nullable<string>>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const { scheduleList, removeSchedule, deletedItem, deletingError, reset, isSubmitting } = useSchedule();
   const { displaySuccess, displayError } = useDisplayAlert();
 
-  const handleNewScheduleView = () => {
+  const handleNewScheduleView = (scheduleId?: number) => {
     setIsNewScheduleOpen(true);
-    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} />);
+    const title = scheduleId ? 'Update' : 'Create';
+    setShowModal(<AddNewSchedule setIsNewScheduleOpen={setIsNewScheduleOpen} selectedId={scheduleId} actionTitle={title} />);
   };
 
   const handleDeleteItem = (id: Nullable<number>, schedule: Nullable<string>) => {
@@ -116,15 +117,20 @@ const ManageSchedule = () => {
                 >
                   <DeleteIcon className={'#4f4f4f'} />
                 </button>
-                <button className="edit-button">
-                  <EditIcon className={'text-light-dark'} />
+                <button
+                  className="edit-button"
+                  onClick={() => {
+                    handleNewScheduleView(schedule.id);
+                  }}
+                >
+                  <EditIcon className={'text-icon'} />
                 </button>
               </div>
             </div>
           ))}
         </Show>
 
-        <NewItem item={'Schedule'} btnAction={handleNewScheduleView} />
+        <NewItem item={'Schedule'} btnAction={() => handleNewScheduleView()} />
       </div>
       <Show when={showConfirmation}>
         <Confirmation

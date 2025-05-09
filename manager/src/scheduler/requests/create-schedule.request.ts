@@ -1,4 +1,4 @@
-import { IsDefined, IsInt, IsString, Matches, MaxLength, ValidateNested } from 'class-validator';
+import { IsDefined, IsInt, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { SystemTime } from '/src/systems/requests/properties/system-time.property';

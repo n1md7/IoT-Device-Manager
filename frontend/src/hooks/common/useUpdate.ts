@@ -1,4 +1,4 @@
-import api, { API_URL } from '@src/api/api-client';
+import api, { API_URL } from '@src/api/api-client.ts';
 import { useCallback, useState } from 'react';
 import axios, { CanceledError } from 'axios';
 
@@ -10,16 +10,16 @@ export type ResponseError = {
   details?: string;
 };
 
-const UseDelete = <ResponseType>(endpoint: string) => {
+const useUpdate = <PayloadType, ResponseType>(endpoint: string) => {
   const [data, setData] = useState<ResponseType | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<ResponseError | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  const remove = useCallback(
-    async (id: string | number) => {
+  const update = useCallback(
+    async (id: string | number, payload: PayloadType) => {
       setLoading(true);
       try {
-        const response = await api.delete<ResponseType>(`${API_URL}${endpoint}/${id}`);
+        const response = await api.patch<ResponseType>(`${API_URL}${endpoint}/${id}`, payload);
         if (response.data) setData(response.data);
       } catch (err: unknown) {
         if (err instanceof CanceledError || axios.isCancel(err)) return;
@@ -28,7 +28,7 @@ const UseDelete = <ResponseType>(endpoint: string) => {
         } else if (err instanceof Error) {
           setError({ message: err.message });
         } else {
-          setError({ message: 'Error deleting item' });
+          setError({ message: 'Error updating item' });
         }
       } finally {
         setLoading(false);
@@ -36,20 +36,12 @@ const UseDelete = <ResponseType>(endpoint: string) => {
     },
     [endpoint],
   );
-
-  const reset = () => {
-    setData(null);
-    setLoading(false);
-    setError(null);
-  };
-
   return {
-    remove,
+    update,
     data,
     error,
     loading,
-    reset,
   };
 };
 
-export default UseDelete;
+export default useUpdate;
