@@ -1,7 +1,6 @@
 import api, { API_URL } from '@src/api/api-client.ts';
 import { useCallback, useState } from 'react';
 import axios, { CanceledError } from 'axios';
-import { SchedulePayload } from '@src/types/scheduleTypes.ts';
 
 export type ResponseError = {
   statusCode?: number;
@@ -20,8 +19,8 @@ const useUpdate = <PayloadType, ResponseType>(endpoint: string) => {
     async (id: string | number, payload: PayloadType) => {
       setLoading(true);
       try {
-        const response = await api.patch<SchedulePayload, ResponseType>(`${API_URL}${endpoint}/${id}`, payload);
-        if (response) setData(response);
+        const response = await api.patch<ResponseType>(`${API_URL}${endpoint}/${id}`, payload);
+        if (response.data) setData(response.data);
       } catch (err: unknown) {
         if (err instanceof CanceledError || axios.isCancel(err)) return;
         if (axios.isAxiosError(err)) {

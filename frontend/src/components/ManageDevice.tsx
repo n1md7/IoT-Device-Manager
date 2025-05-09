@@ -11,9 +11,10 @@ const ManageDevice = () => {
   const [isNewDeviceOpen, setIsNewDeviceOpen] = useState(false);
   const { deviceList } = useDevice();
 
-  const handleNewDeviceView = () => {
+  const handleNewDeviceView = (componentId?: string) => {
     setIsNewDeviceOpen(true);
-    setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} />);
+    const title = componentId ? 'Update' : 'Create';
+    setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} selectedId={componentId} actionTitle={title} />);
   };
 
   return (
@@ -54,7 +55,7 @@ const ManageDevice = () => {
                 <button className="delete-button" onClick={() => {}}>
                   <DeleteIcon className={'#4f4f4f'} />
                 </button>
-                <button className="edit-button">
+                <button className="edit-button" onClick={() => handleNewDeviceView(device.code)}>
                   <EditIcon className={'text-icon'} />
                 </button>
               </div>
@@ -62,7 +63,7 @@ const ManageDevice = () => {
           ))}
         </Show>
 
-        <NewItem item={'Device'} btnAction={handleNewDeviceView} />
+        <NewItem item={'Device'} btnAction={() => handleNewDeviceView()} />
       </div>
       <Show when={deviceList.devices.length <= 0}>
         <div className="pt-5 error-msg">No available data.</div>

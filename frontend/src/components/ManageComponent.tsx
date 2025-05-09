@@ -18,9 +18,12 @@ const ManageComponent = () => {
   const { componentList, removeComponent, deletingError, deletedItem, reset, isSubmitting } = useComponent();
   const { displaySuccess, displayError } = useDisplayAlert();
 
-  const handleNewComponentView = () => {
+  const handleNewComponentView = (componentId?: number) => {
     setIsNewComponentOpen(true);
-    setShowModal(<AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} />);
+    const title = componentId ? 'Update' : 'Create';
+    setShowModal(
+      <AddNewComponent setIsNewComponentOpen={setIsNewComponentOpen} selectedId={componentId} actionTitle={title} />,
+    );
   };
 
   const handleDeleteItem = (id: Nullable<number>, component: Nullable<string>) => {
@@ -98,7 +101,7 @@ const ManageComponent = () => {
                 >
                   <DeleteIcon className={'#4f4f4f'} />
                 </button>
-                <button className="edit-button">
+                <button className="edit-button" onClick={() => handleNewComponentView(component.id)}>
                   <EditIcon className={'text-icon'} />
                 </button>
               </div>
@@ -106,7 +109,7 @@ const ManageComponent = () => {
           ))}
         </Show>
 
-        <NewItem item={'Component'} btnAction={handleNewComponentView}></NewItem>
+        <NewItem item={'Component'} btnAction={() => handleNewComponentView()} />
         {isNewComponentOpen && <div className="block">{showModal}</div>}
       </div>
 

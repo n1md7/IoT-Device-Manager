@@ -3,16 +3,21 @@ import { useAtom } from 'jotai';
 import useCreate from '@src/hooks/common/useCreate.ts';
 import useFetch from '@src/hooks/common/useFetch.ts';
 import useDelete from '@src/hooks/common/useDelete.ts';
+import useUpdate from '@src/hooks/common/useUpdate.ts';
 import { componentListAtom } from '@src/atoms/listAtom';
 import { ComponentPayloadData, ComponentsData, ComponentsResponseData } from '@src/types/componentTypes';
 
 const useComponent = () => {
+  const endpoint = '/api/v1/components';
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [componentList, setComponentList] = useAtom(componentListAtom);
-  const { data, error, loading, refresh } = useFetch<ComponentsResponseData>('/api/v1/components');
-  const { remove, error: deletingError, reset: deleteReset } = useDelete<ComponentsData>('/api/v1/components');
-  const component = useCreate<ComponentPayloadData, ComponentsData>('/api/v1/components');
+  const [updatedItem, setUpdatedItem] = useState<string | null>();
   const [deletedItem, setDeletedItem] = useState<string | null>();
+  const { data, error, loading, refresh } = useFetch<ComponentsResponseData>(endpoint);
+  const { remove, error: deletingError, reset: deleteReset } = useDelete<ComponentsData>(endpoint);
+  const { update, error: updatingError, loading: updating } = useUpdate<ComponentPayloadData, ComponentsData>(endpoint);
+  const component = useCreate<ComponentPayloadData, ComponentsData>(endpoint);
 
   const addComponent = async (payload: ComponentPayloadData) => {
     const clickedAt = new Date();
@@ -40,6 +45,15 @@ const useComponent = () => {
     });
   };
 
+  const updateComponent = async (id: number, payload: ComponentPayloadData, component: string) => {
+    return update(id, payload).then(() => {
+      setUpdatedItem(component);
+      return refresh().finally(() => {
+        setIsSubmitting(false);
+      });
+    });
+  };
+
   const reset = () => {
     deleteReset();
     setDeletedItem(null);
@@ -52,6 +66,7 @@ const useComponent = () => {
   return {
     addComponent,
     removeComponent,
+    updateComponent,
     reset,
     isSubmitting,
     componentList,
@@ -60,6 +75,9 @@ const useComponent = () => {
     error,
     deletingError,
     deletedItem,
+    updatingError,
+    updatedItem,
+    updating,
   };
 };
 
