@@ -11,7 +11,7 @@ interface Props {
 }
 
 const AddNewSystem = ({ setIsNewSystemOpen, selectedId, actionTitle }: Props) => {
-  const { addSystem, isSubmitting, system, systemList, updateSystem, updating, updatingError } = useSystem();
+  const { addSystem, isSubmitting, system, systemList, updateSystem, updatingError, updatedItem } = useSystem();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [newSystemName, setNewSystemName] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -75,14 +75,25 @@ const AddNewSystem = ({ setIsNewSystemOpen, selectedId, actionTitle }: Props) =>
   }, [system.data, isSubmitting, setIsNewSystemOpen, displaySuccess, newSystemName]);
 
   useEffect(() => {
-    if (updating && !updatingError) {
+    if (updatingError) {
+      displayError({
+        actionText: 'updating',
+        errorMessage: updatingError.message,
+        errorDetails: updatingError.details,
+      });
+      setIsNewSystemOpen(false);
+    }
+  }, [displayError, setIsNewSystemOpen, updatingError]);
+
+  useEffect(() => {
+    if (updatedItem && !updatingError) {
       displaySuccess({
         actionText: 'updated',
         item: 'item',
       });
       setIsNewSystemOpen(false);
     }
-  }, [displaySuccess, setIsNewSystemOpen, updating, updatingError]);
+  }, [displaySuccess, setIsNewSystemOpen, updatedItem, updatingError]);
 
   return (
     <div className="modal-wrapper">

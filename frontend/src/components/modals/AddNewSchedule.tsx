@@ -11,7 +11,7 @@ interface Props {
   actionTitle: string;
 }
 const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props) => {
-  const { addSchedule, isSubmitting, scheduler, updateSchedule, updatingError, updatedItem, updating } = useSchedule();
+  const { addSchedule, isSubmitting, scheduler, updateSchedule, updatingError, updatedItem } = useSchedule();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
   const [newScheduleName, setNewScheduleName] = useState<string | null>(null);
@@ -61,15 +61,29 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props
   };
 
   useEffect(() => {
-    if (updatingError) {
-      displayError({
-        actionText: 'updating',
-        errorMessage: updatingError.message,
-        errorDetails: updatingError.details,
+    if (scheduleList.schedules.length > 0) {
+      const updateItem = scheduleList.schedules.find((item) => item.id === selectedId);
+      if (updateItem) {
+        setFormData({
+          name: updateItem.name,
+          startExpression: updateItem.startExpression,
+          min: updateItem.duration.min.toLocaleString(),
+          sec: updateItem.duration.sec.toLocaleString(),
+        });
+        setSelectedSystem(updateItem.system.id);
+      }
+    }
+  }, [scheduleList.schedules, selectedId]);
+
+  useEffect(() => {
+    if (scheduler.data && !isSubmitting) {
+      displaySuccess({
+        actionText: 'added',
+        item: `${newScheduleName}`,
       });
       setIsNewScheduleOpen(false);
     }
-  }, [displayError, setIsNewScheduleOpen, updatingError]);
+  }, [isSubmitting, scheduler.data, setIsNewScheduleOpen, displaySuccess, newScheduleName]);
 
   useEffect(() => {
     if (scheduler.error) {
@@ -83,37 +97,25 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props
   }, [displayError, scheduler.error, setIsNewScheduleOpen]);
 
   useEffect(() => {
-    if (scheduler.data && !isSubmitting) {
-      displaySuccess({
-        actionText: 'added',
-        item: `${newScheduleName}`,
+    if (updatingError) {
+      displayError({
+        actionText: 'updating',
+        errorMessage: updatingError.message,
+        errorDetails: updatingError.details,
       });
       setIsNewScheduleOpen(false);
     }
-  }, [isSubmitting, scheduler.data, setIsNewScheduleOpen, displaySuccess, newScheduleName]);
+  }, [displayError, setIsNewScheduleOpen, updatingError]);
 
   useEffect(() => {
-    if (updating && !updatingError) {
+    if (updatedItem && !updatingError) {
       displaySuccess({
         actionText: 'updated',
         item: 'item',
       });
       setIsNewScheduleOpen(false);
     }
-  }, [displaySuccess, setIsNewScheduleOpen, updatedItem, updating, updatingError]);
-
-  const updateItem = scheduleList?.schedules.find((item) => item.id === selectedId);
-  useEffect(() => {
-    if (updateItem) {
-      setFormData({
-        name: updateItem.name,
-        startExpression: updateItem.startExpression,
-        min: updateItem.duration.min.toLocaleString(),
-        sec: updateItem.duration.sec.toLocaleString(),
-      });
-      setSelectedSystem(updateItem.system.id);
-    }
-  }, [updateItem]);
+  }, [displaySuccess, setIsNewScheduleOpen, updatedItem, updatingError]);
 
   return (
     <div className="modal-wrapper">

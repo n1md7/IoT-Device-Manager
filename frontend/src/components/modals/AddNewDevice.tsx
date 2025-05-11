@@ -11,7 +11,7 @@ interface Props {
 }
 
 const AddNewDevice = ({ setIsNewDeviceOpen, selectedId, actionTitle }: Props) => {
-  const { addDevice, isSubmitting, device, deviceList, updateDevice, updating, updatingError } = useDevice();
+  const { addDevice, isSubmitting, device, deviceList, updateDevice, updating, updatingError, updatedItem } = useDevice();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [newDeviceName, setNewDeviceName] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -48,6 +48,23 @@ const AddNewDevice = ({ setIsNewDeviceOpen, selectedId, actionTitle }: Props) =>
   };
 
   useEffect(() => {
+    if (deviceList.devices.length > 0) {
+      const updatedItem = deviceList.devices.find((item) => item.code === selectedId);
+
+      if (updatedItem) {
+        setFormData({
+          name: updatedItem.name,
+          description: updatedItem.description ?? '',
+          code: updatedItem.code,
+          type: updatedItem.type,
+          version: updatedItem.version,
+          ipAddress: updatedItem.ipAddress ?? '',
+        });
+      }
+    }
+  }, [deviceList.devices, selectedId]);
+
+  useEffect(() => {
     if (device.error) {
       displayError({
         actionText: 'adding',
@@ -69,7 +86,18 @@ const AddNewDevice = ({ setIsNewDeviceOpen, selectedId, actionTitle }: Props) =>
   }, [device.statusCode, setIsNewDeviceOpen, isSubmitting, displaySuccess, newDeviceName]);
 
   useEffect(() => {
-    if (updating && !updatingError) {
+    if (updatingError) {
+      displayError({
+        actionText: 'updating',
+        errorMessage: updatingError.message,
+        errorDetails: updatingError.details,
+      });
+      setIsNewDeviceOpen(false);
+    }
+  }, [displayError, setIsNewDeviceOpen, updatingError]);
+
+  useEffect(() => {
+    if (updatedItem && !updatingError) {
       displaySuccess({
         actionText: 'updated',
         item: 'item',
@@ -77,23 +105,6 @@ const AddNewDevice = ({ setIsNewDeviceOpen, selectedId, actionTitle }: Props) =>
       setIsNewDeviceOpen(false);
     }
   }, [displaySuccess, setIsNewDeviceOpen, updating, updatingError]);
-
-  useEffect(() => {
-    if (deviceList.devices.length > 0) {
-      const updatedItem = deviceList.devices.find((item) => item.code === selectedId);
-
-      if (updatedItem) {
-        setFormData({
-          name: updatedItem.name,
-          description: updatedItem.description ?? '',
-          code: updatedItem.code,
-          type: updatedItem.type,
-          version: updatedItem.version,
-          ipAddress: updatedItem.ipAddress ?? '',
-        });
-      }
-    }
-  }, [deviceList.devices, selectedId]);
 
   return (
     <div className="modal-wrapper">
