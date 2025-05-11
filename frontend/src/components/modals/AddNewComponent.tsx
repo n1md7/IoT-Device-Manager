@@ -16,7 +16,7 @@ interface Props {
 const AddNewComponent = ({ setIsNewComponentOpen, selectedId, actionTitle }: Props) => {
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<number | null>(null);
-  const { addComponent, isSubmitting, component, componentList, updateComponent, updating, updatingError } = useComponent();
+  const { addComponent, isSubmitting, component, componentList, updateComponent, updatedItem, updatingError } = useComponent();
   const { displaySuccess, displayError } = useDisplayAlert();
   const { systemList } = useSystems();
   const { deviceList } = useDevice();
@@ -93,14 +93,25 @@ const AddNewComponent = ({ setIsNewComponentOpen, selectedId, actionTitle }: Pro
   }, [component.data, displaySuccess, isSubmitting, selectedDevice, setIsNewComponentOpen]);
 
   useEffect(() => {
-    if (updating && !updatingError) {
+    if (updatingError) {
+      displayError({
+        actionText: 'updating',
+        errorMessage: updatingError.message,
+        errorDetails: updatingError.details,
+      });
+      setIsNewComponentOpen(false);
+    }
+  }, [displayError, setIsNewComponentOpen, updatingError]);
+
+  useEffect(() => {
+    if (updatedItem && !updatingError) {
       displaySuccess({
         actionText: 'updated',
         item: 'item',
       });
       setIsNewComponentOpen(false);
     }
-  }, [displaySuccess, setIsNewComponentOpen, updating, updatingError]);
+  }, [displaySuccess, setIsNewComponentOpen, updatedItem, updatingError]);
 
   return (
     <div className="modal-wrapper">

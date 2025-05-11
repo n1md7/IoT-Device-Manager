@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import useCreate from '@src/hooks/common/useCreate.ts';
-import useFetch from '@src/hooks/common/useFetch.ts';
-import useDelete from '@src/hooks/common/useDelete.ts';
+import useCreate from '@src/hooks/common/useCreate';
+import useFetch from '@src/hooks/common/useFetch';
+import useDelete from '@src/hooks/common/useDelete';
 import { useAtom } from 'jotai';
 import { scheduleListAtom } from '@src/atoms/listAtom';
 import { SchedulePayload, ScheduleData, ScheduleResponseData } from '@src/types/scheduleTypes';
-import useUpdate from '@src/hooks/common/useUpdate.ts';
+import useUpdate from '@src/hooks/common/useUpdate';
 
 const useSchedule = () => {
   const endpoint = '/api/v1/scheduler';

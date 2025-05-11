@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useCreate from '@src/hooks/common/useCreate.ts';
-import useFetch from '@src/hooks/common/useFetch.ts';
-import useDelete from '@src/hooks/common/useDelete.ts';
-import useUpdate from '@src/hooks/common/useUpdate.ts';
+import useCreate from '@src/hooks/common/useCreate';
+import useFetch from '@src/hooks/common/useFetch';
+import useDelete from '@src/hooks/common/useDelete';
+import useUpdate from '@src/hooks/common/useUpdate';
 import { componentListAtom } from '@src/atoms/listAtom';
 import { ComponentPayloadData, ComponentsData, ComponentsResponseData } from '@src/types/componentTypes';
 

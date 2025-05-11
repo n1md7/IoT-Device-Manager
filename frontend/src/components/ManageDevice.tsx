@@ -11,10 +11,10 @@ const ManageDevice = () => {
   const [isNewDeviceOpen, setIsNewDeviceOpen] = useState(false);
   const { deviceList } = useDevice();
 
-  const handleNewDeviceView = (componentId?: string) => {
+  const handleNewDeviceView = (deviceId?: string) => {
     setIsNewDeviceOpen(true);
-    const title = componentId ? 'Update' : 'Create';
-    setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} selectedId={componentId} actionTitle={title} />);
+    const title = deviceId ? 'Update' : 'Create';
+    setShowModal(<AddNewDevice setIsNewDeviceOpen={setIsNewDeviceOpen} selectedId={deviceId} actionTitle={title} />);
   };
 
   return (

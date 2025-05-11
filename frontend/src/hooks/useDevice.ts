@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import useFetch from '@src/hooks/common/useFetch.ts';
-import useCreate from '@src/hooks/common/useCreate.ts';
+import useFetch from '@src/hooks/common/useFetch';
+import useCreate from '@src/hooks/common/useCreate';
 import { deviceListAtom } from '@src/atoms/listAtom';
 import { DeviceDetails, DevicePayloadData, DevicesResponseData } from '@src/types/deviceTypes';
-import useUpdate from '@src/hooks/common/useUpdate.ts';
+import useUpdate from '@src/hooks/common/useUpdate';
 
 const useDevice = () => {
   const endpoint = '/api/v1/devices';
