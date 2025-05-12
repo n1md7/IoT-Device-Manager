@@ -25,10 +25,9 @@ const useComponent = () => {
     setIsSubmitting(true);
 
     return component.create(payload).finally(async () => {
-      const response = await refresh();
       const delta = new Date().getTime() - clickedAt.getTime();
 
-      if (response?.data) setComponentList(response.data);
+      await refreshList();
       if (awaitFor <= delta) setIsSubmitting(false);
       else {
         setTimeout(() => setIsSubmitting(false), awaitFor - delta);
@@ -39,19 +38,23 @@ const useComponent = () => {
   const removeComponent = async (id: number, component: string) => {
     return remove(id).then(() => {
       setDeletedItem(component);
-      return refresh().finally(() => {
-        setIsSubmitting(false);
-      });
+      refreshList();
     });
   };
 
   const updateComponent = async (id: number, payload: ComponentPayloadData, component: string) => {
     return update(id, payload).then(() => {
       setUpdatedItem(component);
-      return refresh().finally(() => {
-        setIsSubmitting(false);
-      });
+      refreshList();
     });
+  };
+
+  const refreshList = async () => {
+    const response = await refresh();
+    if (response?.data) {
+      setComponentList(response.data);
+      setIsSubmitting(false);
+    }
   };
 
   const reset = () => {
@@ -68,6 +71,7 @@ const useComponent = () => {
     removeComponent,
     updateComponent,
     reset,
+    refreshList,
     isSubmitting,
     componentList,
     component,

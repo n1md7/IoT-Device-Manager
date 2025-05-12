@@ -111,7 +111,7 @@ const AddNewSchedule = ({ setIsNewScheduleOpen, selectedId, actionTitle }: Props
     if (updatedItem && !updatingError) {
       displaySuccess({
         actionText: 'updated',
-        item: 'item',
+        item: updatedItem,
       });
       setIsNewScheduleOpen(false);
     }

@@ -11,7 +11,7 @@ interface Props {
 }
 
 const AddNewDevice = ({ setIsNewDeviceOpen, selectedId, actionTitle }: Props) => {
-  const { addDevice, isSubmitting, device, deviceList, updateDevice, updating, updatingError, updatedItem } = useDevice();
+  const { addDevice, isSubmitting, device, deviceList, updateDevice, updatingError, updatedItem } = useDevice();
   const { displaySuccess, displayError } = useDisplayAlert();
   const [newDeviceName, setNewDeviceName] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -100,11 +100,11 @@ const AddNewDevice = ({ setIsNewDeviceOpen, selectedId, actionTitle }: Props) =>
     if (updatedItem && !updatingError) {
       displaySuccess({
         actionText: 'updated',
-        item: 'item',
+        item: updatedItem,
       });
       setIsNewDeviceOpen(false);
     }
-  }, [displaySuccess, setIsNewDeviceOpen, updating, updatingError]);
+  }, [displaySuccess, setIsNewDeviceOpen, updatedItem, updatingError]);
 
   return (
     <div className="modal-wrapper">

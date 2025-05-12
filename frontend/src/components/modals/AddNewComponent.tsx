@@ -107,7 +107,7 @@ const AddNewComponent = ({ setIsNewComponentOpen, selectedId, actionTitle }: Pro
     if (updatedItem && !updatingError) {
       displaySuccess({
         actionText: 'updated',
-        item: 'item',
+        item: updatedItem,
       });
       setIsNewComponentOpen(false);
     }

@@ -12,7 +12,7 @@ const useFetch = <T>(endpoint: string) => {
     try {
       const response = await api.get<T>(`${API_URL}${endpoint}`);
       if (response.data) {
-        setData(response.data);
+        setData({ ...response.data });
       }
       return response;
     } catch (err: unknown) {

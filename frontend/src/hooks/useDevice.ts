@@ -22,10 +22,9 @@ const useDevice = () => {
     setIsSubmitting(true);
 
     return device.create(payload).finally(async () => {
-      const response = await refresh();
       const delta = new Date().getTime() - clickedAt.getTime();
 
-      if (response?.data) setDeviceList(response.data);
+      await refreshList();
       if (awaitFor <= delta) setIsSubmitting(false);
       else {
         setTimeout(() => setIsSubmitting(false), awaitFor - delta);
@@ -36,10 +35,16 @@ const useDevice = () => {
   const updateDevice = async (id: string, payload: DevicePayloadData, device: string) => {
     return update(id, payload).then(() => {
       setUpdatedItem(device);
-      return refresh().finally(() => {
-        setIsSubmitting(false);
-      });
+      refreshList();
     });
+  };
+
+  const refreshList = async () => {
+    const response = await refresh();
+    if (response?.data) {
+      setDeviceList(response.data);
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -49,6 +54,7 @@ const useDevice = () => {
   return {
     addDevice,
     updateDevice,
+    refreshList,
     isSubmitting,
     device,
     deviceList,

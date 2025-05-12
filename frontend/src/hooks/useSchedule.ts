@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useAtom } from 'jotai';
 import useCreate from '@src/hooks/common/useCreate';
 import useFetch from '@src/hooks/common/useFetch';
 import useDelete from '@src/hooks/common/useDelete';
-import { useAtom } from 'jotai';
+import useUpdate from '@src/hooks/common/useUpdate';
 import { scheduleListAtom } from '@src/atoms/listAtom';
 import { SchedulePayload, ScheduleData, ScheduleResponseData } from '@src/types/scheduleTypes';
-import useUpdate from '@src/hooks/common/useUpdate';
 
 const useSchedule = () => {
   const endpoint = '/api/v1/scheduler';
@@ -13,9 +13,9 @@ const useSchedule = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduleList, setScheduleList] = useAtom(scheduleListAtom);
   const { data, loading, refresh, error } = useFetch<ScheduleResponseData>(endpoint);
-  const scheduler = useCreate<SchedulePayload, ScheduleData>(endpoint);
   const { update, error: updatingError, loading: updating } = useUpdate<SchedulePayload, ScheduleData>(endpoint);
   const { remove, error: deletingError, reset: deleteReset } = useDelete<SchedulePayload>(endpoint);
+  const scheduler = useCreate<SchedulePayload, ScheduleData>(endpoint);
   const [deletedItem, setDeletedItem] = useState<string | null>();
   const [updatedItem, setUpdatedItem] = useState<string | null>();
 
@@ -25,10 +25,9 @@ const useSchedule = () => {
     setIsSubmitting(true);
 
     return scheduler.create(payload).finally(async () => {
-      const response = await refresh();
       const delta = new Date().getTime() - clickedAt.getTime();
 
-      if (response?.data) setScheduleList(response.data);
+      await refreshList();
       if (awaitFor <= delta) setIsSubmitting(false);
       else {
         setTimeout(() => setIsSubmitting(false), awaitFor - delta);
@@ -39,24 +38,28 @@ const useSchedule = () => {
   const removeSchedule = async (id: number, schedule: string) => {
     return remove(id).then(() => {
       setDeletedItem(schedule);
-      return refresh().finally(() => {
-        setIsSubmitting(false);
-      });
+      refreshList();
     });
   };
 
   const updateSchedule = async (id: number, payload: SchedulePayload, schedule: string) => {
     return update(id, payload).then(() => {
       setUpdatedItem(schedule);
-      return refresh().finally(() => {
-        setIsSubmitting(false);
-      });
+      refreshList();
     });
   };
 
   const reset = () => {
     deleteReset();
     setDeletedItem(null);
+  };
+
+  const refreshList = async () => {
+    const response = await refresh();
+    if (response?.data) {
+      setScheduleList(response.data);
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -67,6 +70,7 @@ const useSchedule = () => {
     addSchedule,
     removeSchedule,
     updateSchedule,
+    refreshList,
     reset,
     isSubmitting,
     scheduler,
