@@ -8,3 +8,5 @@ export const componentListAtom = atom<ComponentsResponseData>({ components: [], 
 export const systemListAtom = atom<SystemsResponseData>({ systems: [], count: 0 });
 export const deviceListAtom = atom<DevicesResponseData>({ devices: [], count: 0 });
 export const scheduleListAtom = atom<ScheduleResponseData>({ schedules: [], count: 0 });
+
+scheduleListAtom.debugLabel = 'Schedule List';

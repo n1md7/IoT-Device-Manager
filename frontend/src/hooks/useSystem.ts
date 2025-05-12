@@ -25,10 +25,9 @@ const useSystems = () => {
     setIsSubmitting(true);
 
     return system.create(payload).finally(async () => {
-      const response = await refresh();
       const delta = new Date().getTime() - clickedAt.getTime();
 
-      if (response?.data) setSystemList(response.data);
+      await refreshList();
       if (awaitFor <= delta) setIsSubmitting(false);
       else {
         setTimeout(() => setIsSubmitting(false), awaitFor - delta);
@@ -39,19 +38,23 @@ const useSystems = () => {
   const removeSystem = async (id: number, system: string) => {
     return remove(id).then(() => {
       setDeletedItem(system);
-      return refresh().finally(() => {
-        setIsSubmitting(false);
-      });
+      refreshList();
     });
   };
 
   const updateSystem = async (id: number, payload: SystemPayload, system: string) => {
     return update(id, payload).then(() => {
       setUpdatedItem(system);
-      return refresh().finally(() => {
-        setIsSubmitting(false);
-      });
+      refreshList();
     });
+  };
+
+  const refreshList = async () => {
+    const response = await refresh();
+    if (response?.data) {
+      setSystemList(response.data);
+      setIsSubmitting(false);
+    }
   };
 
   const reset = () => {
@@ -68,6 +71,7 @@ const useSystems = () => {
     removeSystem,
     updateSystem,
     reset,
+    refreshList,
     isSubmitting,
     systemList,
     system,

@@ -89,7 +89,7 @@ const AddNewSystem = ({ setIsNewSystemOpen, selectedId, actionTitle }: Props) =>
     if (updatedItem && !updatingError) {
       displaySuccess({
         actionText: 'updated',
-        item: 'item',
+        item: updatedItem,
       });
       setIsNewSystemOpen(false);
     }
