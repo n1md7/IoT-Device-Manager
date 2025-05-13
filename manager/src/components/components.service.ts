@@ -67,7 +67,11 @@ export class ComponentsService {
   }
 
   async updateById(id: number, payload: Partial<UpdateComponentRequest>) {
-    return await this.componentRepository.update({ id }, payload);
+    const system = this.systemRepository.create({ id: payload.systemId });
+    const device = this.deviceRepository.create({ code: payload.deviceCode });
+    const shared = payload.shared;
+
+    return await this.componentRepository.update({ id }, { system, device, shared });
   }
 
   async removeById(id: number) {
