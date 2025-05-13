@@ -14,7 +14,7 @@ const useDevice = () => {
   const [updatedItem, setUpdatedItem] = useState<string | null>();
   const { data, error, loading, refresh } = useFetch<DevicesResponseData>(endpoint);
   const { update, error: updatingError, loading: updating } = useUpdate<DevicePayloadData, DeviceDetails>(endpoint + '/update');
-  const device = useCreate<DevicePayloadData, DeviceDetails>(endpoint);
+  const device = useCreate<DevicePayloadData, DeviceDetails>(endpoint + '/create');
 
   const addDevice = async (payload: DevicePayloadData) => {
     const clickedAt = new Date();
