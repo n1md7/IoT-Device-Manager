@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, OnModuleInit, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, OnModuleInit, Param, Patch, Post } from '@nestjs/common';
 import { Client } from '/src/devices/enums/client.enum';
 import { DevicesService } from '/src/devices/devices.service';
 import { ApiAcceptedResponse, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
@@ -55,11 +55,11 @@ export class DevicesHttpController implements OnModuleInit {
     await this.devicesService.softCreateDevice(body);
   }
 
-  @Put('update')
+  @Patch('update/:code')
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiAcceptedResponse({ description: 'Device updated' })
   @ApiOperation({ summary: 'Update device', description: 'Update a device' })
-  async updateDevice(@Body() body: UpdateDeviceRequest) {
-    await this.devicesService.updateDevice(body);
+  async updateDevice(@Param('code') code: string, @Body() body: UpdateDeviceRequest) {
+    await this.devicesService.updateDevice(code, body);
   }
 }

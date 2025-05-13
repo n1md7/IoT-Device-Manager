@@ -43,8 +43,9 @@ const AddNewDevice = ({ setIsNewDeviceOpen, selectedId, actionTitle }: Props) =>
 
     if (selectedId) {
       await updateDevice(selectedId, payload, formData.name);
+    } else {
+      await addDevice(payload);
     }
-    await addDevice(payload);
   };
 
   useEffect(() => {

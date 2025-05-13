@@ -39,12 +39,17 @@ paths:
         '201':
           description: ''
       tags: *ref_0
-  /api/v1/devices/update:
-    put:
+  /api/v1/devices/update/{code}:
+    patch:
       operationId: DevicesHttpController_updateDevice
       summary: Update device
       description: Update a device
-      parameters: []
+      parameters:
+        - name: code
+          required: true
+          in: path
+          schema:
+            type: string
       requestBody:
         required: true
         content:
