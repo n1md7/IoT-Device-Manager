@@ -55,10 +55,17 @@ export const staticResource = (options) => () => {
   if (options.type !== "html") headers.push("Cache-Control", "public, max-age=31536000");
   if (options.headers) headers.push(...options.headers);
 
-  return {
-    headers,
-    body: new Resource(options.path),
-  };
+  try {
+    return {
+      headers,
+      body: new Resource(options.path),
+    };
+  } catch (e) {
+    console.error(e);
+
+    return apiError("Resource not found", 404);
+  }
+
 };
 
 /**
