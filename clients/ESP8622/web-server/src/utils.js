@@ -49,21 +49,14 @@ const extensions = Object.keys(contentType);
  * @returns {function(): {headers, body: module:Resource.Resource}}
  */
 export const staticResource = (options) => () => {
-  options.headers ||= [];
+  const headers = [];
 
-  if (options.type) {
-    options.headers.push(
-      "Content-type",
-      contentType[options.type] || "text/plain",
-    );
-  }
-
-  if (options.type !== "html") {
-    options.headers.push("Cache-Control", "public, max-age=31536000");
-  }
+  if (options.type) headers.push("Content-type", contentType[options.type] || "text/plain");
+  if (options.type !== "html") headers.push("Cache-Control", "public, max-age=31536000");
+  if (options.headers) headers.push(...options.headers);
 
   return {
-    headers: options.headers,
+    headers,
     body: new Resource(options.path),
   };
 };
