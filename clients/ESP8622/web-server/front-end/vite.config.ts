@@ -13,7 +13,7 @@ export default defineConfig((env) => {
       open: "/index.html",
       proxy: {
         // "/api": "http://localhost:1234",
-        "/api": "http://192.168.1.18",
+        "/api": "http://192.168.116.127",
       },
     },
     resolve: {

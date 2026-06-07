@@ -14,7 +14,7 @@ export default class Storage {
     this.#domain = domain;
     this.#name = name;
 
-    if (defaultValue) this.setValue(defaultValue);
+    if (!this.getValue() && defaultValue) this.setValue(defaultValue);
   }
 
   getValue(defaultValue = null) {
