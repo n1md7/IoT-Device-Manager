@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const resetButton = find("#reset-button") as HTMLButtonElement | null;
 
   const inputs: { [key: string]: HTMLInputElement | null } = {
-    name: find("#name") as HTMLInputElement | null,
+    name: find("#deviceName") as HTMLInputElement | null,
     description: find("#description") as HTMLInputElement | null,
     startTime: find("#startTime") as HTMLInputElement | null,
     managerUrl: find("#managerUrl") as HTMLInputElement | null,
