@@ -1,11 +1,11 @@
-import Timer from "timer";
-import SNTP from "sntp";
-import Time from "time";
-import { ConsoleLogger } from "./logger";
-import { Server } from "http";
-import { Iterator } from "file";
-import Resource from "Resource";
-import config from "mc/config";
+import Timer from 'timer';
+import SNTP from 'sntp';
+import Time from 'time';
+import { ConsoleLogger } from './logger';
+import { Server } from 'http';
+import { Iterator } from 'file';
+import Resource from 'Resource';
+import config from 'mc/config';
 
 export const every = (value) => (current) => current % value === 0;
 export const setInterval = (callback, delay) => Timer.repeat(callback, delay);
@@ -250,8 +250,10 @@ export class SystemTime {
     new SNTP({ host: this.#hosts.pop() }, (message, value) => {
       switch (message) {
         case SNTP.time:
-          console.log("[SNTP] Received time from net", value);
+          // `value` is seconds since 1970 and Time.set() expects seconds.
+          // Do NOT multiply by 1000 — Date still reports milliseconds.
           Time.set(value);
+          console.log("[SNTP] Time set:", new Date().toISOString());
           break;
 
         case SNTP.retry:
@@ -259,7 +261,7 @@ export class SystemTime {
           break;
 
         case SNTP.error:
-          console.log("[SNTP] Failed: ", value);
+          console.log("[SNTP] Failed:", value);
           if (this.#hosts.length) SystemTime.adjust();
           break;
       }

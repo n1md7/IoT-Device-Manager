@@ -16,7 +16,7 @@ window.scheduler.createCard = (options) => {
 
   container.innerHTML = `<div class="schedule-wrapper" data-id="${deserialized.id}">
 <div class="schedule-form">
-<div class="schedule-name">${deserialized.name}</div>
+<div class="schedule-name">Schedule #${deserialized.id}</div>
 <div class="form-group">
 <label for="id${deserialized.id}-start-time">Start Time: </label>
 <input class="start-time" type="time" id="id${deserialized.id}-start-time" value="${window.scheduler.formatTime(deserialized.startTime)}" class="timepicker">
@@ -71,6 +71,7 @@ window.scheduler.createCard = (options) => {
 </div>
 <div class="button-container">
 <button class="update-btn" id="id${deserialized.id}-save-schedule">Save</button>
+<button class="remove-btn secondary-button" id="id${deserialized.id}-remove-schedule">Remove</button>
 </div>
 </div>
 </div>`;

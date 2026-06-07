@@ -132,8 +132,8 @@ class Scheduler {
     const currentMinute = now.getMinutes();
     const currentWeekday = now.getDay();
 
-    const hour = this.#hour.getValue();
-    const minute = this.#minute.getValue();
+    const hour = this.#hour.getValue(0);
+    const minute = this.#minute.getValue(0);
     const weekdays = this.#weekdays.getValue().split(",").map(Number);
 
     if (!weekdays.includes(currentWeekday)) return false;
@@ -146,11 +146,22 @@ class Scheduler {
       id,
       name: this.#name,
       active: this.#active.getValue(),
-      hour: this.#hour.getValue(),
-      minute: this.#minute.getValue(),
+      hour: this.#hour.getValue(0),
+      minute: this.#minute.getValue(0),
       weekdays: this.#weekdays.getValue(),
       activateForSeconds: this.#activateForSeconds.getValue(),
     };
+  }
+
+  /**
+   * @description Wipes every persisted value for this schedule from disk.
+   */
+  destroy() {
+    this.#active.deleteValue();
+    this.#hour.deleteValue();
+    this.#minute.deleteValue();
+    this.#weekdays.deleteValue();
+    this.#activateForSeconds.deleteValue();
   }
 }
 
@@ -162,17 +173,41 @@ class Scheduler {
 
 export default class ScheduleManager {
   #tickEveryMs = 10_000;
+
+  /**
+   * @desc Hard cap on concurrent schedules to stay within device memory.
+   */
+  #maxSchedules = 4;
+
   /**
    * @type {Timer}
    */
   #timer;
   #logger = new ConsoleLogger("ScheduleManager");
 
-  #schedules = [
-    new Scheduler("schedule1"),
-    new Scheduler("schedule2"),
-    new Scheduler("schedule3"),
-  ];
+  /**
+   * @type {{id: number, scheduler: Scheduler}[]}
+   */
+  #schedules = [];
+
+  /**
+   * @type {Storage}
+   * @desc CSV of the ids currently in use, e.g. "1,3,4". Persists the dynamic
+   * set of schedules across reboots.
+   */
+  #ids;
+
+  /**
+   * @type {Storage}
+   * @desc Monotonic id counter. Ids are never reused, even after removal.
+   */
+  #nextId;
+
+  /**
+   * @type {Storage}
+   * @desc Marks whether the very first schedule has been seeded.
+   */
+  #initialized;
 
   /**
    * @type {Storage}
@@ -186,10 +221,76 @@ export default class ScheduleManager {
 
   constructor() {
     this.#turnedOff = new Storage("scheduleManager", "turnedOff", false);
+    this.#ids = new Storage("scheduleManager", "ids", "");
+    this.#nextId = new Storage("scheduleManager", "nextId", 1);
+    this.#initialized = new Storage("scheduleManager", "initialized", false);
+
+    this.#restore();
+
+    // Fresh device: seed exactly one (disabled) schedule to start from.
+    if (!this.#initialized.getValue()) {
+      this.create();
+      this.#initialized.setValue(true);
+    }
   }
 
   /**
-   * @param {number} index - Schedule array index
+   * @description Rebuilds the in-memory schedule list from the persisted ids.
+   */
+  #restore() {
+    const raw = this.#ids.getValue();
+    const ids = raw ? String(raw).split(",").map(Number) : [];
+
+    for (const id of ids) {
+      this.#schedules.push({ id, scheduler: new Scheduler(`schedule${id}`) });
+    }
+  }
+
+  #persistIds() {
+    this.#ids.setValue(this.#schedules.map((entry) => entry.id).join(","));
+  }
+
+  /**
+   * @description Creates a new schedule with default values.
+   * @returns {Object|Error} The created schedule as JSON, or an Error if the
+   * limit is reached.
+   */
+  create() {
+    if (this.#schedules.length >= this.#maxSchedules) {
+      return new Error(`Schedule limit reached (max ${this.#maxSchedules})`);
+    }
+
+    const id = this.#nextId.getValue();
+    this.#nextId.setValue(id + 1);
+
+    const scheduler = new Scheduler(`schedule${id}`);
+    this.#schedules.push({ id, scheduler });
+    this.#persistIds();
+
+    this.#logger.info(`Created schedule ${id}`);
+
+    return scheduler.toJson(id);
+  }
+
+  /**
+   * @param {number} id - Schedule id to remove
+   * @returns {Error|undefined}
+   */
+  remove(id) {
+    const index = this.#schedules.findIndex((entry) => entry.id === id);
+    if (index === -1) {
+      return new Error(`Invalid schedule id: ${id}`);
+    }
+
+    this.#schedules[index].scheduler.destroy();
+    this.#schedules.splice(index, 1);
+    this.#persistIds();
+
+    this.#logger.info(`Removed schedule ${id}`);
+  }
+
+  /**
+   * @param {number} id - Schedule id
    * @param {string} week - Schedule weekdays. CSV values between 0 and 6, where 0 is Sunday
    * @param {number} hour - Schedule hour value
    * @param {number} minute - Schedule minute value
@@ -197,11 +298,13 @@ export default class ScheduleManager {
    * @param {number} runForSeconds - Schedule run for seconds
    * @returns {Error|undefined}
    */
-  updateScheduleByIndex(index, week, hour, minute, active, runForSeconds) {
-    const schedule = this.#schedules[index];
-    if (!schedule) {
-      return new Error(`Invalid schedule index: ${index}`);
+  updateScheduleById(id, week, hour, minute, active, runForSeconds) {
+    const entry = this.#schedules.find((entry) => entry.id === id);
+    if (!entry) {
+      return new Error(`Invalid schedule id: ${id}`);
     }
+
+    const schedule = entry.scheduler;
 
     for (const error of [
       schedule.setHour(hour),
@@ -213,7 +316,7 @@ export default class ScheduleManager {
       if (error) return error;
     }
 
-    this.#logger.info(index, week, hour, minute, active, runForSeconds);
+    this.#logger.info(id, week, hour, minute, active, runForSeconds);
     this.#logger.info(`Updated schedule: ${schedule.getName()}`);
   }
 
@@ -226,11 +329,11 @@ export default class ScheduleManager {
   #subscribe() {
     this.#timer = setInterval(() => {
       const now = new Date();
-      for (const schedule of this.#schedules) {
-        if (schedule.isActive() && schedule.isTimeToExecute(now)) {
-          this.#logger.info(`Executing schedule: ${schedule.getName()}`);
+      for (const { scheduler } of this.#schedules) {
+        if (scheduler.isActive() && scheduler.isTimeToExecute(now)) {
+          this.#logger.info(`Executing schedule: ${scheduler.getName()}`);
           if (this.#onExecute) {
-            this.#onExecute(schedule.getActivateForSeconds(), this.#logger);
+            this.#onExecute(scheduler.getActivateForSeconds(), this.#logger);
           }
         }
       }
@@ -264,6 +367,6 @@ export default class ScheduleManager {
   }
 
   toJson() {
-    return this.#schedules.map((schedule, id) => schedule.toJson(id));
+    return this.#schedules.map(({ id, scheduler }) => scheduler.toJson(id));
   }
 }

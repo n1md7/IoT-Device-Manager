@@ -1,4 +1,5 @@
-import { apiFetch } from "../device";
+import { apiFetch, onDeviceStatus } from "../device";
+import { find } from "../dom.utils";
 import { on, off, status, time } from "./elements";
 import { counter, handleClick, startCountdown } from "./events";
 import {
@@ -9,19 +10,52 @@ import {
 } from "./functions";
 import showError from "./error";
 
-apiFetch("/api/status")
-  .then((res) => (res.ok ? res.json() : Promise.reject(res.statusText)))
-  .then((timer) => {
-    on.addEventListener("click", handleClick);
-    off.addEventListener("click", handleClick);
+const controls = find("#device-controls");
+const offline = find("#device-offline");
 
-    status.innerText = getStatusText(timer.active);
-    time.innerText = getFormattedTime(timer.time);
-    if (timer.active) {
-      status.classList.add("text-success");
-      counter.countdown = timer.time;
-      startCountdown();
-      hideSelect();
-    } else showSelect();
-  })
-  .catch((error) => showError(error));
+// Buttons are wired once; they target whatever device is currently configured.
+on.addEventListener("click", handleClick);
+off.addEventListener("click", handleClick);
+
+const renderTimer = (timer: { active: boolean; time: number }) => {
+  if (counter.id) clearInterval(counter.id);
+
+  status.innerText = getStatusText(timer.active);
+  status.classList.remove("text-success");
+  time.innerText = getFormattedTime(timer.time);
+
+  if (timer.active) {
+    status.classList.add("text-success");
+    counter.countdown = timer.time;
+    startCountdown();
+    hideSelect();
+  } else showSelect();
+};
+
+const showOffline = (message: string) => {
+  if (counter.id) clearInterval(counter.id);
+  controls.classList.add("hidden");
+  offline.classList.remove("hidden");
+  offline.innerHTML = message;
+};
+
+onDeviceStatus(async (state) => {
+  if (!state.online) {
+    showOffline(
+      "Not connected to a device. Enter the address above and press <b>Connect</b>.",
+    );
+    return;
+  }
+
+  try {
+    const res = await apiFetch("/api/status");
+    if (!res.ok) throw new Error(res.statusText);
+    const timer = await res.json();
+
+    offline.classList.add("hidden");
+    controls.classList.remove("hidden");
+    renderTimer(timer);
+  } catch (error) {
+    showError(error);
+  }
+});

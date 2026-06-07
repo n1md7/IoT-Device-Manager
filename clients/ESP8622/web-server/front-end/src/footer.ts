@@ -1,35 +1,10 @@
-import { apiFetch } from "./device";
-
-type InfoResponse = {
-  code: string;
-  version: string;
-  current: {
-    name: string;
-    description: string;
-    startTime: number;
-    managerUrl: string;
-  };
-  defaults: {
-    name: string;
-    description: string;
-    startTime: number;
-    managerUrl: string;
-  };
-  disk: {
-    used: number;
-    total: number;
-    occupied: string;
-  };
-  time: {
-    now: number;
-    str: string;
-    iso: string;
-  };
-};
+import { onDeviceStatus, type DeviceInfo } from "./device";
+import { format } from "./text.utils";
 
 const footer = document.createElement("footer");
 
 footer.innerHTML = `
+  <p class="clock"><span id="clock">--:--:--</span></p>
   <p>Powered by <b>GG-Software</b></p>
   <p class="version">
     <span><b id="name">...</b></span>
@@ -45,36 +20,67 @@ footer.innerHTML = `
 
 document.body.appendChild(footer);
 
-const name = footer.querySelector("#name") as HTMLSpanElement;
-const desc = footer.querySelector("#desc") as HTMLSpanElement;
-const version = footer.querySelector("#version") as HTMLSpanElement;
-const total = footer.querySelector("#total") as HTMLSpanElement;
-const used = footer.querySelector("#used") as HTMLSpanElement;
-const occupied = footer.querySelector("#occupied") as HTMLSpanElement;
+const $ = <T extends HTMLElement>(id: string) =>
+  footer.querySelector(id) as T;
 
-const err = (message: string) => {
-  desc.innerHTML = message;
-  name.innerHTML = message;
-  version.innerHTML = message;
-  used.innerHTML = message;
-  total.innerHTML = message;
-  occupied.innerHTML = message;
+const name = $<HTMLSpanElement>("#name");
+const desc = $<HTMLSpanElement>("#desc");
+const version = $<HTMLSpanElement>("#version");
+const total = $<HTMLSpanElement>("#total");
+const used = $<HTMLSpanElement>("#used");
+const occupied = $<HTMLSpanElement>("#occupied");
+const clock = $<HTMLSpanElement>("#clock");
+
+const setMeta = (text: string) => {
+  desc.innerHTML = text;
+  name.innerHTML = text;
+  version.innerHTML = text;
+  used.innerHTML = text;
+  total.innerHTML = text;
+  occupied.innerHTML = text;
 };
 
-apiFetch("/api/info")
-  .then((res) => res.json())
-  .then(async (info: InfoResponse) => {
-    name.innerText = info.code || "N/A";
-    desc.innerText = info.current?.name || "N/A";
-    version.innerText = info.version || "N/A";
-    occupied.innerText = info.disk?.occupied || "N/A";
+/* --- Live digital clock, anchored to the device's server time --- */
+const pad = (n: number) => String(n).padStart(2, "0");
+const formatClock = (ms: number) => {
+  const d = new Date(ms);
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+};
 
-    const textUtils = await import("./text.utils.ts");
-    used.innerText = textUtils.format(info.disk?.used?.toString() || "N/A");
-    total.innerText = textUtils.format(info.disk?.total?.toString() || "N/A");
-  })
-  .catch((e) => {
-    console.error(e);
+let clockTimer: ReturnType<typeof setInterval> | null = null;
 
-    err(`<span style="color: #c90400">ERR</span>`);
-  });
+const stopClock = () => {
+  if (clockTimer) clearInterval(clockTimer);
+  clockTimer = null;
+  clock.textContent = "--:--:--";
+};
+
+const startClock = (serverTimeMs: number) => {
+  if (clockTimer) clearInterval(clockTimer);
+
+  // Track the gap between the device and the browser once, then advance off
+  // the live browser clock so the display ticks (and survives drift).
+  const offset = serverTimeMs - Date.now();
+  const tick = () => (clock.textContent = formatClock(Date.now() + offset));
+  tick();
+  clockTimer = setInterval(tick, 1000);
+};
+
+const populate = (info: DeviceInfo) => {
+  name.innerText = info.code || "N/A";
+  desc.innerText = info.current?.name || "N/A";
+  version.innerText = info.version || "N/A";
+  occupied.innerText = info.disk?.occupied || "N/A";
+  used.innerText = format(info.disk?.used?.toString() || "N/A");
+  total.innerText = format(info.disk?.total?.toString() || "N/A");
+};
+
+onDeviceStatus((state) => {
+  if (state.online && state.info) {
+    populate(state.info);
+    startClock(new Date(state.info.time.iso).getTime());
+  } else {
+    setMeta(`<span style="color: #c90400">ERR</span>`);
+    stopClock();
+  }
+});

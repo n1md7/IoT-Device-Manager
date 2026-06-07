@@ -1,5 +1,89 @@
+/* Horizontally scrollable row of schedule cards */
+.schedule-board {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+    width: 100%;
+    overflow-x: auto;
+    padding: 1rem 0.25rem 1.5rem;
+    scroll-snap-type: x proximity;
+}
+
+.schedule-board > * {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+}
+
+.schedule-board::-webkit-scrollbar {
+    height: 10px;
+}
+
+.schedule-board::-webkit-scrollbar-thumb {
+    background: #cdd6da;
+    border-radius: 5px;
+}
+
+.schedule-board::-webkit-scrollbar-track {
+    background: #eef2f4;
+    border-radius: 5px;
+}
+
 .schedule-container {
     display: flex;
+}
+
+/* Dashed "add new schedule" tile */
+.add-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 220px;
+    flex-basis: 220px;
+    border: 2px dashed #b9c4ca;
+    border-radius: 10px;
+    background: #fafdff;
+    color: #04404f;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.add-card:hover {
+    border-color: #04404f;
+    background: #eef7fa;
+}
+
+.add-card svg {
+    width: 42px;
+    height: 42px;
+}
+
+.add-card:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.schedule-message {
+    color: #555;
+    margin: 2rem auto;
+}
+
+.schedule-form .button-container {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.remove-btn.secondary-button {
+    background: transparent;
+    color: #c90400;
+    border: 1px solid #e6b9b8;
+}
+
+.remove-btn.secondary-button:hover {
+    background: #fdecec;
 }
 
 .schedule-wrapper {
@@ -8,17 +92,19 @@
     gap: 2rem;
     flex-wrap: wrap;
     flex-direction: column;
+    width: 100%;
 }
 
 .schedule-form {
     padding: 1.5rem;
     border: 1px solid #e1e1e1;
-    min-width: 300px;
+    width: 100%;
+    box-sizing: border-box;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     background: #fdfdfd;
     height: fit-content;
-    margin: 1rem;
+    margin: 0;
 }
 
 .schedule-form .form-group {

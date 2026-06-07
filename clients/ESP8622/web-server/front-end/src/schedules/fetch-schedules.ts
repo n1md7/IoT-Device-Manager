@@ -7,5 +7,6 @@ window.scheduler.fetchSchedules = async () => {
   if (response.ok) {
     return response.json();
   }
-  return await Promise.reject(response.json());
+
+  return await Promise.reject(await response.json());
 };

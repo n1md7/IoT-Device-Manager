@@ -144,7 +144,7 @@ server.callback = requestHandler({
           occupied: `${occupiedInPercent.toFixed(2)}%`,
         },
         time: {
-          now: time * 1,
+          now: time.getTime(),
           str: time.toString(),
           iso: time.toISOString(),
         },
@@ -190,6 +190,16 @@ server.callback = requestHandler({
             case "OFF":
               scheduler.turnOff();
               return { status: 200 };
+            case "CREATE": {
+              const created = scheduler.create();
+              if (created instanceof Error) return apiError(created.message);
+              return jsonResponse(created, 201);
+            }
+            case "REMOVE": {
+              const error = scheduler.remove(parseInt(ctx.params.id));
+              if (error) return apiError(error.message);
+              return { status: 204 };
+            }
             default:
               return apiError(`Invalid action: ${ctx.params.action}`);
           }
@@ -198,7 +208,7 @@ server.callback = requestHandler({
           const { id, weekdays, hour, minute } = ctx.body;
           const { active, activateForSeconds } = ctx.body;
 
-          const error = scheduler.updateScheduleByIndex(
+          const error = scheduler.updateScheduleById(
             parseInt(id),
             String(weekdays),
             parseInt(hour),

@@ -51,6 +51,8 @@ declare global {
       serialize(card: Deserialized): ScheduleType;
       fetchSchedules(): Promise<ScheduleType[]>;
       updateSchedule(payload: ScheduleType): Promise<void>;
+      createSchedule(): Promise<ScheduleType>;
+      removeSchedule(id: number): Promise<void>;
     };
   }
 }

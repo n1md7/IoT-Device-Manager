@@ -26,4 +26,8 @@ export default class Storage {
 
     return value;
   }
+
+  deleteValue() {
+    Preference.delete(this.#domain, this.#name);
+  }
 }

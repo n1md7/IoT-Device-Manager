@@ -32,6 +32,45 @@
     padding: 0.45rem 1rem;
 }
 
+.device-bar__status {
+    flex: 1 1 100%;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.device-bar__status--ok {
+    color: #9fe6a0;
+}
+
+.device-bar__status--error {
+    color: #ffb3b0;
+}
+
+.device-bar__status--info {
+    color: #cfe1e7;
+}
+
+@media screen and (min-width: 768px) {
+    .device-bar__status {
+        flex: 0 1 auto;
+        margin-left: 0.5rem;
+    }
+}
+
+.info-text {
+    color: #555;
+    margin: 1.5rem 0;
+}
+
+/* Digital clock in the footer */
+.clock #clock {
+    font-variant-numeric: tabular-nums;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #032e3b;
+}
+
 /* === Global Styles === */
 html, body {
     margin: 0;
