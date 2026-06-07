@@ -1,3 +1,5 @@
+import "./device-bar";
+
 const navbar = document.querySelector("div.navbar");
 
 if (!navbar) {

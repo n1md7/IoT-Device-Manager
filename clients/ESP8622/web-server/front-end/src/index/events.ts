@@ -7,6 +7,7 @@ import {
 } from "@src/index/functions.ts";
 import { errorText, status, time } from "@src/index/elements.ts";
 import handleError from "@src/index/error.ts";
+import { api } from "@src/device.ts";
 
 export const counter: {
   id: ReturnType<typeof setInterval> | null;
@@ -36,7 +37,7 @@ export const handleClick = (e: MouseEvent) => {
 
   if (!path) return;
 
-  return fetch(addQueryString(path), {
+  return fetch(api(addQueryString(path)), {
     method: "POST",
   })
     .then((res) => {

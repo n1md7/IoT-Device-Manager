@@ -1,8 +1,11 @@
-import { defineConfig } from "vite";
-import { env, cwd } from "node:process";
+import { defineConfig, loadEnv } from "vite";
+import { cwd } from "node:process";
 import { createHtmlPlugin } from "vite-plugin-html";
 
-export default defineConfig((env) => {
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, cwd(), "IOT_");
+  const deviceUrl = env.IOT_DEVICE_URL || "http://192.168.116.127";
+
   return {
     publicDir: "public",
     envPrefix: "IOT_",
@@ -12,8 +15,9 @@ export default defineConfig((env) => {
       host: "0.0.0.0",
       open: "/index.html",
       proxy: {
-        // "/api": "http://localhost:1234",
-        "/api": "http://192.168.116.127",
+        // Dev-only fallback: hit when no device URL is configured and the app
+        // falls back to relative /api paths. Targets the .env default.
+        "/api": deviceUrl,
       },
     },
     resolve: {
@@ -28,37 +32,14 @@ export default defineConfig((env) => {
       },
     },
     build: {
-      reportCompressedSize: true,
-      modulePreload: false,
       cssMinify: true,
-      cssCodeSplit: true,
-      chunkSizeWarningLimit: 2.75,
       sourcemap: false,
       emptyOutDir: true,
-      assetsDir: ".",
       rollupOptions: {
-        treeshake: false,
         input: {
           index: "index.html",
           config: "config.html",
           scheduler: "scheduler.html",
-        },
-        output: {
-          manualChunks: (path, { getModuleIds }) => {
-            if (path.endsWith(".ts")) {
-              if (path.endsWith(".ts") && path.includes("schedules")) {
-                const [, file] = path.split("/schedules/");
-                const [name] = file.split(".");
-
-                return name;
-              }
-
-              if (path.endsWith("footer.ts")) return "footer";
-              if (path.endsWith("nav.ts")) return "nav";
-              if (path.endsWith("dom.utils.ts")) return "dom.utils";
-              if (path.endsWith("dom.text.ts")) return "dom.text";
-            }
-          },
         },
       },
     },

@@ -1,15 +1,17 @@
-const elements = import("./elements.ts");
-const events = import("./events.ts");
-const functions = import("./functions.ts");
+import { apiFetch } from "../device";
+import { on, off, status, time } from "./elements";
+import { counter, handleClick, startCountdown } from "./events";
+import {
+  getFormattedTime,
+  getStatusText,
+  hideSelect,
+  showSelect,
+} from "./functions";
+import showError from "./error";
 
-fetch("/api/status")
+apiFetch("/api/status")
   .then((res) => (res.ok ? res.json() : Promise.reject(res.statusText)))
-  .then(async (timer) => {
-    const { on, off, status, time } = await elements;
-    const { counter, handleClick, startCountdown } = await events;
-    const { getFormattedTime, getStatusText, showSelect, hideSelect } =
-      await functions;
-
+  .then((timer) => {
     on.addEventListener("click", handleClick);
     off.addEventListener("click", handleClick);
 
@@ -22,4 +24,4 @@ fetch("/api/status")
       hideSelect();
     } else showSelect();
   })
-  .catch((error) => import("./error.ts").then((fn) => fn.default(error)));
+  .catch((error) => showError(error));

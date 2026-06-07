@@ -1,3 +1,5 @@
+import { apiFetch } from "./device";
+
 type InfoResponse = {
   code: string;
   version: string;
@@ -59,7 +61,7 @@ const err = (message: string) => {
   occupied.innerHTML = message;
 };
 
-fetch("/api/info")
+apiFetch("/api/info")
   .then((res) => res.json())
   .then(async (info: InfoResponse) => {
     name.innerText = info.code || "N/A";

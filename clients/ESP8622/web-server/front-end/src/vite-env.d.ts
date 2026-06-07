@@ -1,5 +1,14 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  /** Default base URL of the IoT device REST API (see `.env`). */
+  readonly IOT_DEVICE_URL: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 type ScheduleType = {
   id: number;
   name: string;

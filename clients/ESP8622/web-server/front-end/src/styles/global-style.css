@@ -1,3 +1,37 @@
+/* === Device connection bar === */
+.device-bar {
+    background: #04404f;
+    color: #cfe1e7;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.device-bar__form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.device-bar__form label {
+    font-weight: 600;
+    color: #cfe1e7;
+}
+
+.device-bar__form input[type="url"] {
+    flex: 1 1 220px;
+    width: auto;
+    min-width: 180px;
+    padding: 0.4rem 0.6rem;
+}
+
+.device-bar__form button {
+    padding: 0.45rem 1rem;
+}
+
 /* === Global Styles === */
 html, body {
     margin: 0;

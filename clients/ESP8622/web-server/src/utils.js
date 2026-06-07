@@ -91,6 +91,32 @@ export const apiError = (message, status = 400) => ({
   status,
 });
 
+/**
+ * @description CORS preflight response for cross-origin OPTIONS requests.
+ * Allows the UI to be hosted on a different origin than the device.
+ */
+export const preflightResponse = () => ({
+  status: 204,
+  headers: [
+    "Access-Control-Allow-Origin", "*",
+    "Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers", "Content-Type, x-body-vars",
+    "Access-Control-Max-Age", "86400",
+  ],
+});
+
+/**
+ * @description Appends the CORS allow-origin header to any response so the
+ * browser exposes the body to cross-origin callers.
+ * @param {{headers?: string[]}} response
+ */
+export const withCors = (response) => {
+  if (!response) return response;
+  const origin = ["Access-Control-Allow-Origin", "*"];
+  response.headers = response.headers ? [...response.headers, ...origin] : origin;
+  return response;
+};
+
 export const getQueryParams = (query = "") => {
   return decodeURIComponent(query)
     .replaceAll("+", " ")
@@ -173,13 +199,17 @@ export const requestHandler = (routes = {}) => {
         break;
       }
       case Server.prepareResponse: {
-        if (routes[this.route]) return routes[this.route](this);
+        // Answer CORS preflight before any routing so cross-origin
+        // PUT/PATCH and custom-header requests are not blocked.
+        if (this.is.options) return preflightResponse();
+
+        if (routes[this.route]) return withCors(routes[this.route](this));
 
         if (this.path.startsWith(API)) {
           const [, second] = this.path.split(API);
           const [method] = second.split("?"); // Remove query string
 
-          if (routes[API][method]) return routes[API][method](this);
+          if (routes[API][method]) return withCors(routes[API][method](this));
         }
 
         const [path] = this.path.split("?"); // Remove query string
@@ -187,10 +217,10 @@ export const requestHandler = (routes = {}) => {
         if (extensions.includes(type)) {
           // Remove leading slash
           const name = path.substring(1, path.length);
-          return staticResource({ path: name, type })();
+          return withCors(staticResource({ path: name, type })());
         }
 
-        return routes["404"](this);
+        return withCors(routes["404"](this));
       }
     }
   };

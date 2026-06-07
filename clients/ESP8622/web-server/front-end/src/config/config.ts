@@ -1,4 +1,5 @@
 import { find } from "@src/dom.utils";
+import { apiFetch } from "@src/device";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const form = find("#config-form") as HTMLFormElement | null;
@@ -14,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const fetchInfo = async (): Promise<any> => {
     try {
-      const response = await fetch("/api/info");
+      const response = await apiFetch("/api/info");
       if (!response.ok) {
         throw new Error("Failed to fetch info: " + response.statusText);
       }
@@ -32,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const resetConfig = async (): Promise<void> => {
     try {
-      const response = await fetch("/api/config-reset");
+      const response = await apiFetch("/api/config-reset");
       if (!response.ok) {
         throw new Error(
           "Failed to reset configuration: " + response.statusText,
@@ -82,7 +83,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
 
       try {
-        const response = await fetch(`/api/config-update?${params.toString()}`);
+        const response = await apiFetch(
+          `/api/config-update?${params.toString()}`,
+        );
         updateStatus(
           response.ok
             ? "Configuration updated successfully!"

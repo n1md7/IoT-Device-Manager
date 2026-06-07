@@ -1,6 +1,8 @@
+import { apiFetch } from "../device";
+
 window.scheduler ||= {} as any;
 window.scheduler.updateSchedule = async (payload) => {
-  const response = await fetch(`/api/schedules`, {
+  const response = await apiFetch(`/api/schedules`, {
     method: "PUT",
     headers: {
       "x-body-vars": Object.entries(payload)
