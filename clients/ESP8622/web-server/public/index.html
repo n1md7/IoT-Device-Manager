@@ -1,44 +1,707 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IoT Device · REST API</title>
-  <link rel="icon" href="favicon.ico" />
-  <style>
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      color: #e6ecff; background: #0b1020; line-height: 1.5; }
-    .wrap { max-width: 480px; padding: 32px 24px; text-align: center; }
-    .badge-icon { width: 52px; height: 52px; margin: 0 auto 18px; display: block; }
-    h1 { font-size: 26px; margin: 0 0 12px; letter-spacing: -0.02em; }
-    .grad { color: #9fb8ff; }
-    .lead { color: #93a0c4; font-size: 16px; margin: 0; }
-    footer { margin-top: 28px; color: #93a0c4; font-size: 13px; }
-    footer a { color: #5b8cff; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-    .sep { opacity: 0.4; }
-    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Home Automation</title>
+<style>
+  :root {
+    --bg: #0f172a; --card: #1e293b; --line: #334155;
+    --text: #e2e8f0; --muted: #94a3b8;
+    --accent: #38bdf8; --ok: #22c55e; --err: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    background: var(--bg); color: var(--text);
+    font-family: system-ui, "Segoe UI", Roboto, sans-serif; line-height: 1.5;
+  }
+  header { background: #020617; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  header h1 { margin: 0; font-size: 1.25rem; }
+  header .subtitle { margin: 2px 0 0; font-size: .8rem; color: var(--muted); }
+
+  nav { display: flex; gap: 4px; padding: 8px 12px; background: #020617; flex-wrap: wrap; }
+  nav button {
+    flex: 1; min-width: 90px; background: transparent; color: var(--muted);
+    border: none; border-bottom: 2px solid transparent; padding: 10px;
+    font-size: .95rem; cursor: pointer;
+  }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main { width: 100%; max-width: 720px; margin: 0 auto; padding: 16px; flex: 1 0 auto; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px; margin-bottom: 14px;
+  }
+  h2 { margin: 0 0 12px; font-size: 1.05rem; }
+  label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
+  input, select {
+    width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--line);
+    background: #0b1220; color: var(--text); font-size: .95rem;
+  }
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1 1 0; min-width: 0; } /* equal columns regardless of input type */
+  .field { margin-bottom: 12px; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  button.action {
+    flex: 1; min-width: 110px; padding: 11px; border: none; border-radius: 8px;
+    background: var(--accent); color: #02131f; font-weight: 600; cursor: pointer; font-size: .95rem;
+  }
+  button.action.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+  button.action.danger { background: var(--err); color: #fff; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .status-line { font-size: 1.1rem; margin-bottom: 6px; }
+  .pill { font-weight: 700; }
+  .pill.on { color: var(--ok); }
+  .pill.off { color: var(--muted); }
+  .clock { font-size: 2.4rem; font-weight: 700; text-align: center; margin: 8px 0; font-variant-numeric: tabular-nums; }
+  .msg { font-size: .85rem; margin-top: 8px; min-height: 1em; }
+  .msg.ok { color: var(--ok); }
+  .msg.err { color: var(--err); }
+  .muted { color: var(--muted); font-size: .8rem; }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 12px; }
+  .days label {
+    text-align: center; padding: 6px 0; border: 1px solid var(--line); border-radius: 6px;
+    margin: 0; cursor: pointer; user-select: none; color: var(--text);
+  }
+  .days input { display: none; }
+  .days input:checked + span { color: var(--accent); font-weight: 700; }
+  .hidden { display: none; }
+  .info-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: .85rem; }
+  .info-grid div:nth-child(odd) { color: var(--muted); }
+  .switch { display: flex; align-items: center; gap: 10px; }
+  .switch input { width: auto; }
+
+  /* Schedule cards: green accent when enabled, red when disabled */
+  .schedule { border-left-width: 4px; transition: border-color .2s ease; }
+  .schedule-on { border-left-color: var(--ok); }
+  .schedule-off { border-left-color: var(--err); }
+  .badge {
+    font-size: .68rem; font-weight: 700; padding: 2px 9px; border-radius: 999px;
+    vertical-align: middle; margin-left: 6px; border: 1px solid transparent;
+  }
+  .badge-on { color: var(--ok); background: rgba(34, 197, 94, .14); border-color: var(--ok); }
+  .badge-off { color: var(--err); background: rgba(239, 68, 68, .12); border-color: var(--err); }
+  .hint { margin: 4px 0 12px; }
+
+  /* Card actions: prominent primary Save, de-emphasised destructive Remove */
+  .card-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .card-actions .action { flex: 1; }
+  .btn-remove {
+    flex: 0 0 auto; background: transparent; border: none; cursor: pointer;
+    color: var(--err); font-size: .85rem; font-weight: 600;
+    padding: 8px 10px; border-radius: 8px; opacity: .8;
+  }
+  .btn-remove:hover { background: rgba(239, 68, 68, .12); opacity: 1; }
+
+  /* Footer — pinned to the bottom (flex body) */
+  footer {
+    flex-shrink: 0; background: #020617; border-top: 1px solid var(--line);
+    padding: 20px 16px; text-align: center; color: var(--muted); font-size: .8rem;
+  }
+  .footer-clock {
+    font-size: 1.9rem; font-weight: 700; color: var(--text);
+    font-variant-numeric: tabular-nums; letter-spacing: 2px;
+  }
+  .footer-date { font-size: .75rem; margin: 2px 0 14px; }
+  .footer-credit { opacity: .7; }
+
+  /* Custom confirm modal */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 50; padding: 20px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(2, 6, 23, .72);
+  }
+  /* Beat .modal-backdrop's display:flex (equal specificity, defined later). */
+  .modal-backdrop.hidden { display: none; }
+  .modal {
+    width: 100%; max-width: 380px; padding: 22px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .5); animation: modal-pop .15s ease-out;
+  }
+  @keyframes modal-pop { from { transform: scale(.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h3 { margin: 0 0 8px; font-size: 1.1rem; }
+  .modal p { margin: 0 0 18px; color: var(--muted); font-size: .9rem; }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <img class="badge-icon" src="favicon.ico" alt="Device icon" />
-      <h1>This device speaks <span class="grad">REST</span>, not HTML.</h1>
-      <p class="lead">
-        You've reached the device's API endpoint. The web interface is hosted separately —
-        this address only serves the JSON REST API below.
-      </p>
-    </header>
+<header>
+  <h1 id="title">Home Automation</h1>
+  <p class="subtitle" id="subtitle"></p>
+</header>
 
-    <footer>
-      <span>IoT Device Manager</span>
-      <span class="sep">·</span>
-      <a id="open-info" href="/api/info">View raw /api/info</a>
-      <span class="sep">·</span>
-      <span id="d-host" class="mono"></span>
-    </footer>
+<nav>
+  <button data-tab="device" class="active">Device</button>
+  <button data-tab="schedules">Schedules</button>
+  <button data-tab="config">Config</button>
+</nav>
+
+<main>
+  <!-- ============ DEVICE ============ -->
+  <section id="device" class="tab active">
+    <div class="card">
+      <h2>Manual control</h2>
+      <div class="status-line">Status: <span id="dStatus" class="pill off">OFF</span></div>
+      <div class="clock" id="dClock">00:00:00</div>
+
+      <div id="dPicker">
+        <div class="row field">
+          <div>
+            <label for="dMin">Minutes</label>
+            <input type="number" id="dMin" min="0" max="999" value="10" />
+          </div>
+          <div>
+            <label for="dSec">Seconds</label>
+            <input type="number" id="dSec" min="0" max="59" value="0" />
+          </div>
+        </div>
+        <p class="muted">Minimum duration is 10 seconds.</p>
+      </div>
+
+      <div class="btns">
+        <button class="action" id="dOn">Turn ON</button>
+        <button class="action danger" id="dOff">Turn OFF</button>
+      </div>
+      <div class="msg" id="dMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>About this board</h2>
+      <div class="info-grid">
+        <div>Chip</div><div>Espressif ESP8266 (Tensilica L106)</div>
+        <div>CPU</div><div>32-bit RISC @ 80 MHz (overclockable to 160 MHz)</div>
+        <div>RAM</div><div>~80 KB data + 32 KB instruction</div>
+        <div>Wi-Fi</div><div>802.11 b/g/n, 2.4 GHz</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCHEDULES ============ -->
+  <section id="schedules" class="tab">
+    <div class="msg" id="sMsg"></div>
+    <div id="sList"></div>
+    <button class="action ghost" id="sAdd" style="width:100%">+ Add schedule</button>
+  </section>
+
+  <!-- ============ CONFIG ============ -->
+  <section id="config" class="tab">
+    <div class="card">
+      <h2>Device configuration</h2>
+      <div class="field">
+        <label for="cName">Device name</label>
+        <input type="text" id="cName" maxlength="32" placeholder="My Pump" />
+      </div>
+      <div class="field">
+        <label for="cDesc">Description</label>
+        <input type="text" id="cDesc" maxlength="64" placeholder="My device" />
+      </div>
+      <div class="field">
+        <label for="cStart">Start time (seconds)</label>
+        <input type="number" id="cStart" min="10" placeholder="1200" />
+      </div>
+      <div class="field">
+        <label for="cUrl">Manager URL</label>
+        <input type="url" id="cUrl" placeholder="http://192.168.1.2" />
+      </div>
+      <div class="btns">
+        <button class="action" id="cSave">Update</button>
+        <button class="action ghost" id="cReset">Reset to defaults</button>
+      </div>
+      <div class="msg" id="cMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>System info</h2>
+      <div class="info-grid" id="cInfo"><div>Loading…</div><div></div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-clock" id="fClock">--:--:--</div>
+  <div class="footer-date" id="fDate"></div>
+  <div class="footer-credit">Powered by <b>GG-Software</b> · ESP8266</div>
+</footer>
+
+<!-- Reusable confirm dialog (driven by Modal.confirm) -->
+<div class="modal-backdrop hidden" id="modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <h3 id="modalTitle">Please confirm</h3>
+    <p id="modalText"></p>
+    <div class="btns">
+      <button class="action ghost" id="modalCancel">Cancel</button>
+      <button class="action danger" id="modalOk">Confirm</button>
+    </div>
   </div>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+ * Small DOM + formatting helpers
+ * ============================================================ */
+const $ = (selector, root = document) => root.querySelector(selector);
+const pad = (value) => String(value).padStart(2, "0");
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; // 0=Sun (Date.getDay)
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Seconds → "HH:MM:SS" (never negative). */
+const formatDuration = (totalSeconds) => {
+  const seconds = Math.max(0, totalSeconds | 0);
+  return [seconds / 3600, (seconds / 60) % 60, seconds % 60]
+    .map((part) => pad(part | 0))
+    .join(":");
+};
+
+/** Group digits for readability: 1234567 → "1 234 567". */
+const formatBytes = (value) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+/** Write a status line under a card; `kind` is "ok" | "err" | "". */
+const setMessage = (element, text = "", kind = "") => {
+  if (!element) return; // never let a missing slot mask the real error
+  element.textContent = text;
+  element.className = `msg ${kind}`.trim();
+};
+
+/* ============================================================
+ * Device API client — the single place that talks to /api
+ * ============================================================ */
+
+/**
+ * Call a device endpoint under /api.
+ * @returns parsed JSON, or null when the response has no body (e.g. 204).
+ * @throws  Error carrying the device's `{ message }` (or status text) on failure.
+ */
+async function api(path, init) {
+  const response = await fetch(`/api${path}`, init);
+
+  if (!response.ok) {
+    const message = await response.json().then((body) => body.message, () => null);
+    throw new Error(message || response.statusText || "Request failed");
+  }
+
+  return response.json().catch(() => null);
+}
+
+/** Serialise an object into the device's `x-body-vars` header format. */
+const toBodyVars = (vars) =>
+  Object.entries(vars).map(([key, value]) => `${key}=${value}`).join(";");
+
+/* ============================================================
+ * Modal — promise-based confirm dialog (replaces window.confirm)
+ * ============================================================ */
+const Modal = (() => {
+  const backdrop = $("#modal");
+  const title = $("#modalTitle");
+  const text = $("#modalText");
+  const okButton = $("#modalOk");
+  const cancelButton = $("#modalCancel");
+  let resolve = null;
+
+  const close = (result) => {
+    backdrop.classList.add("hidden");
+    const done = resolve;
+    resolve = null;
+    done?.(result);
+  };
+
+  okButton.addEventListener("click", () => close(true));
+  cancelButton.addEventListener("click", () => close(false));
+  backdrop.addEventListener("click", (event) => { if (event.target === backdrop) close(false); });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !backdrop.classList.contains("hidden")) close(false);
+  });
+
+  /** Show the dialog and resolve to true (confirm) or false (cancel/dismiss). */
+  const confirm = (message, { heading = "Please confirm", okText = "Confirm", danger = true } = {}) => {
+    title.textContent = heading;
+    text.textContent = message;
+    okButton.textContent = okText;
+    okButton.className = `action ${danger ? "danger" : ""}`.trim();
+    backdrop.classList.remove("hidden");
+    okButton.focus();
+    return new Promise((res) => { resolve = res; });
+  };
+
+  return { confirm };
+})();
+
+/* ============================================================
+ * Device control — manual ON/OFF with a live countdown
+ * ============================================================ */
+const DeviceControl = (() => {
+  const statusLabel = $("#dStatus");
+  const clock = $("#dClock");
+  const picker = $("#dPicker");
+  const message = $("#dMsg");
+  const minutes = $("#dMin");
+  const seconds = $("#dSec");
+
+  let countdown = null;
+  const stopCountdown = () => { clearInterval(countdown); countdown = null; };
+
+  const render = ({ active, time }) => {
+    stopCountdown();
+    statusLabel.textContent = active ? "ON" : "OFF";
+    statusLabel.className = `pill ${active ? "on" : "off"}`;
+    picker.classList.toggle("hidden", active);
+
+    if (!active) {
+      clock.textContent = "00:00:00";
+      return;
+    }
+
+    let remaining = time | 0;
+    clock.textContent = formatDuration(remaining);
+    countdown = setInterval(() => {
+      clock.textContent = formatDuration(--remaining);
+      if (remaining <= 0) refresh(); // re-sync with the device at zero
+    }, 1000);
+  };
+
+  /** Run a request that returns timer state, then render it. */
+  const apply = async (request, okText = "") => {
+    try {
+      render(await request());
+      setMessage(message, okText, okText && "ok");
+    } catch (error) {
+      setMessage(message, error.message, "err");
+    }
+  };
+
+  const refresh = () => apply(() => api("/status"));
+  const turnOn = () =>
+    apply(() => api(`/on?min=${minutes.value || 0}&sec=${seconds.value || 0}`, { method: "POST" }), "Timer started.");
+  const turnOff = () => apply(() => api("/off", { method: "POST" }), "Turned off.");
+
+  $("#dOn").addEventListener("click", turnOn);
+  $("#dOff").addEventListener("click", turnOff);
+
+  return { refresh };
+})();
+
+/* ============================================================
+ * Schedules — CRUD over the device's schedule manager
+ * ============================================================ */
+const Schedules = (() => {
+  const MAX = 4; // mirrors ScheduleManager#maxSchedules on the device
+  const list = $("#sList");
+  const addButton = $("#sAdd");
+  const message = $("#sMsg");
+
+  const cardTemplate = (schedule) => {
+    const enabledDays = new Set(String(schedule.weekdays).split(",").map(Number));
+    const startTime = `${pad(schedule.hour)}:${pad(schedule.minute)}`;
+    const durationMinutes = Math.round(schedule.activateForSeconds / 60) || 1;
+    const dayBoxes = WEEKDAYS.map((label, day) => `
+        <label>
+          <input type="checkbox" class="f-day" value="${day}" ${enabledDays.has(day) ? "checked" : ""} />
+          <span>${label}</span>
+        </label>`).join("");
+
+    return `
+    <h2>Schedule #${schedule.id} <span class="f-badge badge"></span></h2>
+    <div class="row field">
+      <div>
+        <label>Start time</label>
+        <input type="time" class="f-start" value="${startTime}" />
+      </div>
+      <div>
+        <label>Run for (minutes)</label>
+        <input type="number" class="f-dur" min="1" max="60" step="1" inputmode="numeric" value="${durationMinutes}" />
+      </div>
+    </div>
+    <p class="hint muted">1–60 minutes (device cap: 3600 seconds).</p>
+    <label>Repeat on</label>
+    <div class="days">${dayBoxes}</div>
+    <div class="switch field">
+      <input type="checkbox" class="f-active" id="act-${schedule.id}" ${schedule.active ? "checked" : ""} />
+      <label for="act-${schedule.id}" style="margin:0">Enabled</label>
+    </div>
+    <div class="card-actions">
+      <button class="action f-save" type="button">Save changes</button>
+      <button class="btn-remove f-remove" type="button">Remove</button>
+    </div>
+    <div class="msg f-msg"></div>`;
+  };
+
+  /** Read a card's inputs into the payload the device PUT expects. */
+  const readCard = (card, id) => {
+    const [hour, minute] = $(".f-start", card).value.split(":").map(Number);
+    const days = [...card.querySelectorAll(".f-day:checked")].map((box) => box.value);
+    return {
+      id,
+      weekdays: days.join(",") || "0",
+      hour: hour || 0,
+      minute: minute || 0,
+      active: $(".f-active", card).checked ? "true" : "false",
+      activateForSeconds: clamp(Number($(".f-dur", card).value) || 1, 1, 60) * 60,
+    };
+  };
+
+  /** Stable signature of a card's current values, for change detection. */
+  const signature = (card, id) => JSON.stringify(readCard(card, id));
+
+  /** Valid when the time is set and run-for is a whole number from 1 to 60. */
+  const isValid = (card) => {
+    const minutes = Number($(".f-dur", card).value);
+    return /^\d{2}:\d{2}$/.test($(".f-start", card).value)
+      && Number.isInteger(minutes) && minutes >= 1 && minutes <= 60;
+  };
+
+  const remove = async (card, id) => {
+    const confirmed = await Modal.confirm(`Schedule #${id} will be permanently removed.`, {
+      heading: `Remove schedule #${id}?`,
+      okText: "Remove",
+    });
+    if (!confirmed) return;
+    try {
+      await api(`/schedules?action=REMOVE&id=${id}`, { method: "POST" });
+      load();
+    } catch (error) {
+      setMessage($(".f-msg", card), error.message, "err");
+    }
+  };
+
+  /** Reflect the enabled/disabled state in the card's colour + badge. */
+  const setCardState = (card, active) => {
+    card.classList.toggle("schedule-on", active);
+    card.classList.toggle("schedule-off", !active);
+    const badge = $(".f-badge", card);
+    badge.textContent = active ? "Enabled" : "Disabled";
+    badge.className = `f-badge badge ${active ? "badge-on" : "badge-off"}`;
+  };
+
+  const buildCard = (schedule) => {
+    const card = document.createElement("div");
+    card.className = "card schedule";
+    card.innerHTML = cardTemplate(schedule);
+
+    const saveButton = $(".f-save", card);
+    const activeToggle = $(".f-active", card);
+    const cardMessage = $(".f-msg", card);
+    let saved = signature(card, schedule.id); // baseline = the loaded values
+
+    // Save is enabled only when the inputs are valid AND something changed.
+    const sync = () => {
+      const valid = isValid(card);
+      saveButton.disabled = !valid || signature(card, schedule.id) === saved;
+      if (!valid) setMessage(cardMessage, "Run-for must be a whole number from 1 to 60 minutes.", "err");
+      else if (cardMessage.classList.contains("err")) setMessage(cardMessage); // clear stale error
+    };
+
+    const handleSave = async () => {
+      saveButton.disabled = true;
+      try {
+        await api("/schedules", {
+          method: "PUT",
+          headers: { "x-body-vars": toBodyVars(readCard(card, schedule.id)) },
+        });
+        saved = signature(card, schedule.id); // new baseline → Save disables until next edit
+        setMessage(cardMessage, "Saved.", "ok");
+      } catch (error) {
+        setMessage(cardMessage, error.message, "err");
+        saveButton.disabled = !isValid(card); // allow a retry
+      }
+    };
+
+    setCardState(card, schedule.active);
+    activeToggle.addEventListener("change", () => setCardState(card, activeToggle.checked));
+    card.addEventListener("input", sync);
+    card.addEventListener("change", sync);
+    saveButton.addEventListener("click", handleSave);
+    $(".f-remove", card).addEventListener("click", () => remove(card, schedule.id));
+
+    sync(); // start with Save disabled (nothing changed yet)
+    return card;
+  };
+
+  const load = async () => {
+    setMessage(message);
+    list.innerHTML = `<div class="card muted">Loading schedules…</div>`;
+    try {
+      const schedules = await api("/schedules");
+      list.replaceChildren(...schedules.map(buildCard));
+      addButton.classList.toggle("hidden", schedules.length >= MAX);
+    } catch (error) {
+      list.replaceChildren();
+      setMessage(message, error.message, "err");
+    }
+  };
+
+  const create = async () => {
+    addButton.disabled = true;
+    try {
+      await api("/schedules?action=CREATE", { method: "POST" });
+      await load();
+    } catch (error) {
+      setMessage(message, error.message, "err");
+    } finally {
+      addButton.disabled = false;
+    }
+  };
+
+  addButton.addEventListener("click", create);
+
+  return { load };
+})();
+
+/* ============================================================
+ * Config — device settings form + system-info panel
+ * ============================================================ */
+const Config = (() => {
+  const fields = {
+    name: $("#cName"),
+    description: $("#cDesc"),
+    startTime: $("#cStart"),
+    managerUrl: $("#cUrl"),
+  };
+  const infoPanel = $("#cInfo");
+  const message = $("#cMsg");
+  let defaults = null;
+
+  const fill = (values) =>
+    Object.entries(fields).forEach(([key, input]) => { input.value = values?.[key] ?? ""; });
+
+  /** Populate the form + info panel from a /api/info payload. */
+  const apply = (info) => {
+    defaults = info.defaults;
+    fill(info.current);
+    infoPanel.innerHTML = `
+      <div>Code</div><div>${info.code}</div>
+      <div>Version</div><div>${info.version}</div>
+      <div>Disk used</div><div>${formatBytes(info.disk.used)} / ${formatBytes(info.disk.total)} B (${info.disk.occupied})</div>
+      <div>Device time</div><div>${info.time.str}</div>`;
+  };
+
+  const fail = (text) => setMessage(message, text, "err");
+
+  const save = async () => {
+    const query = new URLSearchParams(
+      Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, input.value])),
+    );
+    try {
+      await api(`/config-update?${query}`, { method: "POST" });
+      setMessage(message, "Configuration updated.", "ok");
+    } catch (error) {
+      fail(error.message);
+    }
+  };
+
+  const reset = async () => {
+    const confirmed = await Modal.confirm("All settings return to their factory defaults.", {
+      heading: "Reset configuration?",
+      okText: "Reset",
+    });
+    if (!confirmed) return;
+    try {
+      await api("/config-reset", { method: "POST" });
+      fill(defaults);
+      setMessage(message, "Reset to defaults.", "ok");
+    } catch (error) {
+      fail(error.message);
+    }
+  };
+
+  $("#cSave").addEventListener("click", save);
+  $("#cReset").addEventListener("click", reset);
+
+  return { apply, fail };
+})();
+
+/* ============================================================
+ * Header — show the device's name instead of a generic title
+ * ============================================================ */
+const Header = (() => {
+  const title = $("#title");
+  const subtitle = $("#subtitle");
+
+  const apply = (info) => {
+    const name = info.current?.name || "Home Automation";
+    title.textContent = name;
+    subtitle.textContent = info.current?.description || "";
+    document.title = name;
+  };
+
+  return { apply };
+})();
+
+/* ============================================================
+ * Footer — live clock + date, anchored to the device's time
+ * ============================================================ */
+const Footer = (() => {
+  const clock = $("#fClock");
+  const date = $("#fDate");
+  let ticker = null;
+
+  // Measure the device↔browser time gap once, then tick off the browser clock
+  // (which actually advances) so the display stays live and drift-free.
+  const startClock = (deviceNowMs) => {
+    clearInterval(ticker);
+    const offset = deviceNowMs - Date.now();
+    const tick = () => {
+      const now = new Date(Date.now() + offset);
+      clock.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      date.textContent = `${WEEKDAYS[now.getDay()]}, ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+    };
+    tick();
+    ticker = setInterval(tick, 1000);
+  };
+
+  const apply = (info) => startClock(info.time.now);
+
+  const fail = () => {
+    clearInterval(ticker);
+    clock.textContent = "--:--:--";
+    date.textContent = "device offline";
+  };
+
+  return { apply, fail };
+})();
+
+/* ============================================================
+ * Shared loaders + tab wiring + boot
+ * ============================================================ */
+
+/** Fetch /api/info once and fan it out to every panel that needs it. */
+const loadInfo = async () => {
+  try {
+    const info = await api("/info");
+    Header.apply(info);
+    Config.apply(info);
+    Footer.apply(info);
+  } catch (error) {
+    Config.fail(error.message);
+    Footer.fail();
+  }
+};
+
+const initTabs = (onShow) => {
+  const buttons = document.querySelectorAll("nav button");
+  buttons.forEach((button) =>
+    button.addEventListener("click", () => {
+      const { tab } = button.dataset;
+      buttons.forEach((other) => other.classList.toggle("active", other === button));
+      document.querySelectorAll(".tab").forEach((panel) =>
+        panel.classList.toggle("active", panel.id === tab),
+      );
+      onShow(tab);
+    }),
+  );
+};
+
+initTabs((tab) => {
+  if (tab === "schedules") Schedules.load();
+  if (tab === "config") loadInfo();
+});
+
+DeviceControl.refresh();
+loadInfo();
+</script>
 </body>
 </html>

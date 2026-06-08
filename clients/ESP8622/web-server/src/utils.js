@@ -69,6 +69,38 @@ export const staticResource = (options) => () => {
 };
 
 /**
+ * @description Serves a flash resource but hands it to the HTTP server in small
+ * slices instead of one big body. Returning `body: true` puts the server into
+ * fragment mode: it then pulls the body via repeated `responseFragment`
+ * callbacks (handled in `requestHandler`). `Resource` is memory-mapped from
+ * flash (zero-copy), and each fragment only slices a small chunk into RAM — so
+ * the served size is bounded by flash, not by free contiguous RAM. This is what
+ * lifts the ~2.75 KB whole-body limit; no zipping needed.
+ * @param {ResourceOptions} options
+ * @returns {function(Context): {headers: string[], body: boolean}}
+ */
+export const streamResource = (options) => (ctx) => {
+  try {
+    const resource = new Resource(options.path); // flash-mapped, read-only
+    const headers = [];
+
+    if (options.type) headers.push("Content-type", contentType[options.type] || "text/plain");
+    if (options.type !== "html") headers.push("Cache-Control", "public, max-age=31536000");
+    headers.push("Content-Length", String(resource.byteLength)); // total size up front
+    if (options.headers) headers.push(...options.headers);
+
+    // Per-connection cursor, picked up by the responseFragment handler below.
+    ctx.stream = { resource, position: 0 };
+
+    return { headers, body: true };
+  } catch (e) {
+    console.error(e);
+
+    return apiError("Resource not found", 404);
+  }
+};
+
+/**
  * @param {Object} data
  * @param {number} [status]
  * @returns {{headers: string[], body: string}}
@@ -112,6 +144,7 @@ export const preflightResponse = () => ({
  */
 export const withCors = (response) => {
   if (!response) return response;
+
   const origin = ["Access-Control-Allow-Origin", "*"];
   response.headers = response.headers ? [...response.headers, ...origin] : origin;
   return response;
@@ -217,10 +250,33 @@ export const requestHandler = (routes = {}) => {
         if (extensions.includes(type)) {
           // Remove leading slash
           const name = path.substring(1, path.length);
-          return withCors(staticResource({ path: name, type })());
+          return withCors(streamResource({ path: name, type })(this));
         }
 
         return withCors(routes["404"](this));
+      }
+      case Server.responseFragment: {
+        // Server is asking for the next slice of a streamed body (body: true).
+        // `value` is how many bytes it can take right now.
+        const stream = this.stream;
+        if (!stream) return undefined;
+
+        const { resource, position } = stream;
+        const remaining = resource.byteLength - position;
+        if (remaining <= 0) {
+          this.stream = undefined;
+          return undefined; // end of body
+        }
+
+        // Slice only a small chunk into RAM; the rest stays mapped in flash.
+        const count = Math.min(value, remaining, 512);
+        stream.position = position + count;
+        return resource.slice(position, position + count);
+      }
+      case Server.responseComplete: {
+        // Drop the cursor once the body is fully sent (or the connection ends).
+        this.stream = undefined;
+        break;
       }
     }
   };

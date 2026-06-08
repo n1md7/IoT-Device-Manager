@@ -12,6 +12,7 @@ import {
   jsonResponse,
   plainResponse,
   staticResource,
+  streamResource,
 } from "./utils";
 import { Server } from "http";
 import { System } from "file";
@@ -84,7 +85,7 @@ scheduler
   .initialize();
 
 server.callback = requestHandler({
-  "/": staticResource({ path: "index.html", type: "html" }), // Alias for index.html
+  "/": streamResource({ path: "index.html", type: "html" }), // Alias for index.html (streamed)
   [API]: {
     "/on": (ctx) => {
       if (!ctx.is.post) return apiError("Only POST is allowed");
