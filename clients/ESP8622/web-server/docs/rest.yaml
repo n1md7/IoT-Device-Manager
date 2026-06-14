@@ -1,271 +1,174 @@
 openapi: 3.0.0
 info:
-  title: Simple Server API
-  description: API for serving static files and managing a timer.
+  title: ESP IoT Device Manager API
+  description: >-
+    REST API exposed by the on-device, Express-like web server running on an
+    ESP8266 / ESP32 (Moddable SDK, XS runtime).
+
+
+    The server manages **switches** (digital output pins driving relays/LEDs)
+    and **schedules** (time windows that automatically drive a switch on/off).
+    All endpoints are mounted under the `/api` prefix and respond with JSON.
+
+
+    ## Conventions
+
+    - **Base path:** every route is prefixed with `/api`.
+
+    - **Identifiers in the query string:** the router has no dynamic URL params,
+      so resource ids are passed via the query string (e.g. `?pin=3`, `?id=1`).
+
+    - **Errors:** any validation or domain failure returns the matching `4xx`
+      status with a body of `{ "message": "<reason>" }`.
+
+    - **Pins:** only digital pins `1`–`8` are accepted as control pins.
+
+    - **Control signal:** `0` (LOW) or `1` (HIGH); some relays are active-low.
   version: 1.0.0
 tags:
-  - name: Power
-    description: Device power management (ON/OFF)
-  - name: Device
-    description: Device information
+  - name: Switches
+    description: >-
+      Manage digital output switches and drive them manually. A switch maps a
+      digital pin to an on/off control signal.
   - name: Scheduler
-    description: Device scheduler
+    description: >-
+      Manage schedules. A schedule turns a switch on within a daily time window
+      on the selected weekdays.
 servers:
-  - url: http://localhost
+  - url: http://localhost/api
     description: Local development server
-  - url: http://192.168.1.2
-    description: My home network
+  - url: http://192.168.1.2/api
+    description: Device on the home network
 paths:
-  /api/on:
-    post:
+  /switches:
+    get:
       tags:
-        - Power
-      description: >-
-        Starts the device timer for a specified duration.
-        After the timer expires, the device will be turned off automatically.
-      summary: Start the timer
-      parameters:
-        - name: min
-          in: query
-          schema:
-            type: integer
-          required: true
-          description: Minutes to set the timer
-        - name: sec
-          in: query
-          schema:
-            type: integer
-          required: true
-          description: Seconds to set the timer
+        - Switches
+      summary: List switches
+      description: Returns all configured switches and their current control signal.
       responses:
         '200':
-          description: Timer started successfully
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: application/json
+          description: List of switches
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  active:
-                    type: boolean
-                    example: true
-                  time:
-                    type: integer
-                    example: 60
+                type: array
+                items:
+                  $ref: '#/components/schemas/Switch'
+    post:
+      tags:
+        - Switches
+      summary: Create a switch
+      description: >-
+        Registers a switch on a digital pin with an initial control signal.
+        The pin must be an allowed pin (`1`–`8`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [digitalPin, control]
+              properties:
+                digitalPin:
+                  type: integer
+                  minimum: 1
+                  maximum: 8
+                  example: 3
+                  description: Digital pin to control.
+                control:
+                  $ref: '#/components/schemas/Control'
+      responses:
+        '201':
+          description: Switch created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Switch'
         '400':
-          description: Invalid query parameters or duration less than 10 seconds
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid query parameters or duration less than 10 seconds"
-  /api/off:
-    post:
+          $ref: '#/components/responses/BadRequest'
+    patch:
       tags:
-        - Power
-      summary: Stop the timer
-      description: Stops the device timer and turns off the device.
-      responses:
-        '200':
-          description: Timer stopped successfully
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: application/json
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  active:
-                    type: boolean
-                    example: false
-  /api/status:
-    get:
-      tags:
-        - Device
-      summary: Get the current status of the timer
-      description: >-
-        Returns the current status of the device timer.
-        Whether the timer is active or inactive and the remaining time.
-      responses:
-        '200':
-          description: Timer status retrieved successfully
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: application/json
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  active:
-                    type: boolean
-                    example: true
-                  time:
-                    type: integer
-                    example: 30
-  /api/config-update:
-    get:
-      tags:
-        - Device
-      summary: Update device configuration
-      description: >-
-        Updates the device configuration with new settings.
-        The configuration includes the device name, version, and description.
+        - Switches
+      summary: Update a switch
+      description: Updates the control signal of an existing switch, selected by pin.
       parameters:
-        - name: name
-          in: query
-          schema:
-            type: string
-          required: false
-          description: New device name
-        - name: description
-          in: query
-          schema:
-            type: string
-          required: false
-          description: >-
-            New device description, it has to be short.
-            max 64 characters.
-        - name: startTime
-          in: query
-          schema:
-            type: number
-          required: false
-          description: >-
-            New device start time.
-            It is important for the physical button.
-            On the button click how long it has to start.
-        - name: managerUrl
-          in: query
-          schema:
-            type: string
-          required: false
-          description: >-
-            New device manager URL.
-            It is important for the device to communicate with the manager.
-            It will work without it however for full potential it needs to be set properly.
+        - $ref: '#/components/parameters/PinQuery'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [control]
+              properties:
+                control:
+                  $ref: '#/components/schemas/Control'
+      responses:
+        '202':
+          description: Switch updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    delete:
+      tags:
+        - Switches
+      summary: Delete a switch
+      description: Removes a switch, selected by pin.
+      parameters:
+        - $ref: '#/components/parameters/PinQuery'
       responses:
         '204':
-          description: Configuration updated successfully
+          description: Switch deleted
         '400':
-          description: Invalid query parameters
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Invalid query parameters"
-  /api/info:
-    get:
+          $ref: '#/components/responses/BadRequest'
+  /switches/control:
+    post:
       tags:
-        - Device
-      summary: Get server information
+        - Switches
+      summary: Manually drive a switch
       description: >-
-        Returns information about the server and disk usage.
-        Disk usage is calculated as a percentage of used space to total space.
-        File logs are stored on the device, and disk usage is important.
+        Starts or stops a switch immediately.
+
+
+        - `action: "Start"` requires `stopAt` — an epoch timestamp (ms) in the
+          future (minimum ~10s ahead) at which the switch is expected to stop.
+
+        - `action: "Stop"` stops the switch right away; `stopAt` is ignored.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [digitalPin, action]
+              properties:
+                digitalPin:
+                  type: integer
+                  minimum: 1
+                  maximum: 8
+                  example: 3
+                action:
+                  type: string
+                  enum: [Start, Stop]
+                  example: Start
+                stopAt:
+                  type: integer
+                  format: int64
+                  description: >-
+                    Epoch timestamp in milliseconds. Required when `action` is
+                    `Start`; must be in the future (min ~10s ahead).
+                  example: 1740858186087
       responses:
         '200':
-          description: Server information retrieved successfully
-          headers:
-            Content-type:
-              schema:
-                type: string
-                example: application/json
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    example: "D0001"
-                    description: Device unique identifier
-                  version:
-                    type: string
-                    example: "1"
-                    description: Device version
-                  current:
-                    description: Active configuration of the device
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                        example: "MyServer"
-                      description:
-                        type: string
-                        example: "A simple server"
-                      startTime:
-                        type: number
-                        example: 10
-                        description: Current start time for the physical button
-                      managerUrl:
-                        type: string
-                        example: "http://192.168.1.2"
-                        description: Current manager URL
-                  defaults:
-                    description: Default configuration of the device
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                        example: "DefaultServer"
-                      description:
-                        type: string
-                        example: "Default server description"
-                      startTime:
-                        type: number
-                        example: 10
-                        description: Default start time for the physical button
-                      managerUrl:
-                        type: string
-                        example: "http://192.168.1.3"
-                        description: Default manager URL
-                  disk:
-                    description: Disk usage of the device
-                    type: object
-                    properties:
-                      used:
-                        type: integer
-                        example: 1024
-                      total:
-                        type: integer
-                        example: 2048
-                      occupied:
-                        type: string
-                        example: "50.00%"
-                  time:
-                    description: System time
-                    type: object
-                    properties:
-                      now:
-                        type: integer
-                        example: 1740858186087
-                      str:
-                        type: string
-                        example: "Sat Mar 01 2025 23:43:06 GMT+0400"
-                      iso:
-                        type: string
-                        example: "2025-03-01T19:43:06.087Z"
-  /api/schedules:
+          description: Action applied successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /schedules:
     get:
-      summary: Get list of schedules
       tags:
         - Scheduler
+      summary: List schedules
+      description: Returns all configured schedules.
       responses:
         '200':
           description: List of schedules
@@ -274,90 +177,210 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      example: 1
-                      description: Unique identifier of the schedule. Array index.
-                    name:
-                      type: string
-                      example: "Schedule 1"
-                    active:
-                      type: boolean
-                      example: true
-                      description: Whether the schedule is active or not
-                    hour:
-                      type: integer
-                      example: 13
-                      description: Hour value of the schedule. 24-hour format. 0-23.
-                    minute:
-                      type: integer
-                      example: 30
-                      description: Minute value of the schedule. 0-59.
-                    weekdays:
-                      type: string
-                      example: "1,2,3,4,5"
-                      description: Comma-separated list of weekdays. 0-6. 1 is Monday.
-                    activateForSeconds:
-                      type: integer
-                      example: 360
-                      description: Duration in seconds for how long it should be active. Min 60 seconds, max 3600 seconds.
+                  $ref: '#/components/schemas/Schedule'
     post:
       tags:
         - Scheduler
-      summary: Scheduler action
-      parameters:
-        - name: action
-          in: query
-          schema:
-            enum: [ 'ON', 'OFF' ]
-          required: true
-          description: Action to perform
+      summary: Create a schedule
+      description: >-
+        Creates a schedule that drives a switch within a daily `[startTime,
+        endTime)` window on the enabled weekdays. `controlPin` must reference an
+        already-enabled switch.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleInput'
       responses:
-        '200':
-          description: Schedule updated successfully
-    put:
+        '201':
+          description: Schedule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    patch:
       tags:
         - Scheduler
-      summary: Update scheduler parameters
+      summary: Update a schedule
+      description: >-
+        Partially updates a schedule, selected by id. Every field is optional;
+        only the fields provided are changed. If `controlPin` is provided it
+        must reference an enabled switch.
       parameters:
-        - name: id
-          in: query
-          schema:
-            type: integer
-          required: true
-          description: Schedule ID to update
-        - name: hour
-          in: query
-          schema:
-            type: integer
-          required: true
-          description: Hour value of the schedule. 24-hour format. 0-23.
-        - name: minute
-          in: query
-          schema:
-            type: integer
-          required: true
-          description: Minute value of the schedule. 0-59.
-        - name: weekdays
-          in: query
-          schema:
-            type: string
-          required: true
-          description: Comma-separated list of weekdays. 0-6. 1 is Monday and 0 is Sunday.
-        - name: active
-          in: query
-          schema:
-            enum: ['enable', '']
-          required: true
-          description: Whether the schedule is active or not
-        - name: activateForSeconds
-          in: query
-          schema:
-            type: integer
-          required: true
-          description: Duration in seconds for how long it should be active. Min 60 seconds, max 3600 seconds.
+        - $ref: '#/components/parameters/IdQuery'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleUpdate'
+      responses:
+        '202':
+          description: Schedule updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    delete:
+      tags:
+        - Scheduler
+      summary: Delete a schedule
+      description: Removes a schedule, selected by id.
+      parameters:
+        - $ref: '#/components/parameters/IdQuery'
       responses:
         '204':
-          description: Schedule updated successfully
+          description: Schedule deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+components:
+  parameters:
+    PinQuery:
+      name: pin
+      in: query
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 8
+      description: Digital pin of the switch.
+      example: 3
+    IdQuery:
+      name: id
+      in: query
+      required: true
+      schema:
+        type: integer
+      description: Numeric id of the schedule.
+      example: 1
+  responses:
+    BadRequest:
+      description: Invalid request (bad body, bad query, or a violated domain rule)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Control:
+      type: integer
+      enum: [0, 1]
+      description: Control signal — `0` (LOW) or `1` (HIGH). Some relays are active-low.
+      example: 1
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Invalid digitalPin
+    Switch:
+      type: object
+      description: A switch as returned by the API.
+      properties:
+        id:
+          type: integer
+          description: Digital pin number (also the switch identifier).
+          example: 3
+        control:
+          $ref: '#/components/schemas/Control'
+    TimePayload:
+      type: object
+      required: [hh, mm, ss]
+      description: Time of day as discrete fields (24-hour clock).
+      properties:
+        hh:
+          type: integer
+          minimum: 0
+          maximum: 23
+          example: 13
+        mm:
+          type: integer
+          minimum: 0
+          maximum: 59
+          example: 30
+        ss:
+          type: integer
+          minimum: 0
+          maximum: 59
+          example: 0
+    WeekPayload:
+      type: object
+      required: [sun, mon, tue, wed, thu, fri, sat]
+      description: >-
+        Active-weekday mask, Sunday-first to match JS `Date.getDay()`
+        (Sun=0 … Sat=6). Each field is `1` (active) or `0` (inactive).
+      properties:
+        sun: { type: integer, enum: [0, 1], example: 0 }
+        mon: { type: integer, enum: [0, 1], example: 1 }
+        tue: { type: integer, enum: [0, 1], example: 1 }
+        wed: { type: integer, enum: [0, 1], example: 1 }
+        thu: { type: integer, enum: [0, 1], example: 1 }
+        fri: { type: integer, enum: [0, 1], example: 1 }
+        sat: { type: integer, enum: [0, 1], example: 0 }
+    ScheduleInput:
+      type: object
+      required: [isActive, startTime, endTime, weekdays, controlPin]
+      properties:
+        isActive:
+          type: boolean
+          description: Whether the schedule is currently enabled.
+          example: true
+        startTime:
+          $ref: '#/components/schemas/TimePayload'
+        endTime:
+          $ref: '#/components/schemas/TimePayload'
+        weekdays:
+          $ref: '#/components/schemas/WeekPayload'
+        controlPin:
+          type: integer
+          minimum: 1
+          maximum: 8
+          description: Pin of the switch this schedule drives. Must be an enabled switch.
+          example: 3
+    ScheduleUpdate:
+      type: object
+      description: Partial schedule update — every field is optional.
+      properties:
+        isActive:
+          type: boolean
+          example: false
+        startTime:
+          $ref: '#/components/schemas/TimePayload'
+        endTime:
+          $ref: '#/components/schemas/TimePayload'
+        weekdays:
+          $ref: '#/components/schemas/WeekPayload'
+        controlPin:
+          type: integer
+          minimum: 1
+          maximum: 8
+          example: 4
+    Schedule:
+      type: object
+      description: >-
+        A schedule as returned by the API. Note that times and weekdays are
+        serialized as strings, while create/update accept them as objects.
+      properties:
+        id:
+          type: string
+          description: Schedule identifier (`SDL:<n>`).
+          example: 'SDL:1'
+        startTime:
+          type: string
+          description: Start of the window, `hh:mm:ss`.
+          example: '13:30:0'
+        endTime:
+          type: string
+          description: End of the window, `hh:mm:ss`.
+          example: '14:0:0'
+        weekdays:
+          type: string
+          description: Active-weekday mask `sun:mon:tue:wed:thu:fri:sat`.
+          example: '0:1:1:1:1:1:0'
+        isActive:
+          type: boolean
+          example: true
+        digitalPin:
+          type: integer
+          description: Pin of the switch this schedule drives.
+          example: 3

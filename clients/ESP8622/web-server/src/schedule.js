@@ -1,6 +1,6 @@
-import Storage from "./storage";
-import { ConsoleLogger } from "./logger";
-import { clearInterval, setInterval } from "./utils";
+import Storage from "./database/storage";
+import { ConsoleLogger } from "services/logger";
+import { clearInterval, setInterval } from "utils/http";
 
 class Scheduler {
   #name = "scheduler";

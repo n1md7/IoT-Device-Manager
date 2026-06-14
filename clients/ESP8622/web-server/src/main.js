@@ -8,20 +8,19 @@ import {
   requestHandler,
   toSeconds,
   DiskInformation,
-  SystemTime,
   jsonResponse,
   plainResponse,
-  staticResource,
   streamResource,
-} from "./utils";
+} from "utils/http";
+import systemTime from "services/time";
 import { Server } from "http";
 import { System } from "file";
-import Switch from "./switch";
-import Ticker from "./ticker";
+import Switch from "services/switch";
+import Ticker from "services/ticker";
 import Net from "net";
 import config from "mc/config";
-import Storage from "./storage";
-import Counter from "./counter";
+import Storage from "./database/storage";
+import Counter from "services/counter";
 import Scheduler from "./schedule";
 
 const code = config["code"];
@@ -29,32 +28,30 @@ const version = config["version"];
 
 const defaultName = config["defaultName"];
 const defaultDescription = config["defaultDescription"];
-const defaultStartTime = +config["defaultStartTime"];
-const defaultManagerUrl = config["defaultManagerUrl"];
 
 const info = System.info();
 
 DiskInformation.output();
-SystemTime.adjust();
+systemTime.adjustAutomatically();
 
 const isEveryMinute = every(60);
 
-const remainingTime = new Counter("time");
+const remainingTime = new Counter();
 
 const name = new Storage("device", "name", defaultName);
 const description = new Storage("device", "description", defaultDescription);
-const isRunning = new Storage("ticker", "isRunning", false);
-const startTime = new Storage("ticker", "startTime", defaultStartTime);
-const managerUrl = new Storage("manager", "address", defaultManagerUrl);
 
 const status = new Switch({ pin: 2, signal: LOW });
-const relay = new Switch({ pin: 4, signal: HIGH });
+const D0 = new Switch({ pin: 0, signal: HIGH });
+const D1 = new Switch({ pin: 1, signal: HIGH });
+const D3 = new Switch({ pin: 3, signal: HIGH });
+const D4 = new Switch({ pin: 4, signal: HIGH });
 const server = new Server({ port: 80 });
 
 const timer = new Ticker({
-  isRunning,
+  isRunning: false,
   remainingTime,
-  startTime: startTime.getValue(),
+  startTime: 10,
   onTick: (value, logger) => {
     if (isEveryMinute(value)) {
       logger.info(`Remaining time: ${value}`);
@@ -118,60 +115,16 @@ server.callback = requestHandler({
         time: timer.getCurrentTime(),
       });
     },
-
-    "/system-time": (ctx) => plainResponse(new Date().toString()),
     "/info": (ctx) => {
-      const occupiedInPercent = (info.used / info.total) * 100;
-      const time = new Date();
-
       return jsonResponse({
         code,
         version,
-        current: {
-          name: name.getValue(),
-          description: description.getValue(),
-          startTime: startTime.getValue(),
-          managerUrl: managerUrl.getValue(),
-        },
-        defaults: {
-          name: defaultName,
-          description: defaultDescription,
-          startTime: defaultStartTime,
-          managerUrl: defaultManagerUrl,
-        },
-        disk: {
-          used: info.used,
-          total: info.total,
-          occupied: `${occupiedInPercent.toFixed(2)}%`,
-        },
-        time: {
-          now: time.getTime(),
-          str: time.toString(),
-          iso: time.toISOString(),
-        },
+        name: name.getValue(),
+        time: new Date().toISOString(),
+        description: description.getValue(),
       });
     },
-    "/config-reset": () => {
-      description.setValue(defaultDescription);
-      name.setValue(defaultName);
-      startTime.setValue(defaultStartTime);
-      managerUrl.setValue(defaultManagerUrl);
-    },
     "/config-update": (ctx) => {
-      if (ctx.params.managerUrl) {
-        if (!ctx.params.managerUrl.startsWith("http")) {
-          return apiError(
-            `Invalid managerUrl. It must start with 'http://' or 'https://'`,
-          );
-        }
-        managerUrl.setValue(ctx.params.managerUrl);
-      }
-      if (ctx.params.startTime) {
-        if (+ctx.params.startTime < 10) {
-          return apiError(`Invalid startTime. It must be at least 10 seconds`);
-        }
-        startTime.setValue(+ctx.params.startTime);
-      }
       if (ctx.params.name) name.setValue(ctx.params.name.substring(0, 32));
       if (ctx.params.description) {
         description.setValue(ctx.params.description.substring(0, 64));

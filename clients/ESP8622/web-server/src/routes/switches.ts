@@ -1,0 +1,67 @@
+import { switchController } from "controllers/index";
+import { Router } from "server/router";
+import {
+  assertKeys,
+  assertNumber,
+  assertObject,
+  assertString,
+} from "utils/validations";
+
+export const routeSwitches = new Router("/switches")
+  .post("/control", (ctx) => {
+    assertObject(ctx.body, "Invalid body");
+    assertKeys(
+      ctx.body,
+      "Missing digitalPin or action",
+      "digitalPin",
+      "action",
+    );
+
+    assertNumber(ctx.body.digitalPin, "Invalid digitalPin");
+    assertString(ctx.body.action, "Invalid action");
+
+    switchController.manualControl({
+      digitalPin: ctx.body.digitalPin,
+      action: ctx.body.action,
+      stopAt: ctx.body.stopAt,
+    });
+
+    return ctx.apiSend(200);
+  })
+  // CRUD operations
+  .get((ctx) => ctx.apiSend(200, switchController.fetch()))
+  .post((ctx) => {
+    assertObject(ctx.body, "Invalid body");
+    assertKeys(
+      ctx.body,
+      "Missing digitalPin or control",
+      "digitalPin",
+      "control",
+    );
+    assertNumber(ctx.body.digitalPin, "Invalid digitalPin");
+    assertNumber(ctx.body.control, "Invalid control");
+
+    return ctx.apiSend(
+      201,
+      switchController.create({
+        control: ctx.body.control,
+        digitalPin: ctx.body.digitalPin,
+      }),
+    );
+  })
+  .patch((ctx) => {
+    assertObject(ctx.body, "Invalid body");
+    assertKeys(ctx.body, "Missing control in body", "control");
+    assertNumber(ctx.body.control, "Invalid control value");
+
+    switchController.updateBy(ctx.intParam("pin"), {
+      control: ctx.body.control,
+    });
+
+    return ctx.apiSend(202);
+  })
+  .delete((ctx) => {
+    switchController.removeBy(ctx.intParam("pin"));
+
+    return ctx.apiSend(204);
+  });

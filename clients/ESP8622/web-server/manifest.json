@@ -4,30 +4,28 @@
     "$(MODDABLE)/examples/manifest_net.json",
     "$(MODDABLE)/modules/files/preference/manifest.json",
     "$(MODDABLE)/modules/files/file/manifest.json",
-    "$(MODULES)/pins/digital/manifest.json"
+    "$(MODULES)/pins/digital/manifest.json",
+    "$(MODDABLE)/modules/network/mdns/manifest.json"
   ],
   "modules": {
-    "*": [
-      "./src/*",
-      "$(MODULES)/network/http/*",
-      "$(MODULES)/network/sntp/*"
-    ]
+    "*": ["./src/*", "$(MODULES)/network/http/*", "$(MODULES)/network/sntp/*"],
+    "routes/*": "./src/routes/*",
+    "services/*": "./src/services/*",
+    "controllers/*": "./src/controllers/*",
+    "managers/*": "./src/managers/*",
+    "storages/*": "./src/storages/*",
+    "database/*": "./src/database/*",
+    "server/*": "./src/server/*",
+    "utils/*": "./src/utils/*"
   },
   "data": {
-    "*": [
-      "./public/*"
-    ]
+    "*": ["./public/*"]
   },
-  "preload": [
-    "http",
-    "sntp"
-  ],
+  "preload": ["http", "sntp"],
   "config": {
     "code": "D0001",
     "version": "1.0.0",
-    "defaultName": "My Pump",
-    "defaultStartTime": 1200,
-    "defaultDescription": "Home automation",
-    "defaultManagerUrl": "http://192.168.1.14:3002"
+    "name": "Device controller",
+    "description": "Device controller using NodeMCU via WEB interface"
   }
 }

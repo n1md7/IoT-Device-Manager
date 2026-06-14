@@ -1,0 +1,222 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Router > getRoutes > should verify many routes 1`] = `
+{
+  "/users": {
+    "DELETE": [Function],
+    "GET": [Function],
+    "POST": [Function],
+    "PUT": [Function],
+  },
+  "/users/bulk": {
+    "DELETE": [Function],
+  },
+  "/users/create/many": {
+    "POST": [Function],
+  },
+  "/users/one": {
+    "GET": [Function],
+  },
+  "/users/two": {
+    "GET": [Function],
+  },
+}
+`;
+
+exports[`Router > methods > delete(handler) 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1": {
+      "DELETE": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > delete(path, handler) with status 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "DELETE": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > delete(path, handler) with status and response 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "DELETE": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > get(handler) 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1": {
+      "GET": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > get(path, handler) with status 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "GET": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > get(path, handler) with status and response 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "GET": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > options(handler) 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1": {
+      "OPTIONS": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > options(path, handler) with status 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "OPTIONS": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > options(path, handler) with status and response 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "OPTIONS": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > patch(handler) 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1": {
+      "PATCH": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > patch(path, handler) with status 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "PATCH": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > patch(path, handler) with status and response 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "PATCH": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > post(handler) 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1": {
+      "POST": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > post(path, handler) with status 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "POST": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > post(path, handler) with status and response 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "POST": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > put(handler) 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1": {
+      "PUT": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > put(path, handler) with status 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "PUT": [Function],
+    },
+  },
+}
+`;
+
+exports[`Router > methods > put(path, handler) with status and response 1`] = `
+Router {
+  "namespace": "/api/v1",
+  "routes": {
+    "/api/v1/users": {
+      "PUT": [Function],
+    },
+  },
+}
+`;

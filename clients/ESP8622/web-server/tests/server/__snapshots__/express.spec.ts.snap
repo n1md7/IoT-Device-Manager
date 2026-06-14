@@ -1,0 +1,42 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Express > should verify existing routes 1`] = `
+{
+  "/api/schedules": {
+    "DELETE": [Function],
+    "GET": [Function],
+    "PATCH": [Function],
+    "POST": [Function],
+  },
+  "/api/switches": {
+    "DELETE": [Function],
+    "GET": [Function],
+    "PATCH": [Function],
+    "POST": [Function],
+  },
+}
+`;
+
+exports[`Express > should verify multiple namespaces 1`] = `
+{
+  "/api/schedules": {
+    "DELETE": [Function],
+    "GET": [Function],
+    "POST": [Function],
+  },
+  "/api/schedules/control": {
+    "POST": [Function],
+  },
+  "/api/switches": {
+    "DELETE": [Function],
+    "GET": [Function],
+    "POST": [Function],
+  },
+  "/api/users": {
+    "DELETE": [Function],
+    "GET": [Function],
+    "POST": [Function],
+    "PUT": [Function],
+  },
+}
+`;

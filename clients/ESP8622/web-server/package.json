@@ -1,22 +1,26 @@
 {
   "name": "web-server",
   "version": "1.0.0",
-  "description": "This is a basic code for `esp/nodemcu` (`ESP8622`).",
+  "description": "esp/nodemcu (`ESP8622`)",
   "main": "src/main.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "mock-api": "node ./mock-api/index.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
+    "test": "vitest",
+    "test:cov": "vitest --coverage"
   },
   "keywords": [],
-  "author": "",
+  "author": "n1md7",
   "license": "ISC",
   "devDependencies": {
     "@moddable/typings": "^5.5.0",
-    "@types/express": "^5.0.0",
-    "express": "^4.21.2",
-    "prettier": "3.5.1"
+    "@types/node": "^25.9.3",
+    "@vitest/coverage-istanbul": "^4.1.8",
+    "prettier": "3.5.1",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.8"
   }
 }
