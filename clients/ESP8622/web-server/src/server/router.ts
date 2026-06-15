@@ -21,6 +21,7 @@ export type ResponseStatus =
   | 401
   | 403
   | 404
+  | 413
   | 500;
 export type ResponseBody = string;
 export type RequestBody = Record<string, any>;
@@ -66,6 +67,18 @@ export type Context = Request & {
    * Static file streaming to save memory
    */
   stream?: Stream;
+
+  /**
+   * Declared request body size, captured from the `Content-Length` header
+   * during the header phase.
+   */
+  contentLength?: number;
+
+  /**
+   * Set when `contentLength` exceeds the server's body limit. The body is
+   * discarded as it arrives and the request is answered with a 413.
+   */
+  tooLarge?: boolean;
 
   /**
    * Parse a query-string param as an integer.

@@ -179,10 +179,13 @@ Errors return the relevant `4xx` with a `{ "message": "<reason>" }` body.
 | `POST`   | `/api/schedules`        | Create a schedule                             |
 | `PATCH`  | `/api/schedules?id=`    | Update a schedule (partial)                   |
 | `DELETE` | `/api/schedules?id=`    | Delete a schedule                             |
+| `GET`    | `/api/device`           | Device identity (`name`, `code`, `version`) + clock |
 
 **Pins** accept digital pins `1`–`8`; **control** is `0` (LOW) or `1` (HIGH).
 
-Example — turn a relay on for ~10 minutes:
+Example — turn a relay on for ~10 minutes. `stopAt` is an epoch timestamp (ms,
+min ~10s ahead); the device arms a timer and turns the switch off automatically at
+that time (surfaced as `stopsAt` when you `GET /api/switches`):
 
 ```bash
 curl -X POST http://192.168.1.2/api/switches/control \

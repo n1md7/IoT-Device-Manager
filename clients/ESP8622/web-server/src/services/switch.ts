@@ -47,6 +47,7 @@ type Options = {
 
 export class Switch {
   private readonly pin: Digital;
+  private readonly id: Pins;
   private readonly onSignal: Storage<1 | 0>;
   private readonly logger: Logger;
   private currentlyActive: boolean;
@@ -55,6 +56,7 @@ export class Switch {
     private readonly key: PinKey,
     options: Options,
   ) {
+    this.id = options.pin;
     this.pin = new Digital({
       pin: options.pin,
       mode: Digital.Output,
@@ -80,7 +82,7 @@ export class Switch {
 
   toJSON() {
     return {
-      pin: this.pin.read() as Pins,
+      pin: this.id,
       control: this.getControl(),
       active: this.currentlyActive,
     };

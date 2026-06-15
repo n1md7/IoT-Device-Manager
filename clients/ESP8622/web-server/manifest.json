@@ -21,7 +21,32 @@
   "data": {
     "*": ["./public/*"]
   },
-  "preload": ["http", "sntp"],
+  "preload": [
+    "http",
+    "sntp",
+    "utils/validations",
+    "utils/http",
+    "utils/env",
+    "utils/config",
+    "utils/console",
+    "utils/interval",
+    "services/logger",
+    "services/extension",
+    "services/time",
+    "services/mdns",
+    "services/switch",
+    "services/schedule",
+    "services/counter",
+    "server/router",
+    "server/express",
+    "database/storage",
+    "storages/ids",
+    "storages/unique-id",
+    "managers/switches",
+    "managers/schedules",
+    "controllers/switch.controller",
+    "controllers/schedule.controller"
+  ],
   "config": {
     "code": "D0001",
     "version": "1.0.0",

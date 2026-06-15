@@ -46,34 +46,25 @@ export class Express {
    */
   private readonly routes: Routes;
   private readonly maxChunkSize = 512;
+  /**
+   * Largest request body we'll accept, in bytes. Bodies declaring more than
+   * this via `Content-Length` are discarded as they arrive (never buffered)
+   * and answered with 413. Keep it small — this device only takes tiny control
+   * payloads like `{ digitalPin, control, action, stopAt }`.
+   */
+  private readonly maxBodySize = 2048;
   private readonly extension: Extension;
-  private readonly ipAddress: string;
-  private readonly hostname: string;
 
   constructor(
     private readonly prefix: Path,
     private readonly port: number,
   ) {
     this.routes = {};
-    this.hostname = hostName;
     this.extension = new Extension();
-    this.ipAddress = Net.get("IP");
 
     if (prefix.endsWith("/")) {
       this.prefix = prefix.substring(0, prefix.length - 1) as Path;
     }
-  }
-
-  getPort() {
-    return this.port;
-  }
-
-  getHostname() {
-    return this.hostname;
-  }
-
-  getIpAddress() {
-    return this.ipAddress;
   }
 
   getRoutes() {
@@ -138,6 +129,8 @@ export class Express {
 
   private callback() {
     const handleRequestStatus = this.handleRequestStatus.bind(this);
+    const handleRequestHeader = this.handleRequestHeader.bind(this);
+    const handleHeadersComplete = this.handleHeadersComplete.bind(this);
     const handleRequestBody = this.handleRequestBody.bind(this);
     const handleResponseFragment = this.handleResponseFragment.bind(this);
     const handleResponseComplete = this.handleResponseComplete.bind(this);
@@ -167,6 +160,10 @@ export class Express {
       switch (message) {
         case Server.status:
           return handleRequestStatus(ctx, value, etc);
+        case Server.header:
+          return handleRequestHeader(ctx, value, etc);
+        case Server.headersComplete:
+          return handleHeadersComplete(ctx);
         case Server.requestComplete:
           return handleRequestBody(ctx, value);
         case Server.responseFragment:
@@ -194,6 +191,31 @@ export class Express {
     } catch (e) {
       return this.apiError(400, "Invalid query string");
     }
+  }
+
+  private handleRequestHeader(ctx: Context, name: string, value: string) {
+    // The server emits this once per header; `name` is already lower-cased.
+    // We only care about the declared body size for the guard below.
+    if (name === "content-length") {
+      ctx.contentLength = parseInt(value, 10) || 0;
+    }
+  }
+
+  private handleHeadersComplete(ctx: Context) {
+    // The server uses our return value as the body's output type. If the
+    // declared body is larger than we're willing to buffer, return `false`:
+    // that makes the server DISCARD the body as it streams in (via internal
+    // `socket.read(null, …)`) instead of allocating it in RAM. We flag the
+    // request so `handleResponse` can answer 413 once the body is drained.
+    if ((ctx.contentLength ?? 0) > this.maxBodySize) {
+      ctx.tooLarge = true;
+      return false;
+    }
+
+    // Otherwise: collect the whole body and deliver it as one string at
+    // `requestComplete`, where `handleRequestBody` runs JSON.parse. Without a
+    // return here the body phase would abort with "unsupported output type".
+    return String;
   }
 
   private handleRequestBody(ctx: Context, body: string) {
@@ -233,6 +255,11 @@ export class Express {
   }
 
   private handleResponse(ctx: Context) {
+    // Body was refused at headersComplete and discarded; answer 413 now.
+    if (ctx.tooLarge) {
+      return this.apiError(413, `Body exceeds ${this.maxBodySize} bytes`);
+    }
+
     // We stream index.html by default when file not specified
     if (!ctx.route || ctx.route === "/") {
       return this.streamResource(ctx, "index.html", "html");
@@ -279,7 +306,7 @@ export class Express {
    * lifts the ~2.75 KB whole-body limit; no zipping needed.
    */
   private streamResource(ctx: Context, path: string, type: Extensions) {
-    path = path.substring(1, path.length); // Remove leading slash
+    if (path.startsWith("/")) path = path.substring(1, path.length); // Remove leading slash
 
     try {
       const resource = new Resource(path); // flash-mapped, read-only

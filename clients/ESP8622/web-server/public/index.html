@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Home Automation</title>
+<title>ESP Device</title>
 <style>
   :root {
     --bg: #0f172a; --card: #1e293b; --line: #334155;
@@ -57,6 +57,7 @@
   .pill.on { color: var(--ok); }
   .pill.off { color: var(--muted); }
   .clock { font-size: 2.4rem; font-weight: 700; text-align: center; margin: 8px 0; font-variant-numeric: tabular-nums; }
+  .clock.small { font-size: 1.3rem; font-weight: 600; color: var(--muted); }
   .msg { font-size: .85rem; margin-top: 8px; min-height: 1em; }
   .msg.ok { color: var(--ok); }
   .msg.err { color: var(--err); }
@@ -69,10 +70,13 @@
   .days input { display: none; }
   .days input:checked + span { color: var(--accent); font-weight: 700; }
   .hidden { display: none; }
-  .info-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: .85rem; }
-  .info-grid div:nth-child(odd) { color: var(--muted); }
   .switch { display: flex; align-items: center; gap: 10px; }
   .switch input { width: auto; }
+
+  /* Empty-state prompt (e.g. no switches yet) */
+  .empty { text-align: center; color: var(--muted); }
+  .empty h2 { color: var(--text); }
+  .empty .action { flex: 0 1 auto; margin-top: 8px; padding-inline: 22px; }
 
   /* Schedule cards: green accent when enabled, red when disabled */
   .schedule { border-left-width: 4px; transition: border-color .2s ease; }
@@ -107,6 +111,7 @@
   }
   .footer-date { font-size: .75rem; margin: 2px 0 14px; }
   .footer-credit { opacity: .7; }
+  .footer-meta { opacity: .85; margin-bottom: 2px; }
 
   /* Custom confirm modal */
   .modal-backdrop {
@@ -128,53 +133,84 @@
 </head>
 <body>
 <header>
-  <h1 id="title">Home Automation</h1>
+  <h1 id="title">ESP Device</h1>
   <p class="subtitle" id="subtitle"></p>
 </header>
 
 <nav>
-  <button data-tab="device" class="active">Device</button>
+  <button data-tab="control" class="active">Control</button>
+  <button data-tab="switches">Switches</button>
   <button data-tab="schedules">Schedules</button>
-  <button data-tab="config">Config</button>
 </nav>
 
 <main>
-  <!-- ============ DEVICE ============ -->
-  <section id="device" class="tab active">
-    <div class="card">
-      <h2>Manual control</h2>
-      <div class="status-line">Status: <span id="dStatus" class="pill off">OFF</span></div>
-      <div class="clock" id="dClock">00:00:00</div>
+  <!-- ============ CONTROL (instant) ============ -->
+  <section id="control" class="tab active">
+    <!-- Shown only when no switches are registered yet -->
+    <div class="card empty hidden" id="ctlEmpty">
+      <h2>No switches yet</h2>
+      <p>Register a switch (a digital pin) before you can drive it.</p>
+      <button class="action" id="ctlGoCreate">Create a switch</button>
+    </div>
 
-      <div id="dPicker">
+    <!-- Shown once at least one switch exists -->
+    <div class="card hidden" id="ctlPanel">
+      <h2>Instant control</h2>
+      <div class="field">
+        <label for="ctlSelect">Switch</label>
+        <select id="ctlSelect"></select>
+      </div>
+
+      <div class="status-line">Status: <span id="ctlStatus" class="pill off">OFF</span></div>
+      <div class="clock" id="ctlClock">00:00:00</div>
+
+      <div id="ctlPicker">
         <div class="row field">
           <div>
-            <label for="dMin">Minutes</label>
-            <input type="number" id="dMin" min="0" max="999" value="10" />
+            <label for="ctlMin">Minutes</label>
+            <input type="number" id="ctlMin" min="0" max="999" value="10" />
           </div>
           <div>
-            <label for="dSec">Seconds</label>
-            <input type="number" id="dSec" min="0" max="59" value="0" />
+            <label for="ctlSec">Seconds</label>
+            <input type="number" id="ctlSec" min="0" max="59" value="0" />
           </div>
         </div>
-        <p class="muted">Minimum duration is 10 seconds.</p>
+        <p class="muted">Minimum duration is 10 seconds. The device turns the switch off automatically when it elapses.</p>
       </div>
 
       <div class="btns">
-        <button class="action" id="dOn">Turn ON</button>
-        <button class="action danger" id="dOff">Turn OFF</button>
+        <button class="action" id="ctlOn">Turn ON</button>
+        <button class="action danger" id="ctlOff">Turn OFF</button>
       </div>
-      <div class="msg" id="dMsg"></div>
+      <div class="msg" id="ctlMsg"></div>
     </div>
+  </section>
+
+  <!-- ============ SWITCHES ============ -->
+  <section id="switches" class="tab">
+    <div class="msg" id="swMsg"></div>
+    <div id="swList"></div>
 
     <div class="card">
-      <h2>About this board</h2>
-      <div class="info-grid">
-        <div>Chip</div><div>Espressif ESP8266 (Tensilica L106)</div>
-        <div>CPU</div><div>32-bit RISC @ 80 MHz (overclockable to 160 MHz)</div>
-        <div>RAM</div><div>~80 KB data + 32 KB instruction</div>
-        <div>Wi-Fi</div><div>802.11 b/g/n, 2.4 GHz</div>
+      <h2>Register a switch</h2>
+      <div class="row field">
+        <div>
+          <label for="swPin">Digital pin</label>
+          <select id="swPin"></select>
+        </div>
+        <div>
+          <label for="swSignal">On signal</label>
+          <select id="swSignal">
+            <option value="1">HIGH (1)</option>
+            <option value="0">LOW (0)</option>
+          </select>
+        </div>
       </div>
+      <p class="hint muted">The "on signal" is the level written to drive the switch ON. Some relays and the D2 built-in LED are active-LOW.</p>
+      <div class="btns">
+        <button class="action" id="swAdd">Add switch</button>
+      </div>
+      <div class="msg" id="swAddMsg"></div>
     </div>
   </section>
 
@@ -184,44 +220,12 @@
     <div id="sList"></div>
     <button class="action ghost" id="sAdd" style="width:100%">+ Add schedule</button>
   </section>
-
-  <!-- ============ CONFIG ============ -->
-  <section id="config" class="tab">
-    <div class="card">
-      <h2>Device configuration</h2>
-      <div class="field">
-        <label for="cName">Device name</label>
-        <input type="text" id="cName" maxlength="32" placeholder="My Pump" />
-      </div>
-      <div class="field">
-        <label for="cDesc">Description</label>
-        <input type="text" id="cDesc" maxlength="64" placeholder="My device" />
-      </div>
-      <div class="field">
-        <label for="cStart">Start time (seconds)</label>
-        <input type="number" id="cStart" min="10" placeholder="1200" />
-      </div>
-      <div class="field">
-        <label for="cUrl">Manager URL</label>
-        <input type="url" id="cUrl" placeholder="http://192.168.1.2" />
-      </div>
-      <div class="btns">
-        <button class="action" id="cSave">Update</button>
-        <button class="action ghost" id="cReset">Reset to defaults</button>
-      </div>
-      <div class="msg" id="cMsg"></div>
-    </div>
-
-    <div class="card">
-      <h2>System info</h2>
-      <div class="info-grid" id="cInfo"><div>Loading…</div><div></div></div>
-    </div>
-  </section>
 </main>
 
 <footer>
   <div class="footer-clock" id="fClock">--:--:--</div>
   <div class="footer-date" id="fDate"></div>
+  <div class="footer-meta" id="fMeta"></div>
   <div class="footer-credit">Powered by <b>GG-Software</b> · ESP8266</div>
 </footer>
 
@@ -248,6 +252,7 @@ const pad = (value) => String(value).padStart(2, "0");
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; // 0=Sun (Date.getDay)
+const WEEK_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]; // matches WeekPayload
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /** Seconds → "HH:MM:SS" (never negative). */
@@ -258,15 +263,21 @@ const formatDuration = (totalSeconds) => {
     .join(":");
 };
 
-/** Group digits for readability: 1234567 → "1 234 567". */
-const formatBytes = (value) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
-/** Write a status line under a card; `kind` is "ok" | "err" | "". */
+/** Write a status line; `kind` is "ok" | "err" | "". */
 const setMessage = (element, text = "", kind = "") => {
   if (!element) return; // never let a missing slot mask the real error
   element.textContent = text;
   element.className = `msg ${kind}`.trim();
 };
+
+/* ============================================================
+ * Device clock — anchored to the device, ticked off the browser
+ * ============================================================ */
+// The device exposes its current time via GET /device.timestamp. We measure the
+// device↔browser gap once and then tick off the (actually-advancing) browser
+// clock, so the display stays live and aligned to the device.
+let clockOffset = 0;
+const deviceNow = () => Date.now() + clockOffset;
 
 /* ============================================================
  * Device API client — the single place that talks to /api
@@ -288,9 +299,13 @@ async function api(path, init) {
   return response.json().catch(() => null);
 }
 
-/** Serialise an object into the device's `x-body-vars` header format. */
-const toBodyVars = (vars) =>
-  Object.entries(vars).map(([key, value]) => `${key}=${value}`).join(";");
+/** Send a JSON request (or a bodiless one) and return the parsed response. */
+const send = (method, path, body) =>
+  api(path, {
+    method,
+    headers: body === undefined ? undefined : { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
 
 /* ============================================================
  * Modal — promise-based confirm dialog (replaces window.confirm)
@@ -332,144 +347,337 @@ const Modal = (() => {
 })();
 
 /* ============================================================
- * Device control — manual ON/OFF with a live countdown
+ * Switches store — the single source for "what pins are registered"
+ * GET /switches → [{ pin, control, active, stopsAt }]
  * ============================================================ */
-const DeviceControl = (() => {
-  const statusLabel = $("#dStatus");
-  const clock = $("#dClock");
-  const picker = $("#dPicker");
-  const message = $("#dMsg");
-  const minutes = $("#dMin");
-  const seconds = $("#dSec");
+const Switches = (() => {
+  const ALL_PINS = [1, 2, 3, 4, 5, 6, 7, 8];
+  let cache = []; // last-known list of switches
 
-  let countdown = null;
-  const stopCountdown = () => { clearInterval(countdown); countdown = null; };
+  const list = () => cache;
+  const get = (pin) => cache.find((sw) => sw.pin === pin);
+  const registeredPins = () => cache.map((sw) => sw.pin);
+  const availablePins = () => ALL_PINS.filter((pin) => !registeredPins().includes(pin));
 
-  const render = ({ active, time }) => {
-    stopCountdown();
+  /** Refresh the cache from the device. Throws on failure (callers handle it). */
+  const refresh = async () => {
+    cache = (await api("/switches")) || [];
+    return cache;
+  };
+
+  const create = (digitalPin, control) => send("POST", "/switches", { digitalPin, control });
+  const update = (pin, control) => send("PATCH", `/switches?pin=${pin}`, { control });
+  const remove = (pin) => send("DELETE", `/switches?pin=${pin}`);
+  const start = (digitalPin, stopAt) => send("POST", "/switches/control", { digitalPin, action: "Start", stopAt });
+  const stop = (digitalPin) => send("POST", "/switches/control", { digitalPin, action: "Stop" });
+
+  return { list, get, registeredPins, availablePins, refresh, create, update, remove, start, stop };
+})();
+
+/* ============================================================
+ * Control tab — instant ON/OFF for a selected switch, with a
+ * live countdown driven by the server's `stopsAt`.
+ * ============================================================ */
+const Control = (() => {
+  const empty = $("#ctlEmpty");
+  const panel = $("#ctlPanel");
+  const select = $("#ctlSelect");
+  const statusLabel = $("#ctlStatus");
+  const clock = $("#ctlClock");
+  const picker = $("#ctlPicker");
+  const message = $("#ctlMsg");
+  const minutes = $("#ctlMin");
+  const seconds = $("#ctlSec");
+
+  let ticker = null;
+  const stopTicker = () => { clearInterval(ticker); ticker = null; };
+
+  const selectedPin = () => Number(select.value);
+
+  /** Fill the dropdown with registered pins, preserving the current choice. */
+  const fillSelect = () => {
+    const previous = selectedPin();
+    const pins = Switches.registeredPins();
+    select.innerHTML = pins.map((pin) => `<option value="${pin}">Pin D${pin}</option>`).join("");
+    if (pins.includes(previous)) select.value = String(previous);
+  };
+
+  /** Render the status + clock for whichever switch is selected. */
+  const renderSelected = () => {
+    stopTicker();
+    const sw = Switches.get(selectedPin());
+    if (!sw) return;
+
+    const active = !!sw.active;
     statusLabel.textContent = active ? "ON" : "OFF";
     statusLabel.className = `pill ${active ? "on" : "off"}`;
-    picker.classList.toggle("hidden", active);
+    picker.classList.toggle("hidden", active); // hide the timer picker while running
 
     if (!active) {
+      clock.classList.remove("small");
       clock.textContent = "00:00:00";
       return;
     }
 
-    let remaining = time | 0;
-    clock.textContent = formatDuration(remaining);
-    countdown = setInterval(() => {
-      clock.textContent = formatDuration(--remaining);
-      if (remaining <= 0) refresh(); // re-sync with the device at zero
-    }, 1000);
+    if (!sw.stopsAt) {
+      // On, but with no manual auto-off (e.g. driven by a schedule).
+      clock.classList.add("small");
+      clock.textContent = "ON · no timer";
+      return;
+    }
+
+    // Manual auto-off: count down to stopsAt against device time.
+    clock.classList.remove("small");
+    const tick = () => {
+      const remaining = Math.round((sw.stopsAt - deviceNow()) / 1000);
+      clock.textContent = formatDuration(remaining);
+      if (remaining <= 0) { stopTicker(); refresh(); } // re-sync; the device auto-stops
+    };
+    tick();
+    ticker = setInterval(tick, 1000);
   };
 
-  /** Run a request that returns timer state, then render it. */
-  const apply = async (request, okText = "") => {
+  /** Pull fresh state and re-render the whole tab. */
+  const refresh = async () => {
     try {
-      render(await request());
-      setMessage(message, okText, okText && "ok");
+      await Switches.refresh();
+      render();
     } catch (error) {
       setMessage(message, error.message, "err");
     }
   };
 
-  const refresh = () => apply(() => api("/status"));
-  const turnOn = () =>
-    apply(() => api(`/on?min=${minutes.value || 0}&sec=${seconds.value || 0}`, { method: "POST" }), "Timer started.");
-  const turnOff = () => apply(() => api("/off", { method: "POST" }), "Turned off.");
+  /** Toggle empty-state vs. control panel, then render the selected switch. */
+  const render = () => {
+    const hasSwitches = Switches.list().length > 0;
+    empty.classList.toggle("hidden", hasSwitches);
+    panel.classList.toggle("hidden", !hasSwitches);
+    if (!hasSwitches) { stopTicker(); return; }
+    fillSelect();
+    renderSelected();
+  };
 
-  $("#dOn").addEventListener("click", turnOn);
-  $("#dOff").addEventListener("click", turnOff);
+  const turnOn = async () => {
+    const duration = clamp(Number(minutes.value) || 0, 0, 999) * 60 + clamp(Number(seconds.value) || 0, 0, 59);
+    if (duration < 10) {
+      setMessage(message, "Minimum duration is 10 seconds.", "err");
+      return;
+    }
+    setMessage(message);
+    try {
+      await Switches.start(selectedPin(), deviceNow() + duration * 1000);
+      await refresh();
+      setMessage(message, "Timer started.", "ok");
+    } catch (error) {
+      setMessage(message, error.message, "err");
+    }
+  };
 
-  return { refresh };
+  const turnOff = async () => {
+    setMessage(message);
+    try {
+      await Switches.stop(selectedPin());
+      await refresh();
+      setMessage(message, "Turned off.", "ok");
+    } catch (error) {
+      setMessage(message, error.message, "err");
+    }
+  };
+
+  select.addEventListener("change", () => { setMessage(message); renderSelected(); });
+  $("#ctlOn").addEventListener("click", turnOn);
+  $("#ctlOff").addEventListener("click", turnOff);
+  $("#ctlGoCreate").addEventListener("click", () => Tabs.show("switches"));
+
+  // `load` re-fetches; `render` only re-paints from cache (used after other tabs change state).
+  return { load: refresh, render };
 })();
 
 /* ============================================================
- * Schedules — CRUD over the device's schedule manager
+ * Switches tab — register / configure / remove switches
+ * ============================================================ */
+const SwitchesTab = (() => {
+  const listEl = $("#swList");
+  const message = $("#swMsg");
+  const pinSelect = $("#swPin");
+  const signalSelect = $("#swSignal");
+  const addButton = $("#swAdd");
+  const addMessage = $("#swAddMsg");
+
+  const cardTemplate = (sw) => `
+    <h2>Pin D${sw.pin} <span class="badge ${sw.active ? "badge-on" : "badge-off"}">${sw.active ? "ON" : "OFF"}</span></h2>
+    <div class="field">
+      <label>On signal</label>
+      <select class="f-signal">
+        <option value="1" ${sw.control === 1 ? "selected" : ""}>HIGH (1)</option>
+        <option value="0" ${sw.control === 0 ? "selected" : ""}>LOW (0)</option>
+      </select>
+    </div>
+    <div class="card-actions">
+      <button class="action f-save" type="button">Save</button>
+      <button class="btn-remove f-remove" type="button">Remove</button>
+    </div>
+    <div class="msg f-msg"></div>`;
+
+  const buildCard = (sw) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = cardTemplate(sw);
+    const cardMessage = $(".f-msg", card);
+
+    $(".f-save", card).addEventListener("click", async () => {
+      try {
+        await Switches.update(sw.pin, Number($(".f-signal", card).value));
+        setMessage(cardMessage, "Saved.", "ok");
+        load();
+      } catch (error) {
+        setMessage(cardMessage, error.message, "err");
+      }
+    });
+
+    $(".f-remove", card).addEventListener("click", async () => {
+      const ok = await Modal.confirm(`Pin D${sw.pin} will be unregistered.`, {
+        heading: `Remove switch D${sw.pin}?`, okText: "Remove",
+      });
+      if (!ok) return;
+      try {
+        await Switches.remove(sw.pin);
+        load();
+      } catch (error) {
+        setMessage(cardMessage, error.message, "err");
+      }
+    });
+
+    return card;
+  };
+
+  /** Repopulate the "add" pin dropdown with the still-available pins. */
+  const fillAvailablePins = () => {
+    const pins = Switches.availablePins();
+    pinSelect.innerHTML = pins.map((pin) => `<option value="${pin}">D${pin}</option>`).join("");
+    addButton.disabled = pins.length === 0;
+    setMessage(addMessage, pins.length ? "" : "All pins are registered.", "");
+  };
+
+  const load = async () => {
+    setMessage(message);
+    listEl.innerHTML = `<div class="card muted">Loading switches…</div>`;
+    try {
+      const switches = await Switches.refresh();
+      if (switches.length === 0) {
+        listEl.innerHTML = `<div class="card muted">No switches registered yet. Add one below.</div>`;
+      } else {
+        listEl.replaceChildren(...switches.map(buildCard));
+      }
+      fillAvailablePins();
+    } catch (error) {
+      listEl.replaceChildren();
+      setMessage(message, error.message, "err");
+    }
+  };
+
+  addButton.addEventListener("click", async () => {
+    addButton.disabled = true;
+    try {
+      await Switches.create(Number(pinSelect.value), Number(signalSelect.value));
+      setMessage(addMessage, "Switch added.", "ok");
+      load();
+    } catch (error) {
+      setMessage(addMessage, error.message, "err");
+      addButton.disabled = false;
+    }
+  });
+
+  return { load };
+})();
+
+/* ============================================================
+ * Schedules tab — daily on/off windows that drive a switch
+ * GET /schedules → [{ id:"SDL:n", startTime, endTime, weekdays, isActive, digitalPin }]
  * ============================================================ */
 const Schedules = (() => {
-  const MAX = 4; // mirrors ScheduleManager#maxSchedules on the device
-  const list = $("#sList");
+  const listEl = $("#sList");
   const addButton = $("#sAdd");
   const message = $("#sMsg");
 
-  const cardTemplate = (schedule) => {
-    const enabledDays = new Set(String(schedule.weekdays).split(",").map(Number));
-    const startTime = `${pad(schedule.hour)}:${pad(schedule.minute)}`;
-    const durationMinutes = Math.round(schedule.activateForSeconds / 60) || 1;
-    const dayBoxes = WEEKDAYS.map((label, day) => `
-        <label>
-          <input type="checkbox" class="f-day" value="${day}" ${enabledDays.has(day) ? "checked" : ""} />
-          <span>${label}</span>
-        </label>`).join("");
+  /** "SDL:5" → 5 (the numeric id the PATCH/DELETE query expects). */
+  const numericId = (id) => Number(String(id).split(":")[1]);
+  /** "9:30:0" → "09:30" for an <input type="time">. */
+  const toTimeInput = (value) => {
+    const [hh = 0, mm = 0] = String(value || "").split(":").map(Number);
+    return `${pad(hh)}:${pad(mm)}`;
+  };
+  /** "09:30" → { hh, mm, ss:0 } payload. */
+  const toTimePayload = (value) => {
+    const [hh = 0, mm = 0] = String(value || "").split(":").map(Number);
+    return { hh, mm, ss: 0 };
+  };
+  /** "0:1:1:0:0:0:0" → Set of active day indexes. */
+  const activeDays = (weekdays) => {
+    const bits = String(weekdays || "").split(":").map(Number);
+    return new Set(WEEKDAYS.map((_, day) => day).filter((day) => bits[day] === 1));
+  };
 
+  const dayBoxes = (enabled) => WEEKDAYS.map((label, day) => `
+    <label>
+      <input type="checkbox" class="f-day" value="${day}" ${enabled.has(day) ? "checked" : ""} />
+      <span>${label}</span>
+    </label>`).join("");
+
+  const pinOptions = (selected) => {
+    const pins = Switches.registeredPins();
+    return pins.map((pin) => `<option value="${pin}" ${pin === selected ? "selected" : ""}>Pin D${pin}</option>`).join("");
+  };
+
+  /** Read a card's inputs into the schedule payload the API expects. */
+  const readCard = (card) => {
+    const weekdays = {};
+    const checked = new Set([...card.querySelectorAll(".f-day:checked")].map((box) => Number(box.value)));
+    WEEK_KEYS.forEach((key, day) => { weekdays[key] = checked.has(day) ? 1 : 0; });
+    return {
+      isActive: $(".f-active", card).checked,
+      startTime: toTimePayload($(".f-start", card).value),
+      endTime: toTimePayload($(".f-end", card).value),
+      weekdays,
+      controlPin: Number($(".f-pin", card).value),
+    };
+  };
+
+  const formMarkup = (schedule) => {
+    const enabled = activeDays(schedule.weekdays);
     return `
-    <h2>Schedule #${schedule.id} <span class="f-badge badge"></span></h2>
+    <h2>${schedule.isNew ? "New schedule" : `Schedule ${schedule.id}`}
+      <span class="f-badge badge"></span></h2>
+    <div class="field">
+      <label>Switch</label>
+      <select class="f-pin">${pinOptions(schedule.digitalPin)}</select>
+    </div>
     <div class="row field">
       <div>
         <label>Start time</label>
-        <input type="time" class="f-start" value="${startTime}" />
+        <input type="time" class="f-start" value="${toTimeInput(schedule.startTime)}" />
       </div>
       <div>
-        <label>Run for (minutes)</label>
-        <input type="number" class="f-dur" min="1" max="60" step="1" inputmode="numeric" value="${durationMinutes}" />
+        <label>End time</label>
+        <input type="time" class="f-end" value="${toTimeInput(schedule.endTime)}" />
       </div>
     </div>
-    <p class="hint muted">1–60 minutes (device cap: 3600 seconds).</p>
     <label>Repeat on</label>
-    <div class="days">${dayBoxes}</div>
+    <div class="days">${dayBoxes(enabled)}</div>
     <div class="switch field">
-      <input type="checkbox" class="f-active" id="act-${schedule.id}" ${schedule.active ? "checked" : ""} />
-      <label for="act-${schedule.id}" style="margin:0">Enabled</label>
+      <input type="checkbox" class="f-active" ${schedule.isActive ? "checked" : ""} />
+      <label style="margin:0">Enabled</label>
     </div>
     <div class="card-actions">
-      <button class="action f-save" type="button">Save changes</button>
-      <button class="btn-remove f-remove" type="button">Remove</button>
+      <button class="action f-save" type="button">${schedule.isNew ? "Create" : "Save"}</button>
+      ${schedule.isNew ? "" : '<button class="btn-remove f-remove" type="button">Remove</button>'}
     </div>
     <div class="msg f-msg"></div>`;
   };
 
-  /** Read a card's inputs into the payload the device PUT expects. */
-  const readCard = (card, id) => {
-    const [hour, minute] = $(".f-start", card).value.split(":").map(Number);
-    const days = [...card.querySelectorAll(".f-day:checked")].map((box) => box.value);
-    return {
-      id,
-      weekdays: days.join(",") || "0",
-      hour: hour || 0,
-      minute: minute || 0,
-      active: $(".f-active", card).checked ? "true" : "false",
-      activateForSeconds: clamp(Number($(".f-dur", card).value) || 1, 1, 60) * 60,
-    };
-  };
-
-  /** Stable signature of a card's current values, for change detection. */
-  const signature = (card, id) => JSON.stringify(readCard(card, id));
-
-  /** Valid when the time is set and run-for is a whole number from 1 to 60. */
-  const isValid = (card) => {
-    const minutes = Number($(".f-dur", card).value);
-    return /^\d{2}:\d{2}$/.test($(".f-start", card).value)
-      && Number.isInteger(minutes) && minutes >= 1 && minutes <= 60;
-  };
-
-  const remove = async (card, id) => {
-    const confirmed = await Modal.confirm(`Schedule #${id} will be permanently removed.`, {
-      heading: `Remove schedule #${id}?`,
-      okText: "Remove",
-    });
-    if (!confirmed) return;
-    try {
-      await api(`/schedules?action=REMOVE&id=${id}`, { method: "POST" });
-      load();
-    } catch (error) {
-      setMessage($(".f-msg", card), error.message, "err");
-    }
-  };
-
-  /** Reflect the enabled/disabled state in the card's colour + badge. */
-  const setCardState = (card, active) => {
+  /** Colour + badge reflecting the enabled toggle. */
+  const paintState = (card) => {
+    const active = $(".f-active", card).checked;
     card.classList.toggle("schedule-on", active);
     card.classList.toggle("schedule-off", !active);
     const badge = $(".f-badge", card);
@@ -480,228 +688,158 @@ const Schedules = (() => {
   const buildCard = (schedule) => {
     const card = document.createElement("div");
     card.className = "card schedule";
-    card.innerHTML = cardTemplate(schedule);
-
-    const saveButton = $(".f-save", card);
-    const activeToggle = $(".f-active", card);
+    card.innerHTML = formMarkup(schedule);
     const cardMessage = $(".f-msg", card);
-    let saved = signature(card, schedule.id); // baseline = the loaded values
 
-    // Save is enabled only when the inputs are valid AND something changed.
-    const sync = () => {
-      const valid = isValid(card);
-      saveButton.disabled = !valid || signature(card, schedule.id) === saved;
-      if (!valid) setMessage(cardMessage, "Run-for must be a whole number from 1 to 60 minutes.", "err");
-      else if (cardMessage.classList.contains("err")) setMessage(cardMessage); // clear stale error
-    };
+    paintState(card);
+    $(".f-active", card).addEventListener("change", () => paintState(card));
 
-    const handleSave = async () => {
-      saveButton.disabled = true;
+    $(".f-save", card).addEventListener("click", async () => {
+      const payload = readCard(card);
       try {
-        await api("/schedules", {
-          method: "PUT",
-          headers: { "x-body-vars": toBodyVars(readCard(card, schedule.id)) },
-        });
-        saved = signature(card, schedule.id); // new baseline → Save disables until next edit
-        setMessage(cardMessage, "Saved.", "ok");
+        if (schedule.isNew) {
+          await send("POST", "/schedules", payload);
+        } else {
+          await send("PATCH", `/schedules?id=${numericId(schedule.id)}`, payload);
+        }
+        load();
       } catch (error) {
         setMessage(cardMessage, error.message, "err");
-        saveButton.disabled = !isValid(card); // allow a retry
       }
-    };
+    });
 
-    setCardState(card, schedule.active);
-    activeToggle.addEventListener("change", () => setCardState(card, activeToggle.checked));
-    card.addEventListener("input", sync);
-    card.addEventListener("change", sync);
-    saveButton.addEventListener("click", handleSave);
-    $(".f-remove", card).addEventListener("click", () => remove(card, schedule.id));
+    if (!schedule.isNew) {
+      $(".f-remove", card).addEventListener("click", async () => {
+        const ok = await Modal.confirm(`${schedule.id} will be permanently removed.`, {
+          heading: `Remove ${schedule.id}?`, okText: "Remove",
+        });
+        if (!ok) return;
+        try {
+          await send("DELETE", `/schedules?id=${numericId(schedule.id)}`);
+          load();
+        } catch (error) {
+          setMessage(cardMessage, error.message, "err");
+        }
+      });
+    }
 
-    sync(); // start with Save disabled (nothing changed yet)
     return card;
   };
 
+  /** A blank schedule prefilled with the first available switch. */
+  const blankSchedule = () => ({
+    isNew: true,
+    digitalPin: Switches.registeredPins()[0],
+    startTime: "08:00:0",
+    endTime: "09:00:0",
+    weekdays: "0:0:0:0:0:0:0",
+    isActive: true,
+  });
+
   const load = async () => {
     setMessage(message);
-    list.innerHTML = `<div class="card muted">Loading schedules…</div>`;
+    listEl.innerHTML = `<div class="card muted">Loading schedules…</div>`;
     try {
+      // Schedules reference a switch pin, so we need the switch list too.
+      await Switches.refresh();
       const schedules = await api("/schedules");
-      list.replaceChildren(...schedules.map(buildCard));
-      addButton.classList.toggle("hidden", schedules.length >= MAX);
+
+      if (Switches.registeredPins().length === 0) {
+        listEl.innerHTML = `<div class="card muted">Register a switch first — a schedule needs a switch to drive.</div>`;
+        addButton.classList.add("hidden");
+        return;
+      }
+
+      addButton.classList.remove("hidden");
+      listEl.replaceChildren(...(schedules || []).map(buildCard));
+      if (!schedules || schedules.length === 0) {
+        listEl.innerHTML = `<div class="card muted">No schedules yet. Add one below.</div>`;
+      }
     } catch (error) {
-      list.replaceChildren();
+      listEl.replaceChildren();
       setMessage(message, error.message, "err");
     }
   };
 
-  const create = async () => {
-    addButton.disabled = true;
-    try {
-      await api("/schedules?action=CREATE", { method: "POST" });
-      await load();
-    } catch (error) {
-      setMessage(message, error.message, "err");
-    } finally {
-      addButton.disabled = false;
-    }
-  };
-
-  addButton.addEventListener("click", create);
+  addButton.addEventListener("click", () => {
+    // Append an editable "new schedule" card and scroll to it.
+    const card = buildCard(blankSchedule());
+    listEl.appendChild(card);
+    card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
 
   return { load };
 })();
 
 /* ============================================================
- * Config — device settings form + system-info panel
+ * Header + footer — device identity and a device-anchored clock
+ * GET /device → { name, code, version, description, timestamp }
  * ============================================================ */
-const Config = (() => {
-  const fields = {
-    name: $("#cName"),
-    description: $("#cDesc"),
-    startTime: $("#cStart"),
-    managerUrl: $("#cUrl"),
-  };
-  const infoPanel = $("#cInfo");
-  const message = $("#cMsg");
-  let defaults = null;
-
-  const fill = (values) =>
-    Object.entries(fields).forEach(([key, input]) => { input.value = values?.[key] ?? ""; });
-
-  /** Populate the form + info panel from a /api/info payload. */
-  const apply = (info) => {
-    defaults = info.defaults;
-    fill(info.current);
-    infoPanel.innerHTML = `
-      <div>Code</div><div>${info.code}</div>
-      <div>Version</div><div>${info.version}</div>
-      <div>Disk used</div><div>${formatBytes(info.disk.used)} / ${formatBytes(info.disk.total)} B (${info.disk.occupied})</div>
-      <div>Device time</div><div>${info.time.str}</div>`;
-  };
-
-  const fail = (text) => setMessage(message, text, "err");
-
-  const save = async () => {
-    const query = new URLSearchParams(
-      Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, input.value])),
-    );
-    try {
-      await api(`/config-update?${query}`, { method: "POST" });
-      setMessage(message, "Configuration updated.", "ok");
-    } catch (error) {
-      fail(error.message);
-    }
-  };
-
-  const reset = async () => {
-    const confirmed = await Modal.confirm("All settings return to their factory defaults.", {
-      heading: "Reset configuration?",
-      okText: "Reset",
-    });
-    if (!confirmed) return;
-    try {
-      await api("/config-reset", { method: "POST" });
-      fill(defaults);
-      setMessage(message, "Reset to defaults.", "ok");
-    } catch (error) {
-      fail(error.message);
-    }
-  };
-
-  $("#cSave").addEventListener("click", save);
-  $("#cReset").addEventListener("click", reset);
-
-  return { apply, fail };
-})();
-
-/* ============================================================
- * Header — show the device's name instead of a generic title
- * ============================================================ */
-const Header = (() => {
+const Device = (() => {
   const title = $("#title");
   const subtitle = $("#subtitle");
-
-  const apply = (info) => {
-    const name = info.current?.name || "Home Automation";
-    title.textContent = name;
-    subtitle.textContent = info.current?.description || "";
-    document.title = name;
-  };
-
-  return { apply };
-})();
-
-/* ============================================================
- * Footer — live clock + date, anchored to the device's time
- * ============================================================ */
-const Footer = (() => {
-  const clock = $("#fClock");
-  const date = $("#fDate");
+  const fClock = $("#fClock");
+  const fDate = $("#fDate");
+  const fMeta = $("#fMeta");
   let ticker = null;
 
-  // Measure the device↔browser time gap once, then tick off the browser clock
-  // (which actually advances) so the display stays live and drift-free.
-  const startClock = (deviceNowMs) => {
+  const startClock = () => {
     clearInterval(ticker);
-    const offset = deviceNowMs - Date.now();
     const tick = () => {
-      const now = new Date(Date.now() + offset);
-      clock.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-      date.textContent = `${WEEKDAYS[now.getDay()]}, ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+      const now = new Date(deviceNow());
+      fClock.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      fDate.textContent = `${WEEKDAYS[now.getDay()]}, ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
     };
     tick();
     ticker = setInterval(tick, 1000);
   };
 
-  const apply = (info) => startClock(info.time.now);
-
-  const fail = () => {
-    clearInterval(ticker);
-    clock.textContent = "--:--:--";
-    date.textContent = "device offline";
+  const load = async () => {
+    try {
+      const device = await api("/device");
+      const name = device.name || "ESP Device";
+      title.textContent = name;
+      document.title = name;
+      subtitle.textContent = device.description || "";
+      fMeta.textContent = [device.code, device.version && `v${device.version}`].filter(Boolean).join(" · ");
+      if (typeof device.timestamp === "number") clockOffset = device.timestamp - Date.now();
+      startClock(); // device-anchored
+    } catch {
+      // Device unreachable: fall back to plain browser time so the clock still ticks.
+      clockOffset = 0;
+      startClock();
+      fMeta.textContent = "device offline";
+    }
   };
 
-  return { apply, fail };
+  return { load };
 })();
 
 /* ============================================================
- * Shared loaders + tab wiring + boot
+ * Tabs + boot
  * ============================================================ */
+const Tabs = (() => {
+  const buttons = [...document.querySelectorAll("nav button")];
 
-/** Fetch /api/info once and fan it out to every panel that needs it. */
-const loadInfo = async () => {
-  try {
-    const info = await api("/info");
-    Header.apply(info);
-    Config.apply(info);
-    Footer.apply(info);
-  } catch (error) {
-    Config.fail(error.message);
-    Footer.fail();
-  }
-};
+  const onShow = (tab) => {
+    if (tab === "control") Control.load();
+    if (tab === "switches") SwitchesTab.load();
+    if (tab === "schedules") Schedules.load();
+  };
 
-const initTabs = (onShow) => {
-  const buttons = document.querySelectorAll("nav button");
-  buttons.forEach((button) =>
-    button.addEventListener("click", () => {
-      const { tab } = button.dataset;
-      buttons.forEach((other) => other.classList.toggle("active", other === button));
-      document.querySelectorAll(".tab").forEach((panel) =>
-        panel.classList.toggle("active", panel.id === tab),
-      );
-      onShow(tab);
-    }),
-  );
-};
+  const show = (tab) => {
+    buttons.forEach((button) => button.classList.toggle("active", button.dataset.tab === tab));
+    document.querySelectorAll(".tab").forEach((panel) => panel.classList.toggle("active", panel.id === tab));
+    onShow(tab);
+  };
 
-initTabs((tab) => {
-  if (tab === "schedules") Schedules.load();
-  if (tab === "config") loadInfo();
-});
+  buttons.forEach((button) => button.addEventListener("click", () => show(button.dataset.tab)));
 
-DeviceControl.refresh();
-loadInfo();
+  return { show };
+})();
+
+Device.load();
+Control.load();
 </script>
 </body>
 </html>

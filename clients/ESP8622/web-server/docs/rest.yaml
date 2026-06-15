@@ -34,6 +34,8 @@ tags:
     description: >-
       Manage schedules. A schedule turns a switch on within a daily time window
       on the selected weekdays.
+  - name: Device
+    description: Read-only device identity and clock.
 servers:
   - url: http://localhost/api
     description: Local development server
@@ -131,9 +133,12 @@ paths:
 
 
         - `action: "Start"` requires `stopAt` — an epoch timestamp (ms) in the
-          future (minimum ~10s ahead) at which the switch is expected to stop.
+          future (minimum ~10s ahead). The server arms a one-shot timer and
+          automatically stops the switch at `stopAt` (reported as `stopsAt` on
+          the switch).
 
-        - `action: "Stop"` stops the switch right away; `stopAt` is ignored.
+        - `action: "Stop"` stops the switch right away and cancels any pending
+          auto-off; `stopAt` is ignored.
       requestBody:
         required: true
         content:
@@ -234,6 +239,22 @@ paths:
           description: Schedule deleted
         '400':
           $ref: '#/components/responses/BadRequest'
+  /device:
+    get:
+      tags:
+        - Device
+      summary: Device identity and clock
+      description: >-
+        Returns the device's build-time identity (set via `mcconfig` /
+        `manifest.json`) plus its current time. The UI uses `timestamp` to
+        anchor its clock to the device.
+      responses:
+        '200':
+          description: Device details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
 components:
   parameters:
     PinQuery:
@@ -273,16 +294,49 @@ components:
         message:
           type: string
           example: Invalid digitalPin
+    Device:
+      type: object
+      description: Build-time device identity plus the current device clock.
+      properties:
+        name:
+          type: string
+          example: My Pump
+        code:
+          type: string
+          example: D0001
+        version:
+          type: string
+          example: 1.0.0
+        description:
+          type: string
+          example: Garden water pump controller
+        timestamp:
+          type: integer
+          format: int64
+          description: Current device time as an epoch timestamp in milliseconds.
+          example: 1740858186087
     Switch:
       type: object
       description: A switch as returned by the API.
       properties:
-        id:
+        pin:
           type: integer
           description: Digital pin number (also the switch identifier).
           example: 3
         control:
           $ref: '#/components/schemas/Control'
+        active:
+          type: boolean
+          description: Whether the switch is currently driven on.
+          example: true
+        stopsAt:
+          type: integer
+          format: int64
+          nullable: true
+          description: >-
+            Epoch timestamp (ms) at which a manual auto-off will fire, or `null`
+            when the switch is off or running under a schedule (no auto-off).
+          example: 1740858186087
     TimePayload:
       type: object
       required: [hh, mm, ss]

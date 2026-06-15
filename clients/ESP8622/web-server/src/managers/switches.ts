@@ -40,15 +40,18 @@ export class Switches {
   startBy(pin: Pins, stopAt?: number) {
     this.getBy(pin).start();
 
-    if (!stopAt) return;
+    // No stopAt? -> scheduler controls it
+    if (!stopAt) return this.clearStopAt(pin);
 
-    if (this.stopAtScheduledBy(pin)) this.stopAtClearBy(pin);
-
-    const delayMs = stopAt - Date.now();
-    this.stopAtTimer.set(pin, this.scheduleStopBy(pin, delayMs));
+    // Manual control: (re)arm a one-shot auto-off and remember when it fires.
+    this.clearStopAt(pin); // Just in case if we had some timer references, to avoid memory-leaks
+    this.stopAtTime.set(pin, stopAt);
+    this.stopAtTimer.set(pin, this.scheduleStopBy(pin, stopAt - Date.now()));
   }
 
   stopBy(pin: Pins) {
+    this.clearStopAt(pin);
+
     return this.getBy(pin).stop();
   }
 
@@ -78,20 +81,15 @@ export class Switches {
     return this.switches.has(pin as Pins);
   }
 
-  private stopAtScheduledBy(pin: Pins) {
-    return this.stopAtTimer.has(pin);
-  }
-
-  private stopAtClearBy(pin: Pins) {
+  /** Cancel any pending auto-off and forget when it would have fired. */
+  private clearStopAt(pin: Pins) {
     clearTimeout(this.stopAtTimer.get(pin));
     this.stopAtTimer.delete(pin);
+    this.stopAtTime.delete(pin);
   }
 
   private scheduleStopBy(pin: Pins, ms: number) {
-    return setTimeout(() => {
-      this.stopBy(pin);
-      this.stopAtTimer.delete(pin);
-    }, ms);
+    return setTimeout(() => this.stopBy(pin), ms);
   }
 
   private restoreFromDisk() {
