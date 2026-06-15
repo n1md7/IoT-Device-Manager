@@ -1,10 +1,8 @@
 import { type HTTPServerCallback, Server, type ServerMessages } from "http";
 import { Extension, type Extensions } from "services/extension";
-import { hostName } from "services/mdns";
 import { getErrorMessage } from "utils/http";
 import { env } from "utils/env";
 import Resource from "Resource";
-import Net from "net";
 import {
   type Context,
   type Method,
@@ -72,8 +70,15 @@ export class Express {
   }
 
   use(router: Router) {
-    this.routes[router.getNamespace(this.prefix)] =
-      router.getRoutes()[router.getNamespace()];
+    // A single Router can register several paths under its namespace, e.g.
+    // `/switches` *and* `/switches/control`. Copy every one of them (prefixed),
+    // not just the base namespace — otherwise sub-action routes are silently
+    // dropped at registration and resolve to "Not Found".
+    const routes = router.getRoutes();
+
+    for (const path of Object.keys(routes) as Path[]) {
+      this.routes[(this.prefix + path) as Path] = routes[path];
+    }
 
     return this;
   }

@@ -118,7 +118,7 @@ Configuration can be overridden on the command line; otherwise it defaults to th
 mcconfig -d -m -p esp/nodemcu \
   ssid="YOUR-WIFI-NAME" \
   password="PASSWORD-HERE" \
-  name="My device" \
+  domain="node-mcu" \
   code="D0001" \
   version="1.0.0" \
   environment="development" \

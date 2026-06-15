@@ -76,6 +76,10 @@ export class Switch {
     return this.flip(this.onSignal.getValue());
   }
 
+  isActive() {
+    return this.currentlyActive;
+  }
+
   setSignal(signal: 0 | 1) {
     this.onSignal.setValue(signal);
   }

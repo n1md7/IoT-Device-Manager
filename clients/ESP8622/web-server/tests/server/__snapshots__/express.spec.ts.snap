@@ -14,6 +14,9 @@ exports[`Express > should verify existing routes 1`] = `
     "PATCH": [Function],
     "POST": [Function],
   },
+  "/api/switches/control": {
+    "POST": [Function],
+  },
 }
 `;
 

@@ -182,6 +182,7 @@
         <button class="action" id="ctlOn">Turn ON</button>
         <button class="action danger" id="ctlOff">Turn OFF</button>
       </div>
+      <p class="muted hidden" id="ctlSchedNote"></p>
       <div class="msg" id="ctlMsg"></div>
     </div>
   </section>
@@ -388,11 +389,26 @@ const Control = (() => {
   const message = $("#ctlMsg");
   const minutes = $("#ctlMin");
   const seconds = $("#ctlSec");
+  const onButton = $("#ctlOn");
+  const offButton = $("#ctlOff");
+  const schedNote = $("#ctlSchedNote");
 
   let ticker = null;
   const stopTicker = () => { clearInterval(ticker); ticker = null; };
 
   const selectedPin = () => Number(select.value);
+
+  /** "SDL:5" → 5, the numeric id the schedule PATCH expects. */
+  const scheduleNumericId = (id) => Number(String(id).split(":")[1]);
+
+  /** Disable every enabled schedule driving `pin`, so the scheduler stops re-running it. */
+  const disableSchedulesForPin = async (pin) => {
+    const schedules = (await api("/schedules")) || [];
+    const targeting = schedules.filter((s) => s.digitalPin === pin && s.isActive);
+    for (const schedule of targeting) {
+      await send("PATCH", `/schedules?id=${scheduleNumericId(schedule.id)}`, { isActive: false });
+    }
+  };
 
   /** Fill the dropdown with registered pins, preserving the current choice. */
   const fillSelect = () => {
@@ -409,9 +425,22 @@ const Control = (() => {
     if (!sw) return;
 
     const active = !!sw.active;
+    // ON with no manual auto-off timer = the switch is being driven by a
+    // schedule. It must not be (re)started manually (that would arm an unwanted
+    // stop timer); to turn it off we disable its schedule first.
+    const scheduled = active && !sw.stopsAt;
+
     statusLabel.textContent = active ? "ON" : "OFF";
     statusLabel.className = `pill ${active ? "on" : "off"}`;
     picker.classList.toggle("hidden", active); // hide the timer picker while running
+
+    onButton.disabled = scheduled;
+    offButton.textContent = scheduled ? "Stop & disable schedule" : "Turn OFF";
+    schedNote.classList.toggle("hidden", !scheduled);
+    if (scheduled) {
+      schedNote.textContent =
+        "Controlled by a schedule. Pressing Stop disables that schedule and turns the switch off.";
+    }
 
     if (!active) {
       clock.classList.remove("small");
@@ -419,10 +448,9 @@ const Control = (() => {
       return;
     }
 
-    if (!sw.stopsAt) {
-      // On, but with no manual auto-off (e.g. driven by a schedule).
+    if (scheduled) {
       clock.classList.add("small");
-      clock.textContent = "ON · no timer";
+      clock.textContent = "Controlled by scheduler";
       return;
     }
 
@@ -458,6 +486,8 @@ const Control = (() => {
   };
 
   const turnOn = async () => {
+    const current = Switches.get(selectedPin());
+    if (current && current.active && !current.stopsAt) return; // scheduler-controlled — ignore
     const duration = clamp(Number(minutes.value) || 0, 0, 999) * 60 + clamp(Number(seconds.value) || 0, 0, 59);
     if (duration < 10) {
       setMessage(message, "Minimum duration is 10 seconds.", "err");
@@ -475,10 +505,15 @@ const Control = (() => {
 
   const turnOff = async () => {
     setMessage(message);
+    const sw = Switches.get(selectedPin());
+    const scheduled = !!sw && !!sw.active && !sw.stopsAt;
     try {
+      // A scheduler-driven switch would be switched back on at the next tick,
+      // so disable its schedule(s) first, then stop it.
+      if (scheduled) await disableSchedulesForPin(sw.pin);
       await Switches.stop(selectedPin());
       await refresh();
-      setMessage(message, "Turned off.", "ok");
+      setMessage(message, scheduled ? "Schedule disabled — switch off." : "Turned off.", "ok");
     } catch (error) {
       setMessage(message, error.message, "err");
     }

@@ -38,7 +38,11 @@ export class Switches {
   }
 
   startBy(pin: Pins, stopAt?: number) {
-    this.getBy(pin).start();
+    const switch_ = this.getSwitchBy(pin);
+
+    if (switch_.isActive()) return;
+
+    switch_.start();
 
     // No stopAt? -> scheduler controls it
     if (!stopAt) return this.clearStopAt(pin);
@@ -50,9 +54,13 @@ export class Switches {
   }
 
   stopBy(pin: Pins) {
+    const switch_ = this.getSwitchBy(pin);
+
+    if (!switch_.isActive()) return;
+
     this.clearStopAt(pin);
 
-    return this.getBy(pin).stop();
+    return switch_.stop();
   }
 
   create({ digitalPin: pin, control: signal }: CreateSwitch) {
@@ -103,7 +111,7 @@ export class Switches {
     return switches;
   }
 
-  private getBy(pin: Pins) {
+  private getSwitchBy(pin: Pins) {
     if (!this.switches.has(pin)) {
       throw new Error(`Device pin ${pin} not found.`);
     }
