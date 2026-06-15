@@ -1,5 +1,7 @@
 import { type Control, type Pins, Switch } from "services/switch";
 import { IDs } from "storages/ids";
+import type Timer from "timer";
+import { clearTimeout, setTimeout } from "utils/interval";
 
 export type CreateSwitch = {
   digitalPin: Pins;
@@ -9,24 +11,45 @@ export type CreateSwitch = {
 export type UpdateSwitch = Omit<CreateSwitch, "digitalPin">;
 
 export class Switches {
+  private readonly stopAtTimer: Map<Pins, Timer>;
+  private readonly stopAtTime: Map<Pins, number>;
   private readonly switches: Map<Pins, Switch>;
   private readonly pins: IDs<Pins>;
 
   constructor() {
+    this.stopAtTimer = new Map();
+    this.stopAtTime = new Map();
     this.pins = new IDs<Pins>("Pins");
     this.switches = this.restoreFromDisk();
   }
 
   toArray() {
-    return [...this.switches.values()].map((sw) => sw.toJSON());
+    return [...this.switches.values()].map((sw) => {
+      const { pin, control, active } = sw.toJSON();
+      const stopsAt = this.stopAtTime.get(pin) || null;
+
+      return {
+        pin,
+        control,
+        active,
+        stopsAt,
+      };
+    });
   }
 
-  startBy(index: Pins) {
-    return this.getBy(index).start();
+  startBy(pin: Pins, stopAt?: number) {
+    this.getBy(pin).start();
+
+    if (!stopAt) return;
+
+    if (this.stopAtScheduledBy(pin)) this.stopAtClearBy(pin);
+
+    const delayMs = stopAt - Date.now();
+    this.stopAtTimer.set(pin, this.scheduleStopBy(pin, delayMs));
   }
 
-  stopBy(index: Pins) {
-    return this.getBy(index).stop();
+  stopBy(pin: Pins) {
+    return this.getBy(pin).stop();
   }
 
   create({ digitalPin: pin, control: signal }: CreateSwitch) {
@@ -51,6 +74,26 @@ export class Switches {
     this.switches.delete(pin);
   }
 
+  has(pin: number): pin is Pins {
+    return this.switches.has(pin as Pins);
+  }
+
+  private stopAtScheduledBy(pin: Pins) {
+    return this.stopAtTimer.has(pin);
+  }
+
+  private stopAtClearBy(pin: Pins) {
+    clearTimeout(this.stopAtTimer.get(pin));
+    this.stopAtTimer.delete(pin);
+  }
+
+  private scheduleStopBy(pin: Pins, ms: number) {
+    return setTimeout(() => {
+      this.stopBy(pin);
+      this.stopAtTimer.delete(pin);
+    }, ms);
+  }
+
   private restoreFromDisk() {
     const switches = new Map<Pins, Switch>();
     const pins = this.pins.get();
@@ -60,10 +103,6 @@ export class Switches {
     }
 
     return switches;
-  }
-
-  has(pin: number): pin is Pins {
-    return this.switches.has(pin as Pins);
   }
 
   private getBy(pin: Pins) {

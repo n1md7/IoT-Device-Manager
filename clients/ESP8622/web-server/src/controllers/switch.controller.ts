@@ -19,7 +19,7 @@ type UpdateSwitchPayload = {
 
 export class SwitchController {
   /** Minimum lead time (ms) a `stopAt` timestamp must be ahead of now: 10s. */
-  private static readonly minStopAtLeadMs = 10_000;
+  private readonly minStopAtLeadMs = 10_000;
 
   private readonly actions = new Set(["Start", "Stop"]);
   private readonly controls = new Set([0, 1]);
@@ -36,11 +36,11 @@ export class SwitchController {
         // We require stopAt for start action
         if (!isNumber(stopAt)) throw new Error("Invalid stopAt value");
         // stopAt is an epoch timestamp in ms; require it at least 10s ahead.
-        if (stopAt - Date.now() < SwitchController.minStopAtLeadMs) {
+        if (stopAt - Date.now() < this.minStopAtLeadMs) {
           throw new Error("stopAt needs to be in the future, min 10s");
         }
 
-        return this.switches.startBy(digitalPin);
+        return this.switches.startBy(digitalPin, stopAt);
       case "Stop":
         return this.switches.stopBy(digitalPin);
       default:

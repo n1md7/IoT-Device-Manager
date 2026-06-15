@@ -49,6 +49,7 @@ export class Switch {
   private readonly pin: Digital;
   private readonly onSignal: Storage<1 | 0>;
   private readonly logger: Logger;
+  private currentlyActive: boolean;
 
   constructor(
     private readonly key: PinKey,
@@ -58,6 +59,7 @@ export class Switch {
       pin: options.pin,
       mode: Digital.Output,
     });
+    this.currentlyActive = false;
     this.logger = createLogger(this.key);
     this.onSignal = new Storage(key, "signal");
 
@@ -78,31 +80,26 @@ export class Switch {
 
   toJSON() {
     return {
-      id: this.getID(),
+      pin: this.pin.read() as Pins,
       control: this.getControl(),
+      active: this.currentlyActive,
     };
   }
 
   start() {
-    this.logger.log(`Writing ON signal: ${this.onSignal}`);
+    this.currentlyActive = true;
     this.pin.write(this.onSignal.getValue());
     this.logger.log(`ON signal written.`);
   }
 
   stop() {
-    this.logger.log(`Writing OFF signal: ${this.offSignal}`);
+    this.currentlyActive = false;
     this.pin.write(this.offSignal);
     this.logger.log(`OFF signal written.`);
   }
 
   private getControl() {
     return this.onSignal.getValue();
-  }
-
-  private getID(): number {
-    const [, id] = this.key.split("Pin:");
-
-    return parseInt(id, 10);
   }
 
   private flip(bit: 0 | 1) {

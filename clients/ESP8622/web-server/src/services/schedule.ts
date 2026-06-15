@@ -126,7 +126,7 @@ export class Schedule {
    * Should the device be running right now? True only when today is an active weekday,
    * and the time-of-day falls inside the `[startTime, endTime)` window.
    */
-  isTimeToStart(now = new Date()): boolean {
+  isTimeToStart(now = new Date()) {
     return this.isWithinWindow(now);
   }
 
@@ -134,7 +134,7 @@ export class Schedule {
    * Should the device be off right now? True when
    * `now` is outside the window (wrong weekday or outside the time range).
    */
-  isTimeToStop(now = new Date()): boolean {
+  isTimeToStop(now = new Date()) {
     return !this.isWithinWindow(now);
   }
 
@@ -144,7 +144,7 @@ export class Schedule {
    * must be earlier than `endTime` — a misconfigured (or empty) window simply
    * reads as "outside", keeping the device off.
    */
-  private isWithinWindow(now: Date): boolean {
+  private isWithinWindow(now: Date) {
     const startTime = this.startTime.getValue();
     const endTime = this.endTime.getValue();
 
@@ -169,7 +169,7 @@ export class Schedule {
    * The weekday mask is Sunday-first, the same order as JS `Date.getDay()`
    * (Sun=0 ... Sat=6), so the day index is used directly.
    */
-  private isActiveWeekday(now: Date): boolean {
+  private isActiveWeekday(now: Date) {
     const weekdays = this.weekdays.getValue();
     if (!weekdays) return false;
 
@@ -179,7 +179,7 @@ export class Schedule {
     return bits[now.getDay()] === 1;
   }
 
-  private toSecondsOfDay(hh: number, mm: number, ss: number): number {
+  private toSecondsOfDay(hh: number, mm: number, ss: number) {
     return hh * 3600 + mm * 60 + ss;
   }
 

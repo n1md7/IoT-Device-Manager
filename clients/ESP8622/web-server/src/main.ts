@@ -1,6 +1,8 @@
+import { routeDevice } from "routes/device";
 import { routeSchedules } from "routes/schedules";
 import { routeSwitches } from "routes/switches";
 import { Express } from "server/express";
+import { name, code, version, port } from "utils/config";
 
 import { claimLocalDomain } from "services/mdns";
 import { adjustSystemTime } from "services/time";
@@ -8,9 +10,15 @@ import { adjustSystemTime } from "services/time";
 adjustSystemTime();
 claimLocalDomain();
 
-const server = new Express("/api", 80);
+const server = new Express("/api", port);
 
 server.use(routeSwitches);
 server.use(routeSchedules);
+server.use(routeDevice);
 
 server.start();
+
+console.info(`Server started successfully.`);
+console.info(`Name: ${name}, Code: ${code}, Version: ${version}`);
+console.info(`IP: ${server.getIpAddress()}, Port: ${server.getPort()}`);
+console.info(`Hostname: ${server.getHostname()} when successfully claimed.`);

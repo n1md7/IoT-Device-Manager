@@ -1,8 +1,10 @@
 import { type HTTPServerCallback, Server, type ServerMessages } from "http";
 import { Extension, type Extensions } from "services/extension";
+import { hostName } from "services/mdns";
 import { getErrorMessage } from "utils/http";
 import { env } from "utils/env";
 import Resource from "Resource";
+import Net from "net";
 import {
   type Context,
   type Method,
@@ -45,17 +47,33 @@ export class Express {
   private readonly routes: Routes;
   private readonly maxChunkSize = 512;
   private readonly extension: Extension;
+  private readonly ipAddress: string;
+  private readonly hostname: string;
 
   constructor(
     private readonly prefix: Path,
     private readonly port: number,
   ) {
     this.routes = {};
+    this.hostname = hostName;
     this.extension = new Extension();
+    this.ipAddress = Net.get("IP");
 
     if (prefix.endsWith("/")) {
       this.prefix = prefix.substring(0, prefix.length - 1) as Path;
     }
+  }
+
+  getPort() {
+    return this.port;
+  }
+
+  getHostname() {
+    return this.hostname;
+  }
+
+  getIpAddress() {
+    return this.ipAddress;
   }
 
   getRoutes() {
