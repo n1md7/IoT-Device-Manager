@@ -19,7 +19,7 @@
     "utils/*": "./src/utils/*"
   },
   "data": {
-    "*": ["./public/*"]
+    "*": ["./clientApp/dist/*", "./clientApp/public/*"]
   },
   "preload": [
     "http",

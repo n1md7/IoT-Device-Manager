@@ -1,4 +1,4 @@
-import "./device-bar";
+import "./device-bar.ts";
 
 const navbar = document.querySelector("div.navbar");
 

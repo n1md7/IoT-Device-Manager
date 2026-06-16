@@ -1,14 +1,14 @@
-import { apiFetch, onDeviceStatus } from "../device";
-import { find } from "../dom.utils";
-import { on, off, status, time } from "./elements";
-import { counter, handleClick, startCountdown } from "./events";
+import { apiFetch, onDeviceStatus } from "../device.ts";
+import { find } from "../dom.utils.ts";
+import { on, off, status, time } from "./elements.ts";
+import { counter, handleClick, startCountdown } from "./events.ts";
 import {
   getFormattedTime,
   getStatusText,
   hideSelect,
   showSelect,
-} from "./functions";
-import showError from "./error";
+} from "./functions.ts";
+import showError from "./error.ts";
 
 const controls = find("#device-controls");
 const offline = find("#device-offline");

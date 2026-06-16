@@ -1,4 +1,4 @@
-import { minutes, previewTime, seconds, selectTime } from "./elements";
+import { minutes, previewTime, seconds, selectTime } from "./elements.ts";
 
 export const getStatusText = (s: boolean) => (s ? "ON" : "OFF");
 export const getFormattedTime = (value: number) =>

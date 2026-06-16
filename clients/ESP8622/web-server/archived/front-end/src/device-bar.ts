@@ -13,7 +13,7 @@ import {
   refreshConnection,
   resetDeviceUrl,
   setDeviceUrl,
-} from "./device";
+} from "./device.ts";
 
 const header = document.querySelector("header");
 

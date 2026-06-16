@@ -1,4 +1,4 @@
-import { onDeviceStatus } from "../device";
+import { onDeviceStatus } from "../device.ts";
 import type { ScheduleType } from "../vite-env";
 
 const main = document.body.querySelector("main");

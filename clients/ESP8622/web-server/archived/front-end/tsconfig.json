@@ -4,12 +4,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": [
-      "ESNext",
-      "DOM",
-      "DOM.Iterable",
-      "DOM.AsyncIterable"
-    ],
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "skipLibCheck": true,
 
     /* Bundler mode */
@@ -25,12 +20,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "@src/*": [
-        "src/*"
-      ]
+      "@src/*": ["src/*"]
     }
   },
-  "include": ["src", "src/vite-env.d.ts"],
+  "include": ["src", "src/vite-env.d.ts"]
 }

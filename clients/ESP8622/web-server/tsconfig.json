@@ -28,5 +28,5 @@
     "node_modules/@moddable/typings/**/*.d.ts",
     "vitest/globals"
   ],
-  "exclude": ["front-end", "mock-api"]
+  "exclude": ["archived/front-end", "mock-api", "clientApp"]
 }

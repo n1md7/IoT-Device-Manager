@@ -1,5 +1,5 @@
-import { onDeviceStatus, type DeviceInfo } from "./device";
-import { format } from "./text.utils";
+import { onDeviceStatus, type DeviceInfo } from "./device.ts";
+import { format } from "./text.utils.ts";
 
 const footer = document.createElement("footer");
 
@@ -20,8 +20,7 @@ footer.innerHTML = `
 
 document.body.appendChild(footer);
 
-const $ = <T extends HTMLElement>(id: string) =>
-  footer.querySelector(id) as T;
+const $ = <T extends HTMLElement>(id: string) => footer.querySelector(id) as T;
 
 const name = $<HTMLSpanElement>("#name");
 const desc = $<HTMLSpanElement>("#desc");

@@ -1,5 +1,5 @@
-import { find } from "@src/dom.utils";
-import { apiFetch } from "@src/device";
+import { find } from "@src/dom.utils.ts";
+import { apiFetch } from "@src/device.ts";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const form = find("#config-form") as HTMLFormElement | null;

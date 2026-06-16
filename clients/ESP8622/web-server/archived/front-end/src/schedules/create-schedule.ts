@@ -1,4 +1,4 @@
-import { apiFetch } from "../device";
+import { apiFetch } from "../device.ts";
 
 window.scheduler ||= {} as any;
 
