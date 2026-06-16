@@ -23,7 +23,6 @@ console.info(`Server started successfully.`);
 console.info(`Name: ${domain}, Code: ${code}, Version: ${version}`);
 
 /**
- * FIXME: Scheduler needs to expose right pin id no SDL: prefix, that can be use internally, FE does not need to know that.
  * TODO: Expose switch pin names - feature, save it on disk, extra info si good which pin is for what, ability to edit
  * TODO: Think of remedy for manual control and scheduler. perhaps manual control can be inmemory schedule that runs once?
  */

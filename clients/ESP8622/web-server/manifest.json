@@ -50,7 +50,8 @@
   "config": {
     "code": "D0001",
     "version": "1.0.0",
-    "name": "Device controller",
+    "domain": "node-mcu",
+    "environment": "production",
     "description": "Device controller using NodeMCU via WEB interface"
   }
 }

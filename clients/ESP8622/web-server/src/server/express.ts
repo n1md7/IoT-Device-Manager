@@ -180,7 +180,7 @@ export class Express {
         case Server.error:
           return apiError(500, "Internal Server Error");
         default:
-          return apiError(404, "Not Found");
+          return apiError(404, `${ctx.route} Not Found`);
       }
     } as HTTPServerCallback;
   }

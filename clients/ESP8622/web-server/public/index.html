@@ -628,15 +628,13 @@ const SwitchesTab = (() => {
 
 /* ============================================================
  * Schedules tab — daily on/off windows that drive a switch
- * GET /schedules → [{ id:"SDL:n", startTime, endTime, weekdays, isActive, digitalPin }]
+ * GET /schedules → [{ id, startTime, endTime, weekdays, isActive, digitalPin }]
  * ============================================================ */
 const Schedules = (() => {
   const listEl = $("#sList");
   const addButton = $("#sAdd");
   const message = $("#sMsg");
 
-  /** "SDL:5" → 5 (the numeric id the PATCH/DELETE query expects). */
-  const numericId = (id) => Number(String(id).split(":")[1]);
   /** "9:30:0" → "09:30" for an <input type="time">. */
   const toTimeInput = (value) => {
     const [hh = 0, mm = 0] = String(value || "").split(":").map(Number);
@@ -735,7 +733,7 @@ const Schedules = (() => {
         if (schedule.isNew) {
           await send("POST", "/schedules", payload);
         } else {
-          await send("PATCH", `/schedules?id=${numericId(schedule.id)}`, payload);
+          await send("PATCH", `/schedules?id=${schedule.id}`, payload);
         }
         load();
       } catch (error) {
@@ -750,7 +748,7 @@ const Schedules = (() => {
         });
         if (!ok) return;
         try {
-          await send("DELETE", `/schedules?id=${numericId(schedule.id)}`);
+          await send("DELETE", `/schedules?id=${schedule.id}`);
           load();
         } catch (error) {
           setMessage(cardMessage, error.message, "err");

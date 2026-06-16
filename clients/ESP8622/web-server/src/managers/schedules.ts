@@ -35,7 +35,7 @@ export class Schedules {
 
   create(payload: CreateSchedule) {
     const uid = this.id.getNext();
-    const schedule = new Schedule(`SDL:${uid}`, payload);
+    const schedule = new Schedule(uid, payload);
     this.schedules.set(uid, schedule);
     this.ids.add(uid);
 
@@ -43,12 +43,12 @@ export class Schedules {
   }
 
   updateBy(
-    id: number,
+    uid: number,
     { endTime, weekdays, startTime, isActive, controlPin }: UpdateSchedule,
   ) {
-    const schedule = this.schedules.get(id);
+    const schedule = this.schedules.get(uid);
 
-    if (!schedule) throw new Error(`Schedule "${id}" not found`);
+    if (!schedule) throw new Error(`Schedule "${uid}" not found`);
 
     if (endTime) schedule.setEndTime(endTime);
     if (weekdays) schedule.setWeekdays(weekdays);
@@ -57,9 +57,9 @@ export class Schedules {
     if (isBoolean(isActive)) schedule.setIsActive(isActive);
   }
 
-  removeBy(id: number) {
-    this.ids.remove(id);
-    this.schedules.delete(id);
+  removeBy(uid: number) {
+    this.ids.remove(uid);
+    this.schedules.delete(uid);
   }
 
   private onTick() {
@@ -83,9 +83,9 @@ export class Schedules {
     const schedules = new Map<number, Schedule>();
     const ids = this.ids.get();
 
-    for (const id of ids) {
-      const schedule = new Schedule(`SDL:${id}`);
-      schedules.set(id, schedule);
+    for (const uid of ids) {
+      const schedule = new Schedule(uid);
+      schedules.set(uid, schedule);
     }
 
     return schedules;

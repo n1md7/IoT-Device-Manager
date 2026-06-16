@@ -51,9 +51,10 @@ export class Schedule {
   private readonly weekdays: Storage<Weekdays>;
   private readonly isActive: Storage<boolean>;
   private readonly controlPin: Storage<Pins>;
+  private readonly key: SDLKey;
 
   constructor(
-    private readonly key: SDLKey,
+    private readonly id: number,
     {
       startTime,
       endTime,
@@ -62,11 +63,12 @@ export class Schedule {
       controlPin,
     }: Partial<SchedulerPayload> = {},
   ) {
-    this.startTime = new Storage(key, "startTime");
-    this.endTime = new Storage(key, "endTime");
-    this.weekdays = new Storage(key, "weekdays");
-    this.isActive = new Storage(key, "isActive");
-    this.controlPin = new Storage(key, "digitalPin");
+    this.key = `SDL:${id}`;
+    this.startTime = new Storage(this.key, "startTime");
+    this.endTime = new Storage(this.key, "endTime");
+    this.weekdays = new Storage(this.key, "weekdays");
+    this.isActive = new Storage(this.key, "isActive");
+    this.controlPin = new Storage(this.key, "digitalPin");
 
     if (startTime) this.startTime.setValue(this.toTimeValue(startTime));
     if (endTime) this.endTime.setValue(this.toTimeValue(endTime));
@@ -113,7 +115,7 @@ export class Schedule {
 
   toJSON() {
     return {
-      id: this.key,
+      id: this.id,
       startTime: this.startTime.getValue(),
       endTime: this.endTime.getValue(),
       weekdays: this.weekdays.getValue(),
