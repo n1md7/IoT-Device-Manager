@@ -10,11 +10,13 @@ type ManualControlPayload = {
   stopAt?: number;
 };
 type CreateSwitchPayload = {
+  name: string;
   control: number;
   digitalPin: number;
 };
 type UpdateSwitchPayload = {
   control: number;
+  name: string;
 };
 
 export class SwitchController {
@@ -52,18 +54,18 @@ export class SwitchController {
     return this.switches.toArray();
   }
 
-  create({ digitalPin, control }: CreateSwitchPayload) {
+  create({ digitalPin, control, name }: CreateSwitchPayload) {
     if (!this.pinIsAllowed(digitalPin)) throw new Error("Invalid digitalPin");
     if (!this.controlIsAllowed(control)) throw new Error("Invalid control");
 
-    return this.switches.create({ digitalPin, control }).toJSON();
+    return this.switches.create({ digitalPin, control, name }).toJSON();
   }
 
-  updateBy(pin: number, { control }: UpdateSwitchPayload) {
+  updateBy(pin: number, { name, control }: UpdateSwitchPayload) {
     if (!this.pinIsAllowed(pin)) throw new Error("Invalid digitalPin");
     if (!this.controlIsAllowed(control)) throw new Error("Invalid control");
 
-    this.switches.updateBy(pin, { control });
+    this.switches.updateBy(pin, { name, control });
   }
 
   removeBy(pin: number) {

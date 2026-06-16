@@ -6,6 +6,7 @@ import { clearTimeout, setTimeout } from "utils/interval";
 export type CreateSwitch = {
   digitalPin: Pins;
   control: Control;
+  name: string;
 };
 
 export type UpdateSwitch = Omit<CreateSwitch, "digitalPin">;
@@ -25,11 +26,12 @@ export class Switches {
 
   toArray() {
     return [...this.switches.values()].map((sw) => {
-      const { pin, control, active } = sw.toJSON();
+      const { pin, name, control, active } = sw.toJSON();
       const stopsAt = this.stopAtTime.get(pin) || null;
 
       return {
         pin,
+        name,
         control,
         active,
         stopsAt,
@@ -63,8 +65,8 @@ export class Switches {
     return switch_.stop();
   }
 
-  create({ digitalPin: pin, control: signal }: CreateSwitch) {
-    const switch_ = new Switch(`Pin:${pin}`, { pin, signal });
+  create({ name, digitalPin: pin, control: signal }: CreateSwitch) {
+    const switch_ = new Switch(`Pin:${pin}`, { name, pin, signal });
 
     this.switches.set(pin, switch_);
     this.pins.add(pin);
@@ -72,11 +74,12 @@ export class Switches {
     return switch_;
   }
 
-  updateBy(pin: Pins, { control }: UpdateSwitch) {
+  updateBy(pin: Pins, { name, control }: UpdateSwitch) {
     const switch_ = this.switches.get(pin);
 
     if (!switch_) throw new Error(`Switch with pin ${pin} not found`);
 
+    switch_.setName(name);
     switch_.setSignal(control);
   }
 

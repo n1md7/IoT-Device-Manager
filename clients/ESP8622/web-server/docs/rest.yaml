@@ -70,7 +70,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [digitalPin, control]
+              required: [digitalPin, control, name]
               properties:
                 digitalPin:
                   type: integer
@@ -80,6 +80,12 @@ paths:
                   description: Digital pin to control.
                 control:
                   $ref: '#/components/schemas/Control'
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 16
+                  description: Human-friendly switch name (2–16 chars).
+                  example: Garden Pump
       responses:
         '201':
           description: Switch created
@@ -93,7 +99,9 @@ paths:
       tags:
         - Switches
       summary: Update a switch
-      description: Updates the control signal of an existing switch, selected by pin.
+      description: >-
+        Updates the control signal and name of an existing switch, selected by
+        pin. Both `control` and `name` are required.
       parameters:
         - $ref: '#/components/parameters/PinQuery'
       requestBody:
@@ -102,10 +110,16 @@ paths:
           application/json:
             schema:
               type: object
-              required: [control]
+              required: [control, name]
               properties:
                 control:
                   $ref: '#/components/schemas/Control'
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 16
+                  description: Human-friendly switch name (2–16 chars).
+                  example: Garden Pump
       responses:
         '202':
           description: Switch updated
@@ -323,6 +337,12 @@ components:
           type: integer
           description: Digital pin number (also the switch identifier).
           example: 3
+        name:
+          type: string
+          minLength: 2
+          maxLength: 16
+          description: Human-friendly switch name.
+          example: Garden Pump
         control:
           $ref: '#/components/schemas/Control'
         active:

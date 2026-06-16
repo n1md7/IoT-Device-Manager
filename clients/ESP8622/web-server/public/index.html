@@ -194,6 +194,10 @@
 
     <div class="card">
       <h2>Register a switch</h2>
+      <div class="field">
+        <label for="swName">Name</label>
+        <input type="text" id="swName" maxlength="16" placeholder="e.g. Garden Pump" />
+      </div>
       <div class="row field">
         <div>
           <label for="swPin">Digital pin</label>
@@ -270,6 +274,14 @@ const setMessage = (element, text = "", kind = "") => {
   element.textContent = text;
   element.className = `msg ${kind}`.trim();
 };
+
+/** Escape text before inlining it into innerHTML (switch names are user-set). */
+const escapeHtml = (value) =>
+  String(value).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+
+/** Human label for a switch: "Garden Pump (D2)", falling back to "Pin D2". */
+const switchLabel = (sw) =>
+  escapeHtml(sw && sw.name ? `${sw.name} (D${sw.pin})` : `Pin D${sw ? sw.pin : "?"}`);
 
 /* ============================================================
  * Device clock — anchored to the device, ticked off the browser
@@ -349,7 +361,7 @@ const Modal = (() => {
 
 /* ============================================================
  * Switches store — the single source for "what pins are registered"
- * GET /switches → [{ pin, control, active, stopsAt }]
+ * GET /switches → [{ pin, name, control, active, stopsAt }]
  * ============================================================ */
 const Switches = (() => {
   const ALL_PINS = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -366,8 +378,8 @@ const Switches = (() => {
     return cache;
   };
 
-  const create = (digitalPin, control) => send("POST", "/switches", { digitalPin, control });
-  const update = (pin, control) => send("PATCH", `/switches?pin=${pin}`, { control });
+  const create = (digitalPin, control, name) => send("POST", "/switches", { digitalPin, control, name });
+  const update = (pin, control, name) => send("PATCH", `/switches?pin=${pin}`, { control, name });
   const remove = (pin) => send("DELETE", `/switches?pin=${pin}`);
   const start = (digitalPin, stopAt) => send("POST", "/switches/control", { digitalPin, action: "Start", stopAt });
   const stop = (digitalPin) => send("POST", "/switches/control", { digitalPin, action: "Stop" });
@@ -413,9 +425,9 @@ const Control = (() => {
   /** Fill the dropdown with registered pins, preserving the current choice. */
   const fillSelect = () => {
     const previous = selectedPin();
-    const pins = Switches.registeredPins();
-    select.innerHTML = pins.map((pin) => `<option value="${pin}">Pin D${pin}</option>`).join("");
-    if (pins.includes(previous)) select.value = String(previous);
+    const switches = Switches.list();
+    select.innerHTML = switches.map((sw) => `<option value="${sw.pin}">${switchLabel(sw)}</option>`).join("");
+    if (switches.some((sw) => sw.pin === previous)) select.value = String(previous);
   };
 
   /** Render the status + clock for whichever switch is selected. */
@@ -536,11 +548,16 @@ const SwitchesTab = (() => {
   const message = $("#swMsg");
   const pinSelect = $("#swPin");
   const signalSelect = $("#swSignal");
+  const nameInput = $("#swName");
   const addButton = $("#swAdd");
   const addMessage = $("#swAddMsg");
 
   const cardTemplate = (sw) => `
-    <h2>Pin D${sw.pin} <span class="badge ${sw.active ? "badge-on" : "badge-off"}">${sw.active ? "ON" : "OFF"}</span></h2>
+    <h2>${switchLabel(sw)} <span class="badge ${sw.active ? "badge-on" : "badge-off"}">${sw.active ? "ON" : "OFF"}</span></h2>
+    <div class="field">
+      <label>Name</label>
+      <input class="f-name" type="text" maxlength="16" placeholder="e.g. Garden Pump" />
+    </div>
     <div class="field">
       <label>On signal</label>
       <select class="f-signal">
@@ -559,10 +576,17 @@ const SwitchesTab = (() => {
     card.className = "card";
     card.innerHTML = cardTemplate(sw);
     const cardMessage = $(".f-msg", card);
+    const nameInput = $(".f-name", card);
+    nameInput.value = sw.name || ""; // set as property to avoid HTML-escaping issues
 
     $(".f-save", card).addEventListener("click", async () => {
+      const name = nameInput.value.trim();
+      if (name.length < 2 || name.length > 16) {
+        setMessage(cardMessage, "Name must be 2–16 characters.", "err");
+        return;
+      }
       try {
-        await Switches.update(sw.pin, Number($(".f-signal", card).value));
+        await Switches.update(sw.pin, Number($(".f-signal", card).value), name);
         setMessage(cardMessage, "Saved.", "ok");
         load();
       } catch (error) {
@@ -612,10 +636,16 @@ const SwitchesTab = (() => {
   };
 
   addButton.addEventListener("click", async () => {
+    const name = nameInput.value.trim();
+    if (name.length < 2 || name.length > 16) {
+      setMessage(addMessage, "Name must be 2–16 characters.", "err");
+      return;
+    }
     addButton.disabled = true;
     try {
-      await Switches.create(Number(pinSelect.value), Number(signalSelect.value));
+      await Switches.create(Number(pinSelect.value), Number(signalSelect.value), name);
       setMessage(addMessage, "Switch added.", "ok");
+      nameInput.value = "";
       load();
     } catch (error) {
       setMessage(addMessage, error.message, "err");
@@ -658,8 +688,8 @@ const Schedules = (() => {
     </label>`).join("");
 
   const pinOptions = (selected) => {
-    const pins = Switches.registeredPins();
-    return pins.map((pin) => `<option value="${pin}" ${pin === selected ? "selected" : ""}>Pin D${pin}</option>`).join("");
+    const switches = Switches.list();
+    return switches.map((sw) => `<option value="${sw.pin}" ${sw.pin === selected ? "selected" : ""}>${switchLabel(sw)}</option>`).join("");
   };
 
   /** Read a card's inputs into the schedule payload the API expects. */

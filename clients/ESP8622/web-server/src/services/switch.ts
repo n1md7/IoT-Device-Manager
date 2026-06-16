@@ -49,6 +49,7 @@ export class Switch {
   private readonly pin: Digital;
   private readonly id: Pins;
   private readonly onSignal: Storage<1 | 0>;
+  private readonly name: Storage<string>;
   private readonly logger: Logger;
   private currentlyActive: boolean;
 
@@ -64,9 +65,14 @@ export class Switch {
     this.currentlyActive = false;
     this.logger = createLogger(this.key);
     this.onSignal = new Storage(key, "signal");
+    this.name = new Storage(key, "name");
 
     if (isDefined(options.signal)) {
       this.onSignal.setValue(options.signal);
+    }
+
+    if (isDefined(options.name)) {
+      this.name.setValue(options.name);
     }
 
     this.stop();
@@ -84,9 +90,14 @@ export class Switch {
     this.onSignal.setValue(signal);
   }
 
+  setName(name: string) {
+    this.name.setValue(name);
+  }
+
   toJSON() {
     return {
       pin: this.id,
+      name: this.name.getValue(),
       control: this.getControl(),
       active: this.currentlyActive,
     };

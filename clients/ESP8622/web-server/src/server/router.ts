@@ -3,7 +3,7 @@ import type Resource from "Resource";
 import { isDefined, isString } from "utils/validations";
 
 export type Path = `/${string}`;
-export type Stream = { resource: Resource; position: number };
+export type Stream = { resource: typeof Resource; position: number };
 export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS";
 export type HeaderKey =
   | "Content-Type"

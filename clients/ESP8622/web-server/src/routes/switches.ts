@@ -2,6 +2,7 @@ import { switchController } from "controllers/index";
 import { Router } from "server/router";
 import {
   assertKeys,
+  assertLength,
   assertNumber,
   assertObject,
   assertString,
@@ -37,13 +38,17 @@ export const routeSwitches = new Router("/switches")
       "Missing digitalPin or control",
       "digitalPin",
       "control",
+      "name",
     );
     assertNumber(ctx.body.digitalPin, "Invalid digitalPin");
     assertNumber(ctx.body.control, "Invalid control");
+    assertString(ctx.body.name, "Invalid name");
+    assertLength(ctx.body.name, 2, 16);
 
     return ctx.apiSend(
       201,
       switchController.create({
+        name: ctx.body.name,
         control: ctx.body.control,
         digitalPin: ctx.body.digitalPin,
       }),
@@ -53,9 +58,12 @@ export const routeSwitches = new Router("/switches")
     assertObject(ctx.body, "Invalid body");
     assertKeys(ctx.body, "Missing control in body", "control");
     assertNumber(ctx.body.control, "Invalid control value");
+    assertString(ctx.body.name, "Invalid name");
+    assertLength(ctx.body.name, 2, 16);
 
     switchController.updateBy(ctx.intParam("pin"), {
       control: ctx.body.control,
+      name: ctx.body.name,
     });
 
     return ctx.apiSend(202);

@@ -45,6 +45,15 @@ export function assertString(
   if (!isString(value)) throw new Error(message);
 }
 
+export function assertLength(
+  value: string,
+  min: number,
+  max: number,
+): asserts value is string {
+  if (value.length < min) throw new Error(`Invalid length. Min: ${value}`);
+  if (value.length > max) throw new Error(`Invalid length. Max: ${value}`);
+}
+
 export function assertKeys<O extends object, K extends string>(
   object: O,
   message: string,
