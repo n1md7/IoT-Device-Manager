@@ -14,7 +14,7 @@ import { pad, switchLabel, WEEK_KEYS, WEEKDAYS } from '../utils/format';
 
 /** Seed a card reads its initial state from — an existing schedule or a draft. */
 interface ScheduleSeed {
-	id?: string;
+	id?: number;
 	digitalPin: number;
 	startTime: string;
 	endTime: string;
@@ -46,7 +46,7 @@ function ScheduleCard({
 	seed: ScheduleSeed;
 	onChanged: () => void;
 }) {
-	const isNew = !seed.id;
+	const isNew = seed.id === undefined;
 	const [pin, setPin] = useState(seed.digitalPin);
 	const [start, setStart] = useState(toTimeInput(seed.startTime));
 	const [end, setEnd] = useState(toTimeInput(seed.endTime));
@@ -87,8 +87,8 @@ function ScheduleCard({
 	};
 
 	const remove = async () => {
-		const ok = await confirm(`${seed.id} will be permanently removed.`, {
-			heading: `Remove ${seed.id}?`,
+		const ok = await confirm(`Schedule ${seed.id} will be permanently removed.`, {
+			heading: `Remove schedule ${seed.id}?`,
 			okText: 'Remove',
 		});
 		if (!ok) return;

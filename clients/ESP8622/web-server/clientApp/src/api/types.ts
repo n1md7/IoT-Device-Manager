@@ -31,8 +31,8 @@ export interface DeviceInfo {
 
 /** A schedule as returned by `GET /schedules` (times/weekdays as strings). */
 export interface Schedule {
-	/** Schedule identifier, e.g. "SDL:1". */
-	id: string;
+	/** Numeric schedule identifier. */
+	id: number;
 	/** Start of the window, "hh:mm:ss". */
 	startTime: string;
 	/** End of the window, "hh:mm:ss". */

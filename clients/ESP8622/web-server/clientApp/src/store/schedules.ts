@@ -14,16 +14,12 @@ export async function refreshSchedules(): Promise<Schedule[]> {
 	return schedules.value;
 }
 
-/** "SDL:5" → 5, the numeric id the schedule PATCH/DELETE expects. */
-export const scheduleNumericId = (id: string): number => Number(String(id).split(':')[1]);
-
 export const createSchedule = (payload: ScheduleInput) => send('POST', '/schedules', payload);
 
-export const updateSchedule = (id: string, payload: ScheduleUpdate) =>
-	send('PATCH', `/schedules?id=${scheduleNumericId(id)}`, payload);
+export const updateSchedule = (id: number, payload: ScheduleUpdate) =>
+	send('PATCH', `/schedules?id=${id}`, payload);
 
-export const removeSchedule = (id: string) =>
-	send('DELETE', `/schedules?id=${scheduleNumericId(id)}`);
+export const removeSchedule = (id: number) => send('DELETE', `/schedules?id=${id}`);
 
 /**
  * Disable every enabled schedule driving `pin`, so the scheduler stops

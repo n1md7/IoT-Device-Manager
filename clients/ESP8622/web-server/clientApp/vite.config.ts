@@ -6,7 +6,8 @@ export default defineConfig({
   base: "./",
   server: {
     proxy: {
-      "/api": "http://node-mcu.local",
+      "/api": "http://192.168.116.127",
+      // "/api": "http://node-mcu.local",
     },
   },
   build: {
