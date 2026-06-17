@@ -5,8 +5,9 @@ import type { Control } from '../../api/types';
 import { isValidName } from '../../utils/format';
 
 /** Register-form state: pick a free pin + on-signal, name it, and create it.
- *  `createSwitch` appends to the store, so the list updates without a reload. */
-export function useRegisterSwitch() {
+ *  `createSwitch` appends to the store, so the list updates without a reload.
+ *  `onAdded` fires only on success, so the caller can hide the form again. */
+export function useRegisterSwitch(onAdded?: () => void) {
 	const list = switches.value;
 	const pins = availablePins();
 
@@ -35,8 +36,9 @@ export function useRegisterSwitch() {
 		if (ok) {
 			succeed('Switch added.');
 			setName('');
+			onAdded?.();
 		}
-	}, [name, pin, control, setMessage, succeed, run]);
+	}, [name, pin, control, setMessage, succeed, run, onAdded]);
 
 	return { name, setName, pin, setPin, control, setControl, adding, pins, message, add };
 }

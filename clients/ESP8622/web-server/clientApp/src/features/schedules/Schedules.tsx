@@ -43,9 +43,11 @@ export function Schedules() {
         <div class="card muted">No schedules yet. Add one below.</div>
       )}
 
-      {list.map((schedule) => (
-        <ScheduleCard key={schedule.id} seed={schedule} />
-      ))}
+      {[...list]
+        .sort((a, b) => a.id - b.id)
+        .map((schedule) => (
+          <ScheduleCard key={schedule.id} seed={schedule} />
+        ))}
 
       {drafts.map((key) => (
         <ScheduleCard

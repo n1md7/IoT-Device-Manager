@@ -1,8 +1,9 @@
+import { useState } from "preact/hooks";
 import { Message } from "@src/components/Message";
 import { SaveStatusBadge } from "@src/components/SaveStatusBadge";
 import { Toggle } from "@src/components/Toggle";
 import { switches } from "@src/store/switches";
-import { switchLabel, weekdays } from "@src/utils/format";
+import { daysSummary, switchLabel, weekdays } from "@src/utils/format";
 import type { ScheduleSeed } from "./mappers";
 import { useSchedule } from "./useSchedule";
 
@@ -34,17 +35,50 @@ export function ScheduleCard({
     remove,
   } = useSchedule(seed, onChanged);
   const list = switches.value;
+  // New/draft cards open for editing; existing ones start compact.
+  const [expanded, setExpanded] = useState(isNew);
 
   return (
-    <div class={`card schedule ${enabled ? "schedule-on" : "schedule-off"}`}>
-      <h2>
-        {isNew ? "New schedule" : `Schedule ${seed.id}`}{" "}
+    <div
+      class={`card schedule ${enabled ? "schedule-on" : "schedule-off"} ${
+        expanded ? "" : "collapsed"
+      }`}
+    >
+      <button
+        type="button"
+        class="card-head"
+        aria-expanded={expanded}
+        onClick={() => setExpanded((value) => !value)}
+      >
+        <span class="chevron" aria-hidden="true">
+          ▾
+        </span>
+        <span class="card-title">
+          {isNew ? "New schedule" : `Schedule ${seed.id}`}
+        </span>
         <span class={`badge ${enabled ? "badge-on" : "badge-off"}`}>
           {enabled ? "Enabled" : "Disabled"}
         </span>
         <SaveStatusBadge status={status} />
-      </h2>
-      <div class="field">
+      </button>
+
+      {!expanded && (
+        <div class="card-summary">
+          <span class="sum-item">
+            <strong>
+              {start}–{end}
+            </strong>
+          </span>
+          <span class="sum-item">
+            {switchLabel(list.find((sw) => sw.pin === pin))}
+          </span>
+          <span class="sum-item">{daysSummary(days)}</span>
+        </div>
+      )}
+
+      {expanded && (
+        <>
+          <div class="field">
         <label>Switch</label>
         <select
           value={pin}
@@ -106,13 +140,15 @@ export function ScheduleCard({
               ? "Create"
               : "Save"}
         </button>
-        {!isNew && (
-          <button class="btn-remove" type="button" onClick={remove}>
-            Remove
-          </button>
-        )}
-      </div>
-      <Message {...message} />
+            {!isNew && (
+              <button class="btn-remove" type="button" onClick={remove}>
+                Remove
+              </button>
+            )}
+          </div>
+          <Message {...message} />
+        </>
+      )}
     </div>
   );
 }

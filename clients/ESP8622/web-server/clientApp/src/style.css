@@ -30,6 +30,32 @@ main { width: 100%; max-width: 720px; margin: 0 auto; padding: 16px; flex: 1 0 a
 	padding: 16px; margin-bottom: 14px;
 }
 h2 { margin: 0 0 12px; font-size: 1.05rem; }
+
+/* Collapsible card header — a full-width button styled like the old <h2> */
+.card-head {
+	display: flex; align-items: center; gap: 8px; width: 100%;
+	margin: 0 0 12px; padding: 0; border: none; background: transparent;
+	color: var(--text); font: inherit; text-align: left; cursor: pointer;
+}
+.card.collapsed .card-head { margin-bottom: 0; }
+.card-head .chevron {
+	flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
+	width: 24px; height: 24px; border-radius: 7px;
+	background: rgba(56, 189, 248, .12); color: var(--accent);
+	font-size: 1rem; line-height: 1; transition: transform .2s ease, background .2s ease;
+}
+.card-head:hover .chevron { background: rgba(56, 189, 248, .22); }
+.card.collapsed .card-head .chevron { transform: rotate(-90deg); }
+.card-head .card-title { font-size: 1.05rem; font-weight: 700; margin-right: auto; }
+.card-head .badge { margin-left: 0; }
+
+/* Compact summary shown when a card is collapsed */
+.card-summary {
+	display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px;
+	margin-top: 10px; font-size: .85rem; color: var(--muted);
+}
+.card-summary .sum-item { display: inline-flex; align-items: center; gap: 5px; }
+.card-summary strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
 label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
 input, select {
 	width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--line);

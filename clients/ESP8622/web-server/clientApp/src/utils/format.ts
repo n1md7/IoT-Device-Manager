@@ -63,3 +63,15 @@ export const switchLabel = (sw?: Pick<Switch, "name" | "pin">): string => {
 export const isValidName = (name: string): boolean => {
   return name.length >= 2 && name.length <= 16;
 };
+
+/** Compact label for a set of active weekday indexes (Sun=0): "Every day",
+ *  "Weekdays", "Weekends", or a short list like "Mon, Wed, Fri". */
+export const daysSummary = (days: Set<number>): string => {
+  if (days.size === 0) return "No days";
+  if (days.size === 7) return "Every day";
+  if (days.size === 5 && [1, 2, 3, 4, 5].every((day) => days.has(day)))
+    return "Weekdays";
+  if (days.size === 2 && days.has(0) && days.has(6)) return "Weekends";
+
+  return weekdays.filter((_, day) => days.has(day)).join(", ");
+};

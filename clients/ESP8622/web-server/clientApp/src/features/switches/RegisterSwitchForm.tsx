@@ -3,9 +3,9 @@ import type { Control } from '../../api/types';
 import { useRegisterSwitch } from './useRegisterSwitch';
 
 /** Form to register a new switch on one of the free digital pins. */
-export function RegisterSwitchForm() {
+export function RegisterSwitchForm({ onAdded }: { onAdded?: () => void }) {
 	const { name, setName, pin, setPin, control, setControl, adding, pins, message, add } =
-		useRegisterSwitch();
+		useRegisterSwitch(onAdded);
 	const allRegistered = pins.length === 0;
 
 	return (
