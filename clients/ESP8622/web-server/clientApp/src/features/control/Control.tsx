@@ -20,10 +20,12 @@ export function Control() {
     setSeconds,
     active,
     scheduled,
+    running,
     clockText,
     message,
     turnOn,
     turnOff,
+    stopAll,
   } = useControl();
 
   if (list.length === 0) {
@@ -46,6 +48,37 @@ export function Control() {
 
   return (
     <section>
+      <div class="card">
+        <h2>
+          Active switches{" "}
+          <span class={`badge ${running.length ? "badge-on" : "badge-off"}`}>
+            {running.length} running
+          </span>
+        </h2>
+        {running.length === 0 ? (
+          <p class="muted">Nothing is running right now.</p>
+        ) : (
+          <>
+            <ul class="run-list">
+              {running.map((item) => (
+                <li key={item.pin} class="run-item">
+                  <span class="run-dot" aria-hidden="true" />
+                  <span class="run-name">{item.label}</span>
+                  <span class={`run-time ${item.scheduled ? "muted" : ""}`}>
+                    {item.scheduled ? "Scheduler" : item.remaining}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div class="btns">
+              <button class="action danger" type="button" onClick={stopAll}>
+                Stop all
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
       <div class="card">
         <h2>Instant control</h2>
         <div class="field">

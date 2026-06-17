@@ -126,6 +126,24 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 @keyframes badge-pop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
 .hint { margin: 4px 0 12px; }
 
+/* Active-switches overview (Control page) */
+.run-list { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.run-item {
+	display: flex; align-items: center; gap: 10px;
+	padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: #0b1220;
+}
+.run-dot {
+	flex: 0 0 auto; width: 9px; height: 9px; border-radius: 50%; background: var(--ok);
+	animation: run-blink 1.2s ease-in-out infinite;
+}
+@keyframes run-blink {
+	0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, .5); opacity: 1; }
+	50% { box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); opacity: .55; }
+}
+.run-name { flex: 1 1 auto; font-weight: 600; }
+.run-time { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; }
+.run-time.muted { color: var(--muted); font-weight: 400; }
+
 /* Card actions: prominent primary Save, de-emphasised destructive Remove */
 .card-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
 .card-actions .action { flex: 1; }

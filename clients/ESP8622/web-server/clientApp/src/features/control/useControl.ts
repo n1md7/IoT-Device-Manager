@@ -10,7 +10,7 @@ import {
   stopSwitch,
   switches,
 } from "@src/store/switches";
-import { clamp, formatDuration } from "@src/utils/format";
+import { clamp, formatDuration, switchLabel } from "@src/utils/format";
 
 /**
  * Instant-control state for the selected switch: live `active`/`stopsAt`, a
@@ -48,16 +48,35 @@ export function useControl() {
   const active = !!sw?.active;
   // ON with no manual auto-off timer = the switch is being driven by a schedule.
   const scheduled = active && !sw?.stopsAt;
-  const counting = active && !scheduled && !!sw?.stopsAt;
 
-  // Manual auto-off: tick down to stopsAt; re-sync when it elapses (device auto-stops).
+  // Every active switch driving a pin right now — for the overview panel.
+  const running = list
+    .filter((s) => s.active)
+    .map((s) => ({
+      pin: s.pin,
+      label: switchLabel(s),
+      // ON with no manual auto-off timer = driven by a schedule.
+      scheduled: !s.stopsAt,
+      remaining: s.stopsAt
+        ? formatDuration(Math.round((s.stopsAt - deviceNow()) / 1000))
+        : null,
+    }));
+
+  // Tick once a second while any switch is counting down; re-sync when one
+  // elapses (the device auto-stops it).
+  const anyCounting = list.some((s) => s.active && !!s.stopsAt);
   useInterval(
     () => {
-      if (!sw?.stopsAt) return;
-      if (Math.round((sw.stopsAt - deviceNow()) / 1000) <= 0) void refresh();
+      const elapsed = list.some(
+        (s) =>
+          s.active &&
+          !!s.stopsAt &&
+          Math.round((s.stopsAt - deviceNow()) / 1000) <= 0,
+      );
+      if (elapsed) void refresh();
       else tick((n) => n + 1);
     },
-    counting ? 1000 : null,
+    anyCounting ? 1000 : null,
   );
 
   // Recomputed every render — the per-second `tick` above keeps it live.
@@ -121,6 +140,22 @@ export function useControl() {
       );
   }, [selectedPin, message.clear, message.run, message.succeed]);
 
+  const stopAll = useCallback(async () => {
+    message.clear();
+    const activeSwitches = switches.value.filter((s) => s.active);
+    if (activeSwitches.length === 0) return;
+    const ok = await message.run(async () => {
+      for (const s of activeSwitches) {
+        // Scheduler-driven switches would be turned back on at the next tick,
+        // so disable their schedule(s) before stopping.
+        if (!s.stopsAt) await disableSchedulesForPin(s.pin);
+        await stopSwitch(s.pin);
+      }
+      await refreshSwitches();
+    });
+    if (ok) message.succeed("All switches stopped.");
+  }, [message.clear, message.run, message.succeed]);
+
   return {
     list,
     selectedPin,
@@ -131,9 +166,11 @@ export function useControl() {
     setSeconds,
     active,
     scheduled,
+    running,
     clockText,
     message,
     turnOn,
     turnOff,
+    stopAll,
   };
 }
