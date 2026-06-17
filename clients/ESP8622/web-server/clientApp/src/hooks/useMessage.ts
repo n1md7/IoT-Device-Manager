@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'preact/hooks';
-import { noMessage, type MessageState } from '../components/Message';
+import { useCallback, useState } from "preact/hooks";
+import { noMessage, type MessageState } from "../components/Message";
 
 /**
  * Status-line state for a `<Message />` slot, plus the small set of transitions
@@ -8,28 +8,45 @@ import { noMessage, type MessageState } from '../components/Message';
  * `setMessage` boilerplate out of components.
  */
 export function useMessage() {
-	const [message, setMessage] = useState<MessageState>(noMessage);
+  const [message, setMessage] = useState<MessageState>(noMessage);
 
-	const clear = useCallback(() => setMessage(noMessage), []);
-	const fail = useCallback(
-		(error: unknown) => setMessage({ text: (error as Error).message, kind: 'err' }),
-		[],
-	);
-	const succeed = useCallback((text: string) => setMessage({ text, kind: 'ok' }), []);
+  const clear = useCallback(() => setMessage(noMessage), []);
 
-	/** Run `action`, returning whether it succeeded; failures land in the message. */
-	const run = useCallback(
-		async (action: () => Promise<void>): Promise<boolean> => {
-			try {
-				await action();
-				return true;
-			} catch (error) {
-				fail(error);
-				return false;
-			}
-		},
-		[fail],
-	);
+  const fail = useCallback(
+    (error: unknown) =>
+      setMessage({ text: (error as Error).message, kind: "err" }),
+    [],
+  );
 
-	return { message, setMessage, clear, fail, succeed, run };
+  const succeed = useCallback(
+    (text: string) => setMessage({ text, kind: "ok" }),
+    [],
+  );
+
+  /** Run `action`, returning whether it succeeded; failures land in the message. */
+  const run = useCallback(
+    async (action: () => Promise<void>): Promise<boolean> => {
+      try {
+        await action();
+
+        return true;
+      } catch (error) {
+        fail(error);
+
+        return false;
+      }
+    },
+    [fail],
+  );
+
+  return {
+    set: setMessage,
+    get: message,
+    message,
+    setMessage,
+    clear,
+    fail,
+    succeed,
+    run,
+  };
 }
