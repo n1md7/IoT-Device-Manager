@@ -1,7 +1,7 @@
 :root {
 	--bg: #0f172a; --card: #1e293b; --line: #334155;
 	--text: #e2e8f0; --muted: #94a3b8;
-	--accent: #38bdf8; --ok: #22c55e; --err: #ef4444;
+	--accent: #38bdf8; --ok: #22c55e; --err: #ef4444; --warn: #f59e0b;
 }
 * { box-sizing: border-box; }
 body {
@@ -64,8 +64,21 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 }
 .days input { display: none; }
 .days input:checked + span { color: var(--accent); font-weight: 700; }
-.switch { display: flex; align-items: center; gap: 10px; }
-.switch input { width: auto; }
+/* Slider-style on/off switch */
+.toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; margin: 0; }
+.toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.toggle-track {
+	position: relative; flex: 0 0 auto; width: 42px; height: 24px;
+	background: var(--line); border-radius: 999px; transition: background .2s ease;
+}
+.toggle-track::before {
+	content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
+	background: #fff; border-radius: 50%; transition: transform .2s ease;
+}
+.toggle input:checked + .toggle-track { background: var(--ok); }
+.toggle input:checked + .toggle-track::before { transform: translateX(18px); }
+.toggle input:focus-visible + .toggle-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+.toggle-label { font-size: .85rem; color: var(--text); }
 
 /* Empty-state prompt (e.g. no switches yet) */
 .empty { text-align: center; color: var(--muted); }
@@ -82,6 +95,9 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 }
 .badge-on { color: var(--ok); background: rgba(34, 197, 94, .14); border-color: var(--ok); }
 .badge-off { color: var(--err); background: rgba(239, 68, 68, .12); border-color: var(--err); }
+.badge-unsaved { color: var(--warn); background: rgba(245, 158, 11, .14); border-color: var(--warn); }
+.badge-saved { color: var(--ok); background: rgba(34, 197, 94, .14); border-color: var(--ok); animation: badge-pop .18s ease; }
+@keyframes badge-pop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
 .hint { margin: 4px 0 12px; }
 
 /* Card actions: prominent primary Save, de-emphasised destructive Remove */

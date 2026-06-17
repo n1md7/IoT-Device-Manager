@@ -1,11 +1,13 @@
 import { Message } from '../../components/Message';
+import { SaveStatusBadge } from '../../components/SaveStatusBadge';
 import type { Control, Switch } from '../../api/types';
 import { switchLabel } from '../../utils/format';
 import { useSwitch } from './useSwitch';
 
 /** One configurable switch: rename, change on-signal, or remove. */
 export function SwitchCard({ sw }: { sw: Switch }) {
-	const { name, setName, control, setControl, message, save, remove } = useSwitch(sw);
+	const { name, setName, control, setControl, message, status, saving, dirty, save, remove } =
+		useSwitch(sw);
 
 	return (
 		<div class="card">
@@ -14,6 +16,7 @@ export function SwitchCard({ sw }: { sw: Switch }) {
 				<span class={`badge ${sw.active ? 'badge-on' : 'badge-off'}`}>
 					{sw.active ? 'ON' : 'OFF'}
 				</span>
+				<SaveStatusBadge status={status} />
 			</h2>
 			<div class="field">
 				<label>Name</label>
@@ -36,8 +39,8 @@ export function SwitchCard({ sw }: { sw: Switch }) {
 				</select>
 			</div>
 			<div class="card-actions">
-				<button class="action" type="button" onClick={save}>
-					Save
+				<button class="action" type="button" disabled={!dirty || saving} onClick={save}>
+					{saving ? 'Saving…' : 'Save'}
 				</button>
 				<button class="btn-remove" type="button" onClick={remove}>
 					Remove

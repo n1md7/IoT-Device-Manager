@@ -1,4 +1,6 @@
 import { Message } from '../../components/Message';
+import { SaveStatusBadge } from '../../components/SaveStatusBadge';
+import { Toggle } from '../../components/Toggle';
 import { switches } from '../../store/switches';
 import { switchLabel, WEEKDAYS } from '../../utils/format';
 import type { ScheduleSeed } from './mappers';
@@ -25,6 +27,9 @@ export function ScheduleCard({
 		enabled,
 		setEnabled,
 		message,
+		status,
+		saving,
+		dirty,
 		save,
 		remove,
 	} = useSchedule(seed, onChanged);
@@ -37,6 +42,7 @@ export function ScheduleCard({
 				<span class={`badge ${enabled ? 'badge-on' : 'badge-off'}`}>
 					{enabled ? 'Enabled' : 'Disabled'}
 				</span>
+				<SaveStatusBadge status={status} />
 			</h2>
 			<div class="field">
 				<label>Switch</label>
@@ -67,17 +73,12 @@ export function ScheduleCard({
 					</label>
 				))}
 			</div>
-			<div class="switch field">
-				<input
-					type="checkbox"
-					checked={enabled}
-					onChange={(event) => setEnabled(event.currentTarget.checked)}
-				/>
-				<label style={{ margin: 0 }}>Enabled</label>
+			<div class="field">
+				<Toggle checked={enabled} onChange={setEnabled} label="Enabled" />
 			</div>
 			<div class="card-actions">
-				<button class="action" type="button" onClick={save}>
-					{isNew ? 'Create' : 'Save'}
+				<button class="action" type="button" disabled={!dirty || saving} onClick={save}>
+					{saving ? (isNew ? 'Creating…' : 'Saving…') : isNew ? 'Create' : 'Save'}
 				</button>
 				{!isNew && (
 					<button class="btn-remove" type="button" onClick={remove}>

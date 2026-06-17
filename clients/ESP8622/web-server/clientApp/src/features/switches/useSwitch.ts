@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'preact/hooks';
 import { useMessage } from '../../hooks/useMessage';
+import { useSaveStatus } from '../../hooks/useSaveStatus';
 import { confirm } from '../../store/modal';
 import { removeSwitch, updateSwitch } from '../../store/switches';
 import type { Control, Switch } from '../../api/types';
@@ -10,7 +11,12 @@ import { isValidName } from '../../utils/format';
 export function useSwitch(sw: Switch) {
 	const [name, setName] = useState(sw.name || '');
 	const [control, setControl] = useState<Control>(sw.control);
-	const { message, setMessage, succeed, run } = useMessage();
+	const { message, setMessage, run } = useMessage();
+
+	// Compare against the trimmed name (what we'd actually persist) so trailing
+	// whitespace doesn't count as a change.
+	const dirty = name.trim() !== (sw.name || '') || control !== sw.control;
+	const { status, saving, track } = useSaveStatus(dirty);
 
 	const save = useCallback(async () => {
 		const trimmed = name.trim();
@@ -18,9 +24,8 @@ export function useSwitch(sw: Switch) {
 			setMessage({ text: 'Name must be 2–16 characters.', kind: 'err' });
 			return;
 		}
-		const ok = await run(() => updateSwitch(sw.pin, control, trimmed));
-		if (ok) succeed('Saved.');
-	}, [name, control, sw.pin, setMessage, succeed, run]);
+		await track(() => run(() => updateSwitch(sw.pin, control, trimmed)));
+	}, [name, control, sw.pin, setMessage, run, track]);
 
 	const remove = useCallback(async () => {
 		const confirmed = await confirm(`Pin D${sw.pin} will be unregistered.`, {
@@ -31,5 +36,5 @@ export function useSwitch(sw: Switch) {
 		await run(() => removeSwitch(sw.pin));
 	}, [sw.pin, run]);
 
-	return { name, setName, control, setControl, message, save, remove };
+	return { name, setName, control, setControl, message, status, saving, dirty, save, remove };
 }

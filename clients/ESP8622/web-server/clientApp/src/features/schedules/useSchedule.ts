@@ -1,8 +1,12 @@
 import { useCallback, useState } from 'preact/hooks';
 import { useMessage } from '../../hooks/useMessage';
+import { useSaveStatus } from '../../hooks/useSaveStatus';
 import { confirm } from '../../store/modal';
 import { createSchedule, removeSchedule, updateSchedule } from '../../store/schedules';
 import { activeDays, toScheduleInput, toTimeInput, type ScheduleSeed } from './mappers';
+
+const sameDays = (a: Set<number>, b: Set<number>): boolean =>
+	a.size === b.size && [...a].every((day) => b.has(day));
 
 /**
  * Edit-form state for a single schedule card. Create/update/remove mutate the
@@ -19,6 +23,16 @@ export function useSchedule(seed: ScheduleSeed, onChanged?: () => void) {
 	const [enabled, setEnabled] = useState(seed.isActive);
 	const { message, run } = useMessage();
 
+	// A draft is always "unsaved"; an existing card is dirty once any field differs.
+	const dirty =
+		isNew ||
+		pin !== seed.digitalPin ||
+		start !== toTimeInput(seed.startTime) ||
+		end !== toTimeInput(seed.endTime) ||
+		enabled !== seed.isActive ||
+		!sameDays(days, activeDays(seed.weekdays));
+	const { status, saving, track } = useSaveStatus(dirty);
+
 	const toggleDay = useCallback((day: number) => {
 		setDays((prev) => {
 			const next = new Set(prev);
@@ -29,11 +43,13 @@ export function useSchedule(seed: ScheduleSeed, onChanged?: () => void) {
 
 	const save = useCallback(async () => {
 		const payload = toScheduleInput({ pin, start, end, days, enabled });
-		const ok = await run(() =>
-			(isNew ? createSchedule(payload) : updateSchedule(seed.id!, payload)).then(() => undefined),
+		const ok = await track(() =>
+			run(() =>
+				(isNew ? createSchedule(payload) : updateSchedule(seed.id!, payload)).then(() => undefined),
+			),
 		);
 		if (ok) onChanged?.();
-	}, [pin, start, end, days, enabled, isNew, seed.id, run, onChanged]);
+	}, [pin, start, end, days, enabled, isNew, seed.id, run, track, onChanged]);
 
 	const remove = useCallback(async () => {
 		const confirmed = await confirm(`Schedule ${seed.id} will be permanently removed.`, {
@@ -58,6 +74,9 @@ export function useSchedule(seed: ScheduleSeed, onChanged?: () => void) {
 		enabled,
 		setEnabled,
 		message,
+		status,
+		saving,
+		dirty,
 		save,
 		remove,
 	};
