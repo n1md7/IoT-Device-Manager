@@ -51,6 +51,7 @@
     "code": "D0001",
     "version": "1.0.0",
     "domain": "node-mcu",
+    "timezone": "UTC+3",
     "environment": "production",
     "description": "Device controller using NodeMCU via WEB interface"
   }

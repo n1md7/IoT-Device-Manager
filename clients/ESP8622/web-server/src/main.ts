@@ -3,11 +3,12 @@ import { routeSchedules } from "routes/schedules";
 import { routeSwitches } from "routes/switches";
 import { Express } from "server/express";
 import { console } from "utils/console";
-import { domain, code, version, port } from "utils/config";
+import { domain, code, version, port, timezone } from "utils/config";
 
 import { claimLocalDomain } from "services/mdns";
-import { adjustSystemTime } from "services/time";
+import { adjustSystemTime, applyTimezone } from "services/time";
 
+applyTimezone(timezone);
 adjustSystemTime();
 claimLocalDomain();
 

@@ -9,6 +9,21 @@ const hosts = [
   "3.pool.ntp.org",
 ];
 
+/**
+ * SNTP only ever gives us absolute UTC. The local-time getters used by the
+ * scheduler (`Date#getHours`, `getDay`, …) localise through `Time.timezone`
+ * (+ `Time.dst`), which default to 0 — so without this the device evaluates
+ * windows in UTC while users author them in wall-clock time. We fold the whole
+ * offset into `timezone` and keep `dst` at 0; the offset comes from the
+ * build-time `timezone` config and is re-bumped when the zone flips.
+ *
+ * @param offsetSeconds offset east of UTC, e.g. UTC+3 -> 10800
+ */
+export const applyTimezone = (offsetSeconds: number) => {
+  Time.timezone = offsetSeconds;
+  Time.dst = 0;
+};
+
 export const adjustSystemTime = () => {
   const host = hosts.shift();
   if (!host) return console.error("[SNTP] No more hosts to try.");

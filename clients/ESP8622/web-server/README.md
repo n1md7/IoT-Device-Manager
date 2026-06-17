@@ -116,13 +116,14 @@ Configuration can be overridden on the command line; otherwise it defaults to th
 
 ```bash
 mcconfig -d -m -p esp/nodemcu \
-  ssid="YOUR-WIFI-NAME" \
-  password="PASSWORD-HERE" \
-  domain="node-mcu" \
-  code="D0001" \
-  version="1.0.0" \
-  environment="development" \
-  description="My device description"
+  ssid="YOUR-WIFI-NAME" \ # Required
+  password="PASSWORD-HERE" \ # Required
+  domain="node-mcu" \ # Optional
+  code="D0001" \ # Optional
+  version="1.0.0" \ # Optional
+  timezone="UTC+3" \ # Optional
+  environment="development" \ # Optional
+  description="My device description" # Optional
 ```
 
 > **Note:** To generate a release build, omit both `-d` and `-i` from the

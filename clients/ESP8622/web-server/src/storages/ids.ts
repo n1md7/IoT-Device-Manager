@@ -31,8 +31,8 @@ export class IDs<T = number> {
   remove(id: T) {
     const ids = this.get();
 
-    if (ids.includes(id)) return;
+    if (!ids.includes(id)) return;
 
-    this.ids.setValue(ids.filter((i) => i !== id).join(","));
+    this.set(ids.filter((i) => i !== id));
   }
 }
