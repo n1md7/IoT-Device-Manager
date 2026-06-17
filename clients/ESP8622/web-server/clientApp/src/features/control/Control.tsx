@@ -31,7 +31,7 @@ export function Control() {
       <section>
         <div class="card empty">
           <h2>No switches yet</h2>
-          <p>Register a switch (a digital pin) before you can drive it.</p>
+          <p>Register a switch (a digital pin) before you can control it.</p>
           <button
             class="action"
             type="button"
@@ -83,17 +83,21 @@ export function Control() {
         )}
 
         <div class="btns">
-          <button
-            class="action"
-            type="button"
-            disabled={scheduled}
-            onClick={turnOn}
-          >
-            Turn ON
-          </button>
-          <button class="action danger" type="button" onClick={turnOff}>
-            {scheduled ? "Stop & disable schedule" : "Turn OFF"}
-          </button>
+          {!active && (
+            <button
+              class="action"
+              type="button"
+              disabled={scheduled}
+              onClick={turnOn}
+            >
+              Turn ON
+            </button>
+          )}
+          {active && (
+            <button class="action danger" type="button" onClick={turnOff}>
+              {scheduled ? "Stop & disable schedule" : "Turn OFF"}
+            </button>
+          )}
         </div>
         {scheduled && (
           <p class="muted">
