@@ -1,3 +1,4 @@
+/** Fallback route — shown when no other route matches. */
 export function NotFound() {
 	return (
 		<section>

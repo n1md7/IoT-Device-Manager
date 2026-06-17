@@ -11,7 +11,7 @@ import { adjustSystemTime } from "services/time";
 adjustSystemTime();
 claimLocalDomain();
 
-const server = new Express("/api", port);
+const server = new Express("/api", port, ["/schedules", "/switches"]);
 
 server.use(routeSwitches);
 server.use(routeSchedules);

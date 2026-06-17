@@ -27,3 +27,6 @@ export const formatDuration = (totalSeconds: number): string => {
 /** Human label for a switch: "Garden Pump (D2)", falling back to "Pin D2". */
 export const switchLabel = (sw?: Pick<Switch, 'name' | 'pin'>): string =>
 	sw && sw.name ? `${sw.name} (D${sw.pin})` : `Pin D${sw ? sw.pin : '?'}`;
+
+/** A switch name is valid when it is 2–16 characters long. */
+export const isValidName = (name: string): boolean => name.length >= 2 && name.length <= 16;

@@ -34,13 +34,29 @@ export async function ensureSwitches(): Promise<Switch[]> {
 	return refreshSwitches();
 }
 
-export const createSwitch = (digitalPin: number, control: Control, name: string) =>
-	send('POST', '/switches', { digitalPin, control, name });
+/** Register a switch. The device returns the created `Switch`, which we append
+ *  to the store — no refetch needed. */
+export async function createSwitch(
+	digitalPin: number,
+	control: Control,
+	name: string,
+): Promise<Switch | null> {
+	const created = await send<Switch>('POST', '/switches', { digitalPin, control, name });
+	if (created) switches.value = [...switches.value, created];
+	return created;
+}
 
-export const updateSwitch = (pin: number, control: Control, name: string) =>
-	send('PATCH', `/switches?pin=${pin}`, { control, name });
+/** Update a switch's control/name. The device returns no body, so we apply the
+ *  fields we just sent (the 2xx confirms success). */
+export async function updateSwitch(pin: number, control: Control, name: string): Promise<void> {
+	await send('PATCH', `/switches?pin=${pin}`, { control, name });
+	switches.value = switches.value.map((sw) => (sw.pin === pin ? { ...sw, control, name } : sw));
+}
 
-export const removeSwitch = (pin: number) => send('DELETE', `/switches?pin=${pin}`);
+export async function removeSwitch(pin: number): Promise<void> {
+	await send('DELETE', `/switches?pin=${pin}`);
+	switches.value = switches.value.filter((sw) => sw.pin !== pin);
+}
 
 export const startSwitch = (digitalPin: number, stopAt: number) =>
 	send('POST', '/switches/control', { digitalPin, action: 'Start', stopAt });

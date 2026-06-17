@@ -56,6 +56,12 @@ export class Express {
   constructor(
     private readonly prefix: Path,
     private readonly port: number,
+    /**
+     * To point to index.html when any of these routes are provided.
+     * All UI framework routes need to be listed.
+     * @private
+     */
+    private readonly reactRoutes: Path[] = [],
   ) {
     this.routes = {};
     this.extension = new Extension();
@@ -266,7 +272,7 @@ export class Express {
     }
 
     // We stream index.html by default when file not specified
-    if (!ctx.route || ctx.route === "/") {
+    if (!ctx.route || ctx.route === "/" || this.isReactRoute(ctx)) {
       return this.streamResource(ctx, "index.html", "html");
     }
 
@@ -337,5 +343,13 @@ export class Express {
         `Resource not found: ${getErrorMessage(error)}`,
       );
     }
+  }
+
+  private isReactRoute(ctx: Context) {
+    for (const route of this.reactRoutes) {
+      if (ctx.route === route) return true;
+    }
+
+    return false;
   }
 }

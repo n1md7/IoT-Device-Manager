@@ -1,17 +1,10 @@
-import { useEffect, useState } from 'preact/hooks';
-import { device, deviceNow, deviceOffline } from '../store/device';
+import { device, deviceOffline } from '../store/device';
+import { useDeviceClock } from '../hooks/useDeviceClock';
 import { MONTHS, pad, WEEKDAYS } from '../utils/format';
 
 /** Footer with a device-anchored clock that ticks off the browser. */
 export function Footer() {
-	const [now, setNow] = useState(() => new Date(deviceNow()));
-
-	useEffect(() => {
-		const tick = () => setNow(new Date(deviceNow()));
-		tick();
-		const ticker = setInterval(tick, 1000);
-		return () => clearInterval(ticker);
-	}, []);
+	const now = useDeviceClock();
 
 	const info = device.value;
 	const meta = deviceOffline.value

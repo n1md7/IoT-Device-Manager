@@ -6,10 +6,10 @@ import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Modal } from './components/Modal';
 import { Nav } from './components/Nav';
-import { Control } from './pages/Control';
-import { NotFound } from './pages/_404';
-import { Schedules } from './pages/Schedules';
-import { Switches } from './pages/Switches';
+import { NotFound } from './components/NotFound';
+import { Control } from './features/control/Control';
+import { Schedules } from './features/schedules/Schedules';
+import { Switches } from './features/switches/Switches';
 import { loadDevice } from './store/device';
 import './style.css';
 
