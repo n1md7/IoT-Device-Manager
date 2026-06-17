@@ -4,7 +4,7 @@ import { IDs } from "storages/ids";
 import { UniqueID } from "storages/unique-id";
 import type Timer from "timer";
 import { clearInterval, setInterval } from "utils/interval";
-import { isBoolean } from "utils/validations";
+import { isBoolean, isNumber } from "utils/validations";
 
 export type CreateSchedule = SchedulerPayload & {};
 export type UpdateSchedule = Partial<CreateSchedule>;
@@ -53,8 +53,19 @@ export class Schedules {
     if (endTime) schedule.setEndTime(endTime);
     if (weekdays) schedule.setWeekdays(weekdays);
     if (startTime) schedule.setStartTime(startTime);
-    if (controlPin) schedule.setControlPin(controlPin);
     if (isBoolean(isActive)) schedule.setIsActive(isActive);
+    if (isNumber(controlPin)) {
+      if (this.switches.has(controlPin)) {
+        // Turn off Pin that was re-assigned
+        // If not running, stopBy will skip it
+        this.switches.stopBy(controlPin);
+      }
+
+      schedule.setControlPin(controlPin);
+    }
+
+    // Window/active state may have moved; reassert correct state on the next tick.
+    schedule.markStale();
   }
 
   removeBy(uid: number) {
@@ -64,18 +75,21 @@ export class Schedules {
 
   private onTick() {
     for (const schedule of this.schedules.values()) {
-      if (schedule.isDisabled()) continue;
+      // A disabled schedule must reassert once when re-enabled, not pick up
+      // mid-window as if it had been polling all along.
+      if (schedule.isDisabled()) {
+        schedule.markStale();
+        continue;
+      }
+
+      // Act only on window transitions; a stable window emits no action, so a
+      // manual start/stop holds until the next start/end boundary.
+      const action = schedule.pollTransition();
+      if (!action) continue;
 
       const pin = schedule.getControlPin();
-
-      switch (true) {
-        case schedule.isTimeToStop():
-          this.switches.stopBy(pin);
-          break;
-        case schedule.isTimeToStart():
-          this.switches.startBy(pin);
-          break;
-      }
+      if (action === "start") this.switches.startBy(pin);
+      else this.switches.stopBy(pin);
     }
   }
 

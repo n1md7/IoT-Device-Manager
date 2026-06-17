@@ -21,7 +21,3 @@ server.start();
 
 console.info(`Server started successfully.`);
 console.info(`Name: ${domain}, Code: ${code}, Version: ${version}`);
-
-/**
- * TODO: Think of remedy for manual control and scheduler. perhaps manual control can be inmemory schedule that runs once?
- */

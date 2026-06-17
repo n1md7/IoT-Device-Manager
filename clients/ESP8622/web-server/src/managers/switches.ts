@@ -42,6 +42,10 @@ export class Switches {
   startBy(pin: Pins, stopAt?: number) {
     const switch_ = this.getSwitchBy(pin);
 
+    // Scheduler start (no stopAt) adopts an already-on pin: clear any manual
+    // auto-off so a leftover one-shot can't switch it off mid-window.
+    if (!stopAt && switch_.isActive()) return this.clearStopAt(pin);
+
     if (switch_.isActive()) return;
 
     switch_.start();

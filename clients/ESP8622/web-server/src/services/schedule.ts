@@ -52,6 +52,12 @@ export class Schedule {
   private readonly isActive: Storage<boolean>;
   private readonly controlPin: Storage<Pins>;
   private readonly key: SDLKey;
+  /**
+   * Window-membership as evaluated on the previous tick. RAM-only on purpose:
+   * after a reboot it is `undefined`, so the first poll reasserts the correct
+   * state once. Used to act on *transitions* instead of re-asserting every tick.
+   */
+  private wasWithinWindow?: boolean;
 
   constructor(
     private readonly id: number,
@@ -125,19 +131,36 @@ export class Schedule {
   }
 
   /**
-   * Should the device be running right now? True only when today is an active weekday,
-   * and the time-of-day falls inside the `[startTime, endTime)` window.
+   * Emit the switch action implied by a *transition* of window-membership since
+   * the last poll — never the steady-state level. Call once per tick.
+   *
+   * - `false -> true`     entered the window  => `"start"`
+   * - `true  -> false`    left the window     => `"stop"`
+   * - `undefined -> X`    first poll (boot / after {@link markStale}) => assert once
+   * - no change           => `null`, so manual control inside the window is left alone
+   *
+   * Because it compares the window boolean across ticks (not the clock against an
+   * exact second), a skipped tick only *delays* an edge — it can never miss one.
    */
-  isTimeToStart(now = new Date()) {
-    return this.isWithinWindow(now);
+  pollTransition(now = new Date()): "start" | "stop" | null {
+    const isWithinWindow = this.isWithinWindow(now);
+    const wasWithinWindow = this.wasWithinWindow;
+    this.wasWithinWindow = isWithinWindow;
+
+    if (wasWithinWindow === isWithinWindow) return null;
+
+    return isWithinWindow ? "start" : "stop";
   }
 
   /**
-   * Should the device be off right now? True when
-   * `now` is outside the window (wrong weekday or outside the time range).
+   * Drop the remembered window-membership so the next {@link pollTransition}
+   * reasserts the correct state once. Call after re-enabling or editing a
+   * schedule so config changes take effect on the next tick.
    */
-  isTimeToStop(now = new Date()) {
-    return !this.isWithinWindow(now);
+  markStale() {
+    this.wasWithinWindow = undefined;
+
+    return this;
   }
 
   /**
