@@ -1,7 +1,7 @@
 import { type HTTPServerCallback, Server, type ServerMessages } from "http";
 import Resource from "Resource";
-import { Extension, type Extensions } from "./extension";
-import { getErrorMessage, getErrorStatus } from "./utils";
+import { Extension, type Extensions } from "express/extension";
+import { getErrorMessage, getErrorStatus } from "express/utils";
 import {
   type Context,
   type Method,
@@ -175,7 +175,9 @@ export class Express {
     const params: Record<string, string> = {};
     if (!query) return params;
 
-    for (const pair of decodeURIComponent(query).replaceAll("+", " ").split("&")) {
+    for (const pair of decodeURIComponent(query)
+      .replaceAll("+", " ")
+      .split("&")) {
       if (!pair) continue; // skip empty segments (no query, trailing/double "&")
 
       const [key, value = ""] = pair.split("=");

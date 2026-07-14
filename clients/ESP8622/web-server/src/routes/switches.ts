@@ -1,5 +1,5 @@
 import { switchController } from "controllers/index";
-import { Router } from "server/router";
+import { Router } from "express/router";
 import {
   assertKeys,
   assertLength,

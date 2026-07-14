@@ -3,19 +3,28 @@
 exports[`Express > should verify existing routes 1`] = `
 {
   "/api/schedules": {
-    "DELETE": [Function],
-    "GET": [Function],
-    "PATCH": [Function],
-    "POST": [Function],
+    "handlers": {
+      "DELETE": [Function],
+      "GET": [Function],
+      "PATCH": [Function],
+      "POST": [Function],
+    },
+    "plugins": [],
   },
   "/api/switches": {
-    "DELETE": [Function],
-    "GET": [Function],
-    "PATCH": [Function],
-    "POST": [Function],
+    "handlers": {
+      "DELETE": [Function],
+      "GET": [Function],
+      "PATCH": [Function],
+      "POST": [Function],
+    },
+    "plugins": [],
   },
   "/api/switches/control": {
-    "POST": [Function],
+    "handlers": {
+      "POST": [Function],
+    },
+    "plugins": [],
   },
 }
 `;
@@ -23,23 +32,35 @@ exports[`Express > should verify existing routes 1`] = `
 exports[`Express > should verify multiple namespaces 1`] = `
 {
   "/api/schedules": {
-    "DELETE": [Function],
-    "GET": [Function],
-    "POST": [Function],
+    "handlers": {
+      "DELETE": [Function],
+      "GET": [Function],
+      "POST": [Function],
+    },
+    "plugins": [],
   },
   "/api/schedules/control": {
-    "POST": [Function],
+    "handlers": {
+      "POST": [Function],
+    },
+    "plugins": [],
   },
   "/api/switches": {
-    "DELETE": [Function],
-    "GET": [Function],
-    "POST": [Function],
+    "handlers": {
+      "DELETE": [Function],
+      "GET": [Function],
+      "POST": [Function],
+    },
+    "plugins": [],
   },
   "/api/users": {
-    "DELETE": [Function],
-    "GET": [Function],
-    "POST": [Function],
-    "PUT": [Function],
+    "handlers": {
+      "DELETE": [Function],
+      "GET": [Function],
+      "POST": [Function],
+      "PUT": [Function],
+    },
+    "plugins": [],
   },
 }
 `;

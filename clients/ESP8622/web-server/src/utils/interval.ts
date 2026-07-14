@@ -1,6 +1,6 @@
 import Timer, { type TimerCallback } from "timer";
 import { console } from "utils/console";
-import { getErrorMessage } from "utils/http";
+import { getErrorMessage } from "express/utils";
 
 type N = number;
 export type TC = TimerCallback;

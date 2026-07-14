@@ -1,5 +1,5 @@
 import { schedulesController } from "controllers/index";
-import { Router } from "server/router";
+import { Router } from "express/router";
 import {
   assertBoolean,
   assertKeys,

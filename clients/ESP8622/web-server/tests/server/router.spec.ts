@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Context, Path, Router } from "../../src/server/router";
+import { Context, Path, Router } from "express/router";
 
 type MethodNames<T> = {
   [K in keyof T]-?: T[K] extends (...args: any[]) => any ? K : never;

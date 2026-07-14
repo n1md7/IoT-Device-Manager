@@ -1,6 +1,6 @@
 import type { Request } from "http";
 import type Resource from "Resource";
-import { isDefined, isString } from "./assertion";
+import { isDefined, isString } from "express/assertion";
 
 export type Path = `/${string}`;
 export type Stream = { resource: Resource; position: number };

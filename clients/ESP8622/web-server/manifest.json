@@ -5,7 +5,8 @@
     "$(MODDABLE)/modules/files/preference/manifest.json",
     "$(MODDABLE)/modules/files/file/manifest.json",
     "$(MODULES)/pins/digital/manifest.json",
-    "$(MODDABLE)/modules/network/mdns/manifest.json"
+    "$(MODDABLE)/modules/network/mdns/manifest.json",
+    "../express/manifest.json"
   ],
   "modules": {
     "*": ["./src/*", "$(MODULES)/network/http/*", "$(MODULES)/network/sntp/*"],
@@ -15,7 +16,6 @@
     "managers/*": "./src/managers/*",
     "storages/*": "./src/storages/*",
     "database/*": "./src/database/*",
-    "server/*": "./src/server/*",
     "utils/*": "./src/utils/*"
   },
   "data": {
@@ -24,21 +24,22 @@
   "preload": [
     "http",
     "sntp",
+    "express",
+    "express/router",
+    "express/assertion",
+    "express/extension",
+    "express/utils",
     "utils/validations",
-    "utils/http",
     "utils/env",
     "utils/config",
     "utils/console",
     "utils/interval",
     "services/logger",
-    "services/extension",
     "services/time",
     "services/mdns",
     "services/switch",
     "services/schedule",
     "services/counter",
-    "server/router",
-    "server/express",
     "database/storage",
     "storages/ids",
     "storages/unique-id",
