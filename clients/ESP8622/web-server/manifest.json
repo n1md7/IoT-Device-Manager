@@ -6,7 +6,7 @@
     "$(MODDABLE)/modules/files/file/manifest.json",
     "$(MODULES)/pins/digital/manifest.json",
     "$(MODDABLE)/modules/network/mdns/manifest.json",
-    "../express/manifest.json"
+    "../moddable-kit/express/manifest.json"
   ],
   "modules": {
     "*": ["./src/*", "$(MODULES)/network/http/*", "$(MODULES)/network/sntp/*"],

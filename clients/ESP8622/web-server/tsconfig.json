@@ -20,13 +20,13 @@
       "managers/*": ["./src/managers/*"],
       "database/*": ["./src/database/*"],
       "storages/*": ["./src/storages/*"],
-      "express": ["../express/src/express.ts"],
-      "express/*": ["../express/src/*"]
+      "express": ["../moddable-kit/express/src/express.ts"],
+      "express/*": ["../moddable-kit/express/src/*"]
     }
   },
   "include": [
     "src/**/*",
-    "../express/src/**/*",
+    "../moddable-kit/express/src/**/*",
     "node_modules/@moddable/typings/**/*.d.ts",
     "vitest/globals"
   ],

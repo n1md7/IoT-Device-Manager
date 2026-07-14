@@ -1,0 +1,3 @@
+[submodule "clients/ESP8622/moddable-kit"]
+	path = clients/ESP8622/moddable-kit
+	url = https://github.com/n1md7/moddable-kit.git

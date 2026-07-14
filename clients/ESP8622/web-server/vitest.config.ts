@@ -9,8 +9,8 @@ export default defineConfig({
   resolve: {
     alias: [
       // The extracted express library (mirrors tsconfig.json "express" paths)
-      { find: /^express$/, replacement: resolve(cwd(), "../express/src/express.ts") },
-      { find: /^express\/(.*)$/, replacement: resolve(cwd(), "../express/src/$1") },
+      { find: /^express$/, replacement: resolve(cwd(), "../moddable-kit/express/src/express.ts") },
+      { find: /^express\/(.*)$/, replacement: resolve(cwd(), "../moddable-kit/express/src/$1") },
       // TS path aliases (mirror tsconfig.json "paths")
       { find: /^routes\/(.*)$/, replacement: src("routes/$1") },
       { find: /^services\/(.*)$/, replacement: src("services/$1") },
