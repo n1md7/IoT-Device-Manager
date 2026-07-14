@@ -1,0 +1,14 @@
+{
+  "//": "Standalone typecheck for the library itself (`npm run typecheck`). `paths` mirrors the manifest module map so internal imports resolve the same way the build sees them.",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "express": ["./src/express.ts"],
+      "express/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "node_modules/@moddable/typings/**/*.d.ts"
+  ]
+}

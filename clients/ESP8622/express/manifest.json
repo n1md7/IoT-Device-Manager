@@ -1,0 +1,9 @@
+{
+  "modules": {
+    "express": "./src/express",
+    "express/router": "./src/router",
+    "express/assertion": "./src/assertion",
+    "express/extension": "./src/extension",
+    "express/utils": "./src/utils"
+  }
+}

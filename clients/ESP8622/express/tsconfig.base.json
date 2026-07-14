@@ -1,0 +1,17 @@
+{
+  "//": "Shareable base config. Consumers can `extends` this and only add their own `paths`/`include`. Mirrors the Moddable/XS runtime: ESNext modules, no emit (xsc compiles the .ts).",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "lib": ["ESNext"],
+    "strict": true,
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

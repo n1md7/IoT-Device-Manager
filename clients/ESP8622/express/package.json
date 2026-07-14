@@ -1,0 +1,17 @@
+{
+  "name": "moddable-express",
+  "version": "0.1.0",
+  "description": "A tiny Express-like HTTP server + router for Moddable (XS), written in TypeScript",
+  "author": "n1md7",
+  "license": "ISC",
+  "//": "Moddable does not consume npm packages — these deps are dev tooling only (tsc, prettier). Consumers link the library via manifest `include`, not `npm install`.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch"
+  },
+  "devDependencies": {
+    "@moddable/typings": "^5.5.0",
+    "prettier": "3.5.1",
+    "typescript": "^5.7.0"
+  }
+}
