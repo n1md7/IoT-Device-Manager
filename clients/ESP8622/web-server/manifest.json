@@ -48,6 +48,14 @@
     "controllers/switch.controller",
     "controllers/schedule.controller"
   ],
+  "typescript": {
+    "tsconfig": {
+      "compilerOptions": {
+        "target": "esnext",
+        "lib": ["esnext"]
+      }
+    }
+  },
   "config": {
     "code": "D0001",
     "version": "1.0.0",

@@ -1,9 +1,15 @@
 import type { Request } from "http";
-import type Resource from "Resource";
+import Resource from "Resource";
 import { isDefined, isString } from "express/assertion";
 
 export type Path = `/${string}`;
-export type Stream = { resource: Resource; position: number };
+// `Resource` is exported as a value (a constructor) by Moddable's own typings,
+// so it can't be used as a type directly. `InstanceType<typeof Resource>` names
+// the instance type and works under both Moddable's typings and @moddable/typings.
+export type Stream = {
+  resource: InstanceType<typeof Resource>;
+  position: number;
+};
 export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS";
 export type HeaderKey =
   | "Content-Type"

@@ -209,7 +209,10 @@ export class Express {
 
     return {
       headers,
-      body: body ? JSON.stringify(body) : body,
+      // `undefined` (not `body`) in the empty case: keeps the type `string |
+      // undefined` under non-strict builds too, where the `Record` would
+      // otherwise leak into the response `body` type.
+      body: body ? JSON.stringify(body) : undefined,
       status,
     };
   }
